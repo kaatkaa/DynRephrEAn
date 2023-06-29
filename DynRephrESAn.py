@@ -1,0 +1,90 @@
+# imports
+import streamlit as st
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.express as px
+import plotly
+import plotly.graph_objects as go
+import wordcloud
+import os
+import json
+
+from submenus.single_corpus import SingleCorpusMenu
+from config.config_data_colector import DataProvider
+
+from PIL import Image
+from collections import Counter
+from wordcloud import WordCloud, STOPWORDS
+import streamlit.components.v1 as components
+
+pd.set_option("max_colwidth", 300)
+sns.set_theme(style="whitegrid")
+plt.style.use("seaborn-talk")
+ 
+# ******************* path to file **************************************
+
+rephrase_xlsx = r"./data_xlsx/DynRephrSEAn.xlsx"
+
+# ********************** functions **************************************
+
+def style_css(file):
+    with open(file) as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
+@st.cache_data
+def load_data(dir_address: str) -> dict[str : pd.DataFrame()]:
+    tmpDic = pd.read_excel(dir_address, sheet_name=None)
+    for corpoName in DataProvider.getCorporaSkipLst():
+        if corpoName in tmpDic:
+            del tmpDic[corpoName]
+    return tmpDic
+
+# ******************* multi pages functions **************************************
+
+def MainPage():
+    st.title("Dynamics of Rephrase Analytics")
+    DataProvider.addSpacelines(2)
+
+    st.write("#### DynRephAn")
+    with st.expander("Read abstract"):
+        DataProvider.addSpacelines(1)
+        st.write("Some more information...")
+
+    with st.container():
+        DataProvider.addSpacelines(3)
+
+        st.write("**[The New Ethos Lab](https://newethos.org/)**")
+        st.write(" ************************** ")
+
+    st.write('<style>div.row-widget.stRadio > div{flex-direction:column;font-size=18px;}</style>', unsafe_allow_html=True)
+
+@st.cache_resource
+def SingleCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()], submenu_prefix: str) -> SingleCorpusMenu:
+    print("dataDic: ",dataDic)
+    return SingleCorpusMenu(dataDic = dataDic, prefix = submenu_prefix)
+
+#  *************************** sidebar  *********************************
+
+with st.sidebar:
+    st.write('<style>div[class="css-1siy2j7 e1fqkh3o3"] > div{background-color: #d2cdcd;}</style>', unsafe_allow_html=True)
+    st.write('<style>div.row-widget.stRadio > div{flex-direction:column;}</style>', unsafe_allow_html=True)
+    st.title("Contents")
+    dataDic = load_data(rephrase_xlsx)
+    single_corpora_menu = SingleCorporaMenuLoader(dataDic=dataDic, submenu_prefix="0_")
+    st.subheader("Analytics type")
+    rAnalytics = st.radio("", ("DynRephAn for Ethos",
+                            "DynRephAn for Sentiment"),
+                key="AnType")
+    st.subheader("Choose Corpora")
+    contents_radio = st.radio("Choose: ", ("Main Page", "Single Corpus Analysis", "Comparative Corpora Analysis"),label_visibility='collapsed')
+
+if contents_radio == "Main Page":
+    MainPage()
+elif contents_radio == "Single Corpus Analysis":
+    single_corpora_menu.sidebar()
+elif contents_radio == "Comparative Corpora Analysis":
+    pass
+else:
+    st.error("Wrong option of main sidemenu radiobitton.")
