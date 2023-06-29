@@ -5,10 +5,10 @@ import streamlit as st
 
 class DataProvider:
     __leftmenu_cf_dir = 'left_menu'
-    __color_sentiment = {'Meliorization':'#3FEE0F','M_Strong':'#7CFF57','M_Weak':'#28B900','Pejorativization':'#FF0000'
-                     ,'P_Strong':'#FF5656','P_Weak':'#BD0000','Neutralization':'#2EBDFF','No_Change': '#414040'}
-    __color_ethos = {'Meliorization':'#3FEE0F','M_Strong':'#7CFF57','M_Weak':'#28B900','Pejorativization':'#FF0000'
-                     ,'P_Strong':'#FF5656','P_Weak':'#BD0000','Neutralization':'#2EBDFF','No_Change': '#414040'}
+    __color_sentiment = {'Meliorization':'#3FEE0F','M_strong':'#7CFF57','M_weak':'#28B900','Pejorativization':'#FF0000'
+                     ,'P_strong':'#FF5656','P_weak':'#BD0000','Neutralization':'#2EBDFF','No_Change': '#414040'}
+    __color_ethos = {'Meliorization':'#3FEE0F','M_strong':'#7CFF57','M_weak':'#28B900','Pejorativization':'#FF0000'
+                     ,'P_strong':'#FF5656','P_weak':'#BD0000','Neutralization':'#2EBDFF','No_Change': '#414040'}
     __color_rephr = {'C': '#7FB3D5','D': '#76D7C4',
             'I':'#02FF70', 'O': '#F4D03F','P':'#C56EE7'}
     __color_rephr_empty = {'Rephrase': '#E9B711','No rephrase': '#706351'}
