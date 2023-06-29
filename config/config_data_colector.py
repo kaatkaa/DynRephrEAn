@@ -5,14 +5,21 @@ import streamlit as st
 
 class DataProvider:
     __leftmenu_cf_dir = 'left_menu'
-    __corporaSkipLst = ['Statistics']
-    __rephr_sortDic = {'P':0,'I':1,'C':2,'D':3,'O':4}
-    __rephr_dims = ['P','I','C','D','O']
-    __color_sentiment = {'positive':'#3FEE0F','negative':'#FF0000','neutral':'#2EBDFF','No_Change': '#414040'}
-    __color_ethos = {'Meliorization':'#3FEE0F','Pejorativization':'#FF0000','Neutralization':'#2EBDFF','No_Change': '#414040'}
+    __color_sentiment = {'Meliorization':'#3FEE0F','M_Strong':'#7CFF57','M_Weak':'#28B900','Pejorativization':'#FF0000'
+                     ,'P_Strong':'#FF5656','P_Weak':'#BD0000','Neutralization':'#2EBDFF','No_Change': '#414040'}
+    __color_ethos = {'Meliorization':'#3FEE0F','M_Strong':'#7CFF57','M_Weak':'#28B900','Pejorativization':'#FF0000'
+                     ,'P_Strong':'#FF5656','P_Weak':'#BD0000','Neutralization':'#2EBDFF','No_Change': '#414040'}
     __color_rephr = {'C': '#7FB3D5','D': '#76D7C4',
             'I':'#02FF70', 'O': '#F4D03F','P':'#C56EE7'}
     __color_rephr_empty = {'Rephrase': '#E9B711','No rephrase': '#706351'}
+    __sav_image = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': 'presentation_image',
+            'height': 1080,
+            'scale':6 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
 
     __custom_stop_words = [
             "http", "https", "co", "RT",
@@ -64,15 +71,11 @@ class DataProvider:
     def addSpacelines(number=2):
         for i in range(number):
             st.write("\n")
-
-    @staticmethod
-    def getCorporaSkipLst() -> list[str]:
-        return DataProvider.__corporaSkipLst
-    
-    @staticmethod
-    def getSortingDic() -> dict[str:int]:
-        return DataProvider.__rephr_sortDic
     
     @staticmethod
     def getCustomStopWords() -> list[str]:
         return DataProvider.__custom_stop_words
+    
+    @staticmethod
+    def getSaveConfig() -> dict[str, any]:
+        return DataProvider.__sav_image

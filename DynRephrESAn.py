@@ -36,9 +36,9 @@ def style_css(file):
 @st.cache_data
 def load_data(dir_address: str) -> dict[str : pd.DataFrame()]:
     tmpDic = pd.read_excel(dir_address, sheet_name=None)
-    for corpoName in DataProvider.getCorporaSkipLst():
-        if corpoName in tmpDic:
-            del tmpDic[corpoName]
+    # for corpoName in DataProvider.getCorporaSkipLst():
+    #     if corpoName in tmpDic:
+    #         del tmpDic[corpoName]
     return tmpDic
 
 # ******************* multi pages functions **************************************

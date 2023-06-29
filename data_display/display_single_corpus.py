@@ -197,8 +197,8 @@ class Sentiment:
 class WordCloudOfEmotions:
 
     def __Make_Word_Cloud(self, lexicon):
-        stop_words = DataProvider.getCustomStopWords() + list(STOPWORDS)
-        wordcloud = WordCloud(stopwords = stop_words, background_color="#493E38", colormap='YlOrRd', width=1500, height=800,
+        #stop_words = DataProvider.getCustomStopWords() + list(STOPWORDS)
+        wordcloud = WordCloud(background_color="#493E38", colormap='YlOrRd', width=1500, height=800,
                             normalize_plurals=False).generate(" ".join(lexicon))
         fig, ax = plt.subplots(figsize=(10, 10), facecolor=None)
         ax.imshow(wordcloud)
@@ -223,7 +223,7 @@ class WordCloudOfEmotions:
         st.dataframe(df, width=800, height=1000)
 
     def __init__(self, data: pd.DataFrame()):
-        st.subheader(f"Word Clouds for selected emotion")
+        st.subheader(f"Word Clouds for distribution of ethos dynamics in rephrase:")
         DataProvider.addSpacelines(1)
         if len(data) > 0:
             rephrase_options = st.multiselect("Choose rhetoric categories you would like to visualise", 
@@ -242,16 +242,34 @@ class WordCloudOfEmotions:
             st.warning("You have to provide corpora for WordCloud.")
 
 class Piechart:
-    def __init__(self, data) -> None:
-        st.subheader(f"Distribution of ethos dynamics in rephrase: ") 
+    def __drawDistribution(self, data, unit, col_name):
+        displayer = ""
+        if unit == "percentage":
+            displayer = 'percent+label'
+        elif unit == "number":
+            displayer = 'text+label'
+        pie_df = (data.groupby([col_name]).size()).reset_index(name="number")
+        fig = px.pie(pie_df, values='number', names=col_name, color=col_name,
+                    color_discrete_map=DataProvider.getEthosColors()
+        )
+        fig.update_traces(textposition='inside', 
+                    text=pie_df['number'].map("#{:,}".format),
+                    textinfo=displayer)
+        return fig
+
+    def __init__(self, data: pd.DataFrame()):
+        st.subheader(f"Distribution of ethos dynamics in rephrase:")
+        DataProvider.addSpacelines(1)
         if len(data) > 0:
-            pie_df = (data.groupby(['dyn_ethos']).size()).reset_index(name="number")
-            fig = px.pie(pie_df, values='number', names='dyn_ethos', color='dyn_ethos',
-                        color_discrete_map=DataProvider.getEthosColors()
-            )
-            fig.update_traces(textposition='inside', 
-                     text=pie_df['number'].map("#{:,}".format),
-                     textinfo='percent+label+text')
-            st.plotly_chart(fig)
+            col_radio1, = st.columns(1)
+            with col_radio1:
+                unit = st.radio("Choose display type: ",
+                    ("percentage",
+                    "number"),
+                    key="Rephrase_Distribution_Piechart")
+            f1 = self.__drawDistribution(data, unit, "dyn_ethos")
+            st.plotly_chart(f1, config=DataProvider.getSaveConfig())
+            f2 = self.__drawDistribution(data, unit, "dyn_ethosWS")
+            st.plotly_chart(f2, config=DataProvider.getSaveConfig())
         else:
-            st.write("Choose corpora.")
+            st.warning("You have to select data for analysis.")
