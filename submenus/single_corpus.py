@@ -121,11 +121,11 @@ class SingleCorpusMenu:
                                     )
 
         if module_choice == "Cases":
-            WordCloudOfEmotions(self.__rephrase_df,analysisType="Cases",units=units_choice)
+            WordCloudOfEmotions(self.__rephrase_df,analysisType="Cases",unit=units_choice)
         elif module_choice == "Wordcloud":
-            WordCloudOfEmotions(self.__rephrase_df,analysisType="Wordcloud",units=units_choice)
+            WordCloudOfEmotions(self.__rephrase_df,analysisType="Wordcloud",unit=units_choice)
         elif module_choice == "Distribution":
-            Piechart(self.__rephrase_df)
+            Piechart(self.__rephrase_df,unit=units_choice)
         else:
             raise NotImplementedError("Unsupported option of Analytical module in single_corpus.py .")
 

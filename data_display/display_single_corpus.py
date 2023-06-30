@@ -210,15 +210,19 @@ class WordCloudOfEmotions:
     def __filterInterface(self, data: pd.DataFrame()) -> Tuple[any, list[str]]:
         dyn_rephrase_options = st.multiselect("Choose dynamic ethos rephrase types: ", 
                                     DataProvider.getDynRephDimentions(), 
-                                    DataProvider.getDynRephDimentions()[:])
+                                    DataProvider.getDynRephDimentions()[:],
+                                    key = "multi_sel"+str(self.__keyCtr))
+        self.__keyCtr += 1
         data_WS = data.loc[data['dyn_ethosWS'].isin(dyn_rephrase_options)]
         source_options = st.multiselect("Choose source of data you would like to visualise", 
                                     ["input","output"], 
-                                    ["input","output"][:])
+                                    ["input","output"][:],
+                                    key = "multi_sel"+str(self.__keyCtr))
+        self.__keyCtr += 1
         return data_WS, source_options
     
     def __prepareWordCloud(self, data: pd.DataFrame()) -> list():
-        st.subheader(f"Word Clouds for distribution of ethos dynamics in rephrase:")
+        #st.subheader(f"Word Clouds for distribution of ethos dynamics in rephrase:")
         DataProvider.addSpacelines(1)        
         filteredDf, columnNamesLst = self.__filterInterface(data)
         joined_set = set()
@@ -239,16 +243,34 @@ class WordCloudOfEmotions:
             colCtr = []
             for ctr in range(len(wordLst[:number])):
                 colCtr.append(ctr+1)
-            st.dataframe(phrasesDf, width=800, height=40*number)
+            st.dataframe(phrasesDf, width=800, height=30*number)
 
-    def __init__(self, data: pd.DataFrame(), analysisType: str, units: str) -> None:
+    def __init__(self, data: pd.DataFrame(), analysisType: str, unit: str) -> None:
         if len(data) > 0:
+            self.__keyCtr = 0
             self.__stop_words = DataProvider.getCustomStopWords() + list(STOPWORDS)
-            if analysisType == 'Wordcloud':
-                wl = self.__prepareWordCloud(data)
-                self.__Make_Word_Cloud(wl)
-            elif analysisType == 'Cases':
-                self.__textAnalysis(data)
+            if unit == "ADU-Based Analysis":
+                if analysisType == 'Wordcloud':
+                    st.subheader("Edit ADU data for worldcloud")
+                    wl = self.__prepareWordCloud(data)
+                    self.__Make_Word_Cloud(wl)
+                elif analysisType == 'Cases':
+                    self.__textAnalysis(data)
+            elif unit == "Speaker-Based Analysis":
+                sameSpeakerDf = data.loc[data['speaker_input'] == data['speaker_output']]
+                diffSpeakerDf = data.loc[data['speaker_input'] != data['speaker_output']]
+                if analysisType == 'Wordcloud':
+                    st.subheader("Edit rephrase for worldcloud of same speaker: ")
+                    wl = self.__prepareWordCloud(sameSpeakerDf)
+                    self.__Make_Word_Cloud(wl)
+                    st.subheader("Edit data for worldcloud of different speakers: ")
+                    wl2 = self.__prepareWordCloud(diffSpeakerDf)
+                    self.__Make_Word_Cloud(wl2)
+                elif analysisType == 'Cases':
+                    st.subheader("Edit cases for single speaker rephrase: ")
+                    self.__textAnalysis(sameSpeakerDf)
+                    st.subheader("Edit cases for two speakers rephrase: ")
+                    self.__textAnalysis(diffSpeakerDf)
         else:
             st.warning("You have to provide corpora for text analysis.")
 
@@ -268,19 +290,43 @@ class Piechart:
                     textinfo=displayer)
         return fig
 
-    def __init__(self, data: pd.DataFrame()):
-        st.subheader(f"Distribution of ethos dynamics in rephrase:")
+    def __init__(self, data: pd.DataFrame(), unit: str) -> None:
+        st.subheader(f"**Distribution of ethos dynamics in rephrase:**")
         DataProvider.addSpacelines(1)
         if len(data) > 0:
-            col_radio1, = st.columns(1)
-            with col_radio1:
-                unit = st.radio("Choose display type: ",
-                    ("percentage",
-                    "number"),
-                    key="Rephrase_Distribution_Piechart")
-            f1 = self.__drawDistribution(data, unit, "dyn_ethos")
-            st.plotly_chart(f1, config=DataProvider.getSaveConfig())
-            f2 = self.__drawDistribution(data, unit, "dyn_ethosWS")
-            st.plotly_chart(f2, config=DataProvider.getSaveConfig())
+            if unit == "ADU-Based Analysis":
+                col_radio1, = st.columns(1)
+                with col_radio1:
+                    display_unit = st.radio("Choose display type: ",
+                        ("percentage",
+                        "number"),
+                        key="Rephrase_Distribution_Piechart")
+                f1 = self.__drawDistribution(data, display_unit, "dyn_ethos")
+                st.subheader("General ADU based plot")
+                st.plotly_chart(f1, config=DataProvider.getSaveConfig())
+                st.subheader("Detailed ADU based plot")
+                f2 = self.__drawDistribution(data, display_unit, "dyn_ethosWS")
+                st.plotly_chart(f2, config=DataProvider.getSaveConfig())
+            elif unit == "Speaker-Based Analysis":
+                sameSpeakerDf = data.loc[data['speaker_input'] == data['speaker_output']]
+                diffSpeakerDf = data.loc[data['speaker_input'] != data['speaker_output']]
+                col_radio1, = st.columns(1)
+                with col_radio1:
+                    display_unit = st.radio("Choose display type: ",
+                        ("percentage",
+                        "number"),
+                        key="Rephrase_Distribution_Piechart")
+                f1 = self.__drawDistribution(sameSpeakerDf, display_unit, "dyn_ethos")
+                st.subheader("General single speaker rephrase analysis: ")
+                st.plotly_chart(f1, config=DataProvider.getSaveConfig())
+                st.subheader("Detailed single speaker rephrase analysis:")
+                f2 = self.__drawDistribution(sameSpeakerDf, display_unit, "dyn_ethosWS")
+                st.plotly_chart(f2, config=DataProvider.getSaveConfig())
+                f3 = self.__drawDistribution(diffSpeakerDf, display_unit, "dyn_ethos")
+                st.subheader("General dialog rephrase analysis: ")
+                st.plotly_chart(f3, config=DataProvider.getSaveConfig())
+                st.subheader("Detailed dialog rephrase analysis:")
+                f4 = self.__drawDistribution(diffSpeakerDf, display_unit, "dyn_ethosWS")
+                st.plotly_chart(f4, config=DataProvider.getSaveConfig())
         else:
             st.warning("You have to select data for analysis.")
