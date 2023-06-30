@@ -239,10 +239,11 @@ class WordCloudOfEmotions:
         if text != "":
             wordLst = sorted(WordCloud(stopwords=self.__stop_words).process_text(text).items(), key=lambda x:x[1], reverse=True)
             number = st.slider("Pick top n words/phrases: ", 1, value=10, max_value=len(wordLst))
-            phrasesDf = pd.DataFrame(wordLst[:number],columns = ['Top phrase', 'Frequency'])
-            colCtr = []
-            for ctr in range(len(wordLst[:number])):
-                colCtr.append(ctr+1)
+            index = []
+            for i in range(1,number+1):
+                index.append(i)
+            phrasesDf = pd.DataFrame(wordLst[:number],columns = ['Top phrase', 'Frequency'],index=pd.Index(index, name='Ranking'))
+            phrasesDf.columns.name = phrasesDf.index.name
             st.dataframe(phrasesDf, width=800, height=30*number)
 
     def __init__(self, data: pd.DataFrame(), analysisType: str, unit: str) -> None:
