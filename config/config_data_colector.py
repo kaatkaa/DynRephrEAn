@@ -5,6 +5,7 @@ import streamlit as st
 
 class DataProvider:
     __leftmenu_cf_dir = 'left_menu'
+    __lst_of_dyn_rephr = ['M_strong','M_weak','P_strong','P_weak','Neutralization','No_Change']
     __color_sentiment = {'Meliorization':'#3FEE0F','M_strong':'#7CFF57','M_weak':'#28B900','Pejorativization':'#FF0000'
                      ,'P_strong':'#FF5656','P_weak':'#BD0000','Neutralization':'#2EBDFF','No_Change': '#414040'}
     __color_ethos = {'Meliorization':'#3FEE0F','M_strong':'#7CFF57','M_weak':'#28B900','Pejorativization':'#FF0000'
@@ -25,7 +26,7 @@ class DataProvider:
             "http", "https", "co", "RT",
             "Donald", "Trump", "Mike", "Pence",
             "Hillary","Hilary", "Clinton", "Joe", "Biden",
-            "Michael", "Bloomberg", "Jeb", "Bush",
+            "Michael", "Bloomberg", "Jeb", "Bush","Nicholas", "Ridley",
             "Ben", "Carson", "Lincoln" "Chafee",
             "Chris", "Christie", "Ted", "Cruz",
             "Carly", "Fiorina", "Obama", "OBAMA",
@@ -44,12 +45,12 @@ class DataProvider:
             "Rick", "Santorum",
             "Scott", "Walker",
             "Elizabeth", "Warren",
-            "Jim", "Webb",
+            "Jim", "Webb","Mr"
     ]
 
     @staticmethod
-    def getRephraseDimentions():
-        return DataProvider.__rephr_dims
+    def getDynRephDimentions():
+        return DataProvider.__lst_of_dyn_rephr
 
     @staticmethod
     def getRephraseColors():

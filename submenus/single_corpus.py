@@ -102,36 +102,29 @@ class SingleCorpusMenu:
             
 
     def sidebar(self):
-        contents_radio4 = "Piechart"
-
         with st.sidebar:
-
+            st.subheader("Choose Corpora: ")
             self.__corporaPickerChckBox()
 
             st.write("****************************")
             st.subheader("Analysis Units")
-            contents_radio2 = st.radio("", ("ADU-Based Analysis",
+            units_choice = st.radio("", ("ADU-Based Analysis",
                                             "Speaker-Based Analysis"
                                             ), key=self.__prefix+"units")
 
-            if contents_radio2 == "ADU-Based Analysis":
-                st.write("****************************")
-                st.subheader("Analitics module")
-                contents_radio4 = st.radio("An. Module", \
-                                           ("Wordcloud","Distribution","Cases"), \
-                                           key=self.__prefix+"post", label_visibility="hidden"
-                                        )
+            #if units == "ADU-Based Analysis":
+            st.write("****************************")
+            st.subheader("Analitics module")
+            module_choice = st.radio("An. Module", \
+                                        ("Wordcloud","Distribution","Cases"), \
+                                        key=self.__prefix+"post", label_visibility="hidden"
+                                    )
 
-        if contents_radio4 == "Qualitative Analysis":
-            #DataStatsAnalyzer(self.__dataDic)
-            Overall(self.__rephrase_df)
-        elif contents_radio4 == "Sentiment in Rephrase":
-            pass
-            #Sentiment(self.__rephrase_df)
-        elif contents_radio4 == "Wordcloud":
-            WordCloudOfEmotions(self.__rephrase_df)
-            pass
-        elif contents_radio4 == "Distribution":
+        if module_choice == "Cases":
+            WordCloudOfEmotions(self.__rephrase_df,analysisType="Cases",units=units_choice)
+        elif module_choice == "Wordcloud":
+            WordCloudOfEmotions(self.__rephrase_df,analysisType="Wordcloud",units=units_choice)
+        elif module_choice == "Distribution":
             Piechart(self.__rephrase_df)
         else:
             raise NotImplementedError("Unsupported option of Analytical module in single_corpus.py .")

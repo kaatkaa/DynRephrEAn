@@ -1,6 +1,7 @@
 import streamlit as st
 import sys
 import pandas as pd
+from typing import Tuple
 from pandas.api.types import CategoricalDtype
 import seaborn as sns
 import numpy as np
@@ -196,9 +197,9 @@ class Sentiment:
 
 class WordCloudOfEmotions:
 
-    def __Make_Word_Cloud(self, lexicon):
-        #stop_words = DataProvider.getCustomStopWords() + list(STOPWORDS)
-        wordcloud = WordCloud(background_color="#493E38", colormap='YlOrRd', width=1500, height=800,
+    def __Make_Word_Cloud(self, lexicon) -> None:
+        st.subheader("Word Cloud : ")
+        wordcloud = WordCloud(stopwords=self.__stop_words, background_color="#493E38", colormap='YlOrRd', width=500, height=400,
                             normalize_plurals=False).generate(" ".join(lexicon))
         fig, ax = plt.subplots(figsize=(10, 10), facecolor=None)
         ax.imshow(wordcloud)
@@ -206,40 +207,50 @@ class WordCloudOfEmotions:
         plt.tight_layout(pad=0)
         st.pyplot(fig=fig)
 
-        rel_freq=wordcloud.words_
-        number = st.slider("Pick top n words: ", 0, value=10, max_value=len(rel_freq))
-        topDic = {}
-        for ctr, key in enumerate(rel_freq):
-            if ctr >= number:
-                break
-            else:
-                if 'TopWord' in topDic:
-                    topDic['TopWord'].append(key)
-                    topDic["Popularity 0(least)-1(most) popular"].append(rel_freq[key])
-                else:
-                    topDic['TopWord'] = [key]
-                    topDic["Popularity 0(least)-1(most) popular"] = [rel_freq[key]]
-        df = pd.DataFrame(topDic)
-        st.dataframe(df, width=800, height=1000)
-
-    def __init__(self, data: pd.DataFrame()):
+    def __filterInterface(self, data: pd.DataFrame()) -> Tuple[any, list[str]]:
+        dyn_rephrase_options = st.multiselect("Choose dynamic ethos rephrase types: ", 
+                                    DataProvider.getDynRephDimentions(), 
+                                    DataProvider.getDynRephDimentions()[:])
+        data_WS = data.loc[data['dyn_ethosWS'].isin(dyn_rephrase_options)]
+        source_options = st.multiselect("Choose source of data you would like to visualise", 
+                                    ["input","output"], 
+                                    ["input","output"][:])
+        return data_WS, source_options
+    
+    def __prepareWordCloud(self, data: pd.DataFrame()) -> list():
         st.subheader(f"Word Clouds for distribution of ethos dynamics in rephrase:")
-        DataProvider.addSpacelines(1)
+        DataProvider.addSpacelines(1)        
+        filteredDf, columnNamesLst = self.__filterInterface(data)
+        joined_set = set()
+        for inOut in columnNamesLst: 
+            emo_set = set(",".join(filteredDf[inOut].dropna().to_numpy(na_value="")).split(","))
+            joined_set = joined_set | emo_set
+        return list(joined_set)
+
+    def __textAnalysis(self, data: pd.DataFrame()) -> None:
+        filteredDf, columnNamesLst = self.__filterInterface(data)
+        text = ""
+        for inOut in columnNamesLst: 
+            text += " ".join(map(str,",".join(filteredDf[inOut].dropna().to_numpy(na_value="")).split(",")))
+        if text != "":
+            wordLst = sorted(WordCloud(stopwords=self.__stop_words).process_text(text).items(), key=lambda x:x[1], reverse=True)
+            number = st.slider("Pick top n words/phrases: ", 1, value=10, max_value=len(wordLst))
+            phrasesDf = pd.DataFrame(wordLst[:number],columns = ['Top phrase', 'Frequency'])
+            colCtr = []
+            for ctr in range(len(wordLst[:number])):
+                colCtr.append(ctr+1)
+            st.dataframe(phrasesDf, width=800, height=40*number)
+
+    def __init__(self, data: pd.DataFrame(), analysisType: str, units: str) -> None:
         if len(data) > 0:
-            rephrase_options = st.multiselect("Choose rhetoric categories you would like to visualise", 
-                                        DataProvider.getRephraseDimentions(), 
-                                        DataProvider.getRephraseDimentions()[:])
-            data_WC = data.loc[data['Rephrase_type'].isin(rephrase_options)]
-            source_options = st.multiselect("Choose source of data you would like to visualise", 
-                                        ["input","output"], 
-                                        ["input","output"][:])
-            joined_emo_set = set()
-            for o in source_options: 
-                emo_set = set(",".join(data_WC[o].dropna().to_numpy(na_value="")).split(","))
-                joined_emo_set = joined_emo_set | emo_set
-            self.__Make_Word_Cloud(list(joined_emo_set))
+            self.__stop_words = DataProvider.getCustomStopWords() + list(STOPWORDS)
+            if analysisType == 'Wordcloud':
+                wl = self.__prepareWordCloud(data)
+                self.__Make_Word_Cloud(wl)
+            elif analysisType == 'Cases':
+                self.__textAnalysis(data)
         else:
-            st.warning("You have to provide corpora for WordCloud.")
+            st.warning("You have to provide corpora for text analysis.")
 
 class Piechart:
     def __drawDistribution(self, data, unit, col_name):

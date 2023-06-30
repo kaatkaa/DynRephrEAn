@@ -77,7 +77,6 @@ with st.sidebar:
     rAnalytics = st.radio("", ("DynRephAn for Ethos",
                             "DynRephAn for Sentiment"),
                 key="AnType")
-    st.subheader("Choose Corpora")
     contents_radio = st.radio("Choose: ", ("Main Page", "Single Corpus Analysis", "Comparative Corpora Analysis"),label_visibility='collapsed')
 
 if contents_radio == "Main Page":
