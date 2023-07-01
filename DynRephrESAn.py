@@ -61,9 +61,9 @@ def MainPage():
     st.write('<style>div.row-widget.stRadio > div{flex-direction:column;font-size=18px;}</style>', unsafe_allow_html=True)
 
 @st.cache_resource
-def SingleCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()], submenu_prefix: str) -> SingleCorpusMenu:
+def SingleCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()], submenu_prefix: str, anType: str) -> SingleCorpusMenu:
     print("dataDic: ",dataDic)
-    return SingleCorpusMenu(dataDic = dataDic, prefix = submenu_prefix)
+    return SingleCorpusMenu(dataDic = dataDic, prefix = submenu_prefix, anType=anType)
 
 #  *************************** sidebar  *********************************
 
@@ -72,11 +72,11 @@ with st.sidebar:
     st.write('<style>div.row-widget.stRadio > div{flex-direction:column;}</style>', unsafe_allow_html=True)
     st.title("Contents")
     dataDic = load_data(rephrase_xlsx)
-    single_corpora_menu = SingleCorporaMenuLoader(dataDic=dataDic, submenu_prefix="0_")
     st.subheader("Analytics type")
     rAnalytics = st.radio("", ("DynRephAn for Ethos",
                             "DynRephAn for Sentiment"),
                 key="AnType")
+    single_corpora_menu = SingleCorporaMenuLoader(dataDic=dataDic, submenu_prefix="0_", anType=rAnalytics)
     contents_radio = st.radio("Choose: ", ("Main Page", "Single Corpus Analysis", "Comparative Corpora Analysis"),label_visibility='collapsed')
 
 if contents_radio == "Main Page":

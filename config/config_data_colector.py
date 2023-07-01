@@ -1,10 +1,9 @@
 import json
 import os
-import pandas as pd
 import streamlit as st
 
 class DataProvider:
-    __leftmenu_cf_dir = 'left_menu'
+    __dyn_rephr_file = 'config/dyn_rephr_cfg.json'
     __lst_of_dyn_rephr = ['M_strong','M_weak','P_strong','P_weak','Neutralization','No_Change']
     __color_sentiment = {'Meliorization':'#3FEE0F','M_strong':'#7CFF57','M_weak':'#28B900','Pejorativization':'#FF0000'
                      ,'P_strong':'#FF5656','P_weak':'#BD0000','Neutralization':'#2EBDFF','No_Change': '#414040'}
@@ -18,6 +17,7 @@ class DataProvider:
             'format': 'png', # one of png, svg, jpeg, webp
             'filename': 'presentation_image',
             'height': 1080,
+            'width': 1180,
             'scale':6 # Multiply title/legend/axis/canvas sizes by this factor
         }
     }
@@ -47,6 +47,15 @@ class DataProvider:
             "Elizabeth", "Warren",
             "Jim", "Webb","Mr"
     ]
+
+    @staticmethod
+    def getDynRephrESconfig():
+        try:
+            DataProvider.__config_dic
+        except AttributeError:
+            with open(DataProvider.__dyn_rephr_file) as json_file:
+                DataProvider.__config_dic = json.load(json_file)
+        return DataProvider.__config_dic
 
     @staticmethod
     def getDynRephDimentions():

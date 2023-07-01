@@ -3,15 +3,15 @@ import pandas as pd
 
 import sys
 sys.path.insert(0,"..")
-from data_display.display_single_corpus import Overall
-#from data_display.display_single_corpus import Sentiment
 from data_display.display_single_corpus import WordCloudOfEmotions
-#from data_display.display_single_corpus import DataStatsAnalyzer
 from data_display.display_single_corpus import Piechart
+from config.config_data_colector import DataProvider
 from submenus.tweaker import st_tweaker
 
 class SingleCorpusMenu:
-    def __init__(self, dataDic: dict[str : pd.DataFrame()], prefix: str="0_"):
+    def __init__(self, dataDic: dict[str : pd.DataFrame()], prefix: str="0_", anType: str="DynRephAn for Sentiment") -> None:
+        tmp = DataProvider.getDynRephrESconfig()
+        self.__anCfg = tmp[anType]
         self.__dataDic = dataDic
         self.__ticker = {}
         for key in dataDic:
@@ -116,16 +116,16 @@ class SingleCorpusMenu:
             st.write("****************************")
             st.subheader("Analitics module")
             module_choice = st.radio("An. Module", \
-                                        ("Wordcloud","Distribution","Cases"), \
+                                        ("Distribution","Wordcloud","Cases"), \
                                         key=self.__prefix+"post", label_visibility="hidden"
                                     )
 
         if module_choice == "Cases":
-            WordCloudOfEmotions(self.__rephrase_df,analysisType="Cases",unit=units_choice)
+            WordCloudOfEmotions(self.__rephrase_df,analysisType="Cases",unit=units_choice, configDic=self.__anCfg)
         elif module_choice == "Wordcloud":
-            WordCloudOfEmotions(self.__rephrase_df,analysisType="Wordcloud",unit=units_choice)
+            WordCloudOfEmotions(self.__rephrase_df,analysisType="Wordcloud",unit=units_choice, configDic=self.__anCfg)
         elif module_choice == "Distribution":
-            Piechart(self.__rephrase_df,unit=units_choice)
+            Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg)
         else:
             raise NotImplementedError("Unsupported option of Analytical module in single_corpus.py .")
 

@@ -1,0 +1,38 @@
+{
+    "DynRephAn for Ethos": {
+        "colNameWS": "dyn_ethosWS",
+        "colName": "dyn_ethos",
+        "Wordcloud_filterInterface": "Choose dynamic ethos rephrase types: ",
+        "Wordcloud_editReph_ADU": "Edit ethos transition ADU data for worldcloud",
+        "Wordcloud_editReph_sameSp": "Edit ethos rephrase for worldcloud of same speaker: ",
+        "Wordcloud_editReph_diffSp": "Edit ethos for worldcloud of different speakers: ",
+        "Cases_editReph_ADU": "Edit dynamic ethos for qualitative analysis o: ",
+        "Cases_editReph_sameSp": "Edit ethos cases for same speaker rephrase: ",
+        "Cases_editReph_diffSp": "Edit ethos cases for two speakers rephrase: ",
+        "Distribution_top": "**Distribution of ethos dynamics in rephrase:**",
+        "Distribution_general_plot": "General dynamic ethos ADU based plot",
+        "Distribution_detailed_plot": "Detailed dynamic ethos ADU based plot",
+        "Distribution_general_1speaker": "General speaker's dynamic ethos rephrase analysis: ",
+        "Distribution_detailed_1speaker": "Detailed single speaker dynamic ethos rephrase analysis:",
+        "Distribution_general_2speakers": "General dynamic ethos analysis of 2 speakers: ",
+        "Distribution_detailed_2speakers": "Detailed dynamic ethos analysis of 2 speakers: "
+    },
+    "DynRephAn for Sentiment": {
+        "colNameWS": "dyn_sentimentWS",
+        "colName": "dyn_sentiment",
+        "Wordcloud_filterInterface": "Choose dynamic sentiment rephrase types: ",
+        "Wordcloud_editReph_ADU": "Edit sentiment transition ADU data for worldcloud",
+        "Wordcloud_editReph_sameSp": "Edit sentiment rephrase for worldcloud of same speaker: ",
+        "Wordcloud_editReph_diffSp": "Edit sentiment for worldcloud of different speakers: ",
+        "Cases_editReph_ADU": "Edit dynamic sentiment for qualitative analysis o: ",
+        "Cases_editReph_sameSp": "Edit sentiment cases for same speaker rephrase: ",
+        "Cases_editReph_diffSp": "Edit sentiment cases for two speakers rephrase: ",
+        "Distribution_top": "**Distribution of sentiment dynamics in rephrase:**",
+        "Distribution_general_plot": "General dynamic sentiment ADU based plot",
+        "Distribution_detailed_plot": "Detailed dynamic sentiment ADU based plot",
+        "Distribution_general_1speaker": "General speaker's dynamic sentiment rephrase analysis: ",
+        "Distribution_detailed_1speaker": "Detailed single speaker dynamic sentiment rephrase analysis:",
+        "Distribution_general_2speakers": "General dynamic sentiment analysis of 2 speakers: ",
+        "Distribution_detailed_2speakers": "Detailed dynamic sentiment analysis of 2 speakers: "
+    }
+}
