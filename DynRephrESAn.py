@@ -70,13 +70,13 @@ def SingleCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()], submenu_prefix: s
 with st.sidebar:
     st.write('<style>div[class="css-1siy2j7 e1fqkh3o3"] > div{background-color: #d2cdcd;}</style>', unsafe_allow_html=True)
     st.write('<style>div.row-widget.stRadio > div{flex-direction:column;}</style>', unsafe_allow_html=True)
-    st.title("Contents")
     dataDic = load_data(rephrase_xlsx)
     st.subheader("Analytics type")
     rAnalytics = st.radio("", ("DynRephAn for Ethos",
                             "DynRephAn for Sentiment"),
                 key="AnType")
     single_corpora_menu = SingleCorporaMenuLoader(dataDic=dataDic, submenu_prefix="0_", anType=rAnalytics)
+    st.title("Contents")
     contents_radio = st.radio("Choose: ", ("Main Page", "Single Corpus Analysis", "Comparative Corpora Analysis"),label_visibility='collapsed')
 
 if contents_radio == "Main Page":
