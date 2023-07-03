@@ -118,38 +118,59 @@ class Piechart:
         DataProvider.addSpacelines(1)
         if len(data) > 0:
             if unit == "ADU-Based Analysis":
-                col_radio1, = st.columns(1)
+                col_radio1, col_radio2 = st.columns(2)
                 with col_radio1:
                     display_unit = st.radio("Choose display type: ",
                         ("percentage",
                         "number"),
-                        key="Rephrase_Distribution_Piechart")
-                f1 = self.__drawDistribution(data, display_unit, self.cf['colName'])
-                st.subheader(self.cf['Distribution_general_plot'])
-                st.plotly_chart(f1, config=DataProvider.getSaveConfig())
-                st.subheader(self.cf['Distribution_detailed_plot'])
-                f2 = self.__drawDistribution(data, display_unit, self.cf['colNameWS'])
-                st.plotly_chart(f2, config=DataProvider.getSaveConfig())
+                        key="Rephrase_Piechart_ADU_%_#")
+                with col_radio2:
+                    display_complexity = st.radio("Choose complexity level: ",
+                        ("4-categories",
+                         "6-categories"),                                                  
+                        key="Rephrase_Piechart_ADU_4-6cat")
+                if display_complexity == "4-categories":
+                    #st.subheader(self.cf['Distribution_general_plot'])
+                    f1 = self.__drawDistribution(data, display_unit, self.cf['colName'])
+                    st.plotly_chart(f1, config=DataProvider.getSaveConfig())
+                elif display_complexity == "6-categories":
+                    #st.subheader(self.cf['Distribution_detailed_plot'])
+                    f2 = self.__drawDistribution(data, display_unit, self.cf['colNameWS'])
+                    st.plotly_chart(f2, config=DataProvider.getSaveConfig())
             elif unit == "Speaker-Based Analysis":
                 sameSpeakerDf = data.loc[data['speaker_input'] == data['speaker_output']]
                 diffSpeakerDf = data.loc[data['speaker_input'] != data['speaker_output']]
-                col_radio1, = st.columns(1)
+                col_radio1, col_radio2, col_radio3= st.columns(3)
                 with col_radio1:
                     display_unit = st.radio("Choose display type: ",
                         ("percentage",
                         "number"),
-                        key="Rephrase_Distribution_Piechart")
-                f1 = self.__drawDistribution(sameSpeakerDf, display_unit, self.cf['colName'])
-                st.subheader(self.cf['Distribution_general_1speaker'])
-                st.plotly_chart(f1, config=DataProvider.getSaveConfig())
-                st.subheader(self.cf['Distribution_detailed_1speaker'])
-                f2 = self.__drawDistribution(sameSpeakerDf, display_unit, self.cf['colNameWS'])
-                st.plotly_chart(f2, config=DataProvider.getSaveConfig())
-                f3 = self.__drawDistribution(diffSpeakerDf, display_unit, self.cf['colName'])
-                st.subheader(self.cf['Distribution_general_2speakers'])
-                st.plotly_chart(f3, config=DataProvider.getSaveConfig())
-                st.subheader(self.cf['Distribution_detailed_2speakers'])
-                f4 = self.__drawDistribution(diffSpeakerDf, display_unit, self.cf['colNameWS'])
-                st.plotly_chart(f4, config=DataProvider.getSaveConfig())
+                        key="Rephrase_Piechart_Speaker_%_#")
+                with col_radio2:
+                    display_complexity = st.radio("Choose complexity level: ",
+                        ("4-categories",
+                         "6-categories"),                                                  
+                        key="Rephrase_Piechart_Speaker_4-6cat")
+                with col_radio3:
+                    display_SSRephr_chckbox = st.checkbox("SS rephrase",value=True,key="SS_rephr_chckbox")
+                    display_SORephr_chckbox = st.checkbox("SO rephrase",value=False,key="SO_rephr_chckbox")
+                if display_SSRephr_chckbox:
+                    if display_complexity == "4-categories":
+                        #st.subheader(self.cf['Distribution_general_1speaker'])
+                        f1 = self.__drawDistribution(sameSpeakerDf, display_unit, self.cf['colName'])
+                        st.plotly_chart(f1, config=DataProvider.getSaveConfig())
+                    elif display_complexity == '6-categories':
+                        #st.subheader(self.cf['Distribution_detailed_1speaker'])
+                        f2 = self.__drawDistribution(sameSpeakerDf, display_unit, self.cf['colNameWS'])
+                        st.plotly_chart(f2, config=DataProvider.getSaveConfig())
+                if display_SORephr_chckbox:
+                    if display_complexity == "4-categories":
+                        #st.subheader(self.cf['Distribution_general_2speakers'])
+                        f3 = self.__drawDistribution(diffSpeakerDf, display_unit, self.cf['colName'])
+                        st.plotly_chart(f3, config=DataProvider.getSaveConfig())
+                    elif display_complexity == '6-categories':
+                        #st.subheader(self.cf['Distribution_detailed_2speakers'])
+                        f4 = self.__drawDistribution(diffSpeakerDf, display_unit, self.cf['colNameWS'])
+                        st.plotly_chart(f4, config=DataProvider.getSaveConfig())
         else:
             st.warning("You have to select data for analysis.")
