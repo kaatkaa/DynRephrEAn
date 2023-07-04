@@ -110,6 +110,8 @@ class WordCloudOfEmotions:
                     tmpDf = tmpDf.replace(regexpStr," **"+word+"** ", regex=True)
                     st.table(tmpDf[['input','output']].style.applymap(backgroung_color,
                         subset="output"))
+        else:
+            st.write('No maches for given criteria.')
 
     def __init__(self, data: pd.DataFrame(), analysisType: str, unit: str, configDic: dict[str , str]) -> None:
         self.cf = configDic
