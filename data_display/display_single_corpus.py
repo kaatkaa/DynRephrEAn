@@ -92,7 +92,8 @@ class WordCloudOfEmotions:
             word = st.selectbox("Pick word/phrase to analyse: ",w[:number],index=0,key='Dropdown_lst')
             st.subheader("Selected phrase is marked in text below between stars: \*\*"+word+"\*\*")
             col1, col2 = st.columns([2,2])
-            regexpStr = "^"+word+"\\s|\\s"+word+"\\s|\\s"+word+"$|^"+word+"$"
+            #regexpStr = "^"+word+"('){0,1}\\s|\\s"+word+"('|\\s){0,1}|\\s"+word+"('){0,1}$|^"+word+"('){0,1}$"
+            regexpStr = word
             if 'input' in columnNamesLst:
                 with col1:
                     filteredInputDF = filteredDf[filteredDf['input'].str.contains(regexpStr, case=False, regex=True)]
