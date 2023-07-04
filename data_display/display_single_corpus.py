@@ -96,6 +96,7 @@ class WordCloudOfEmotions:
             if 'input' in columnNamesLst:
                 with col1:
                     filteredInputDF = filteredDf[filteredDf['input'].str.contains(regexpStr, case=False, regex=True)]
+                    filteredInputDF.reset_index(inplace=True)
                     tmpDf = filteredInputDF[['input','output']]
                     tmpDf = tmpDf.replace(regexpStr," **"+word+"** ", regex=True)
                     tmpDf = tmpDf.style.applymap(backgroung_color,subset="input")
