@@ -16,7 +16,7 @@ from data_manipulation.data_manipulator import DataManipulator
 
 class WordCloudOfEmotions:
 
-    def __Make_Word_Cloud(self, lexicon) -> None:
+    def __Make_Word_Cloud(self, lexicon, data: pd.DataFrame(), options: list[str]) -> None:
         st.subheader("Word Cloud : ")
         wordcloud = WordCloud(stopwords=self.__stop_words, background_color="#493E38", colormap='YlOrRd', width=500, height=400,
                             normalize_plurals=False).generate(" ".join(lexicon))
@@ -26,19 +26,46 @@ class WordCloudOfEmotions:
         plt.tight_layout(pad=0)
         st.pyplot(fig=fig)
 
+        text = ""
+        for inOut in options: 
+            text += " ".join(map(str,",".join(data[inOut].dropna().to_numpy(na_value="")).split(",")))
+        if text != "":
+            wordLst = sorted(WordCloud(stopwords=self.__stop_words).process_text(text).items(), key=lambda x:x[1], reverse=True)
+            number = st.slider("Pick top n words/phrases: ", 1, value=10, max_value=len(wordLst))
+            index = []
+            for i in range(1,number+1):
+                index.append(i)
+            phrasesDf = pd.DataFrame(wordLst[:number],columns = ['Top phrase', 'Frequency'],index=pd.Index(index, name='Ranking'))
+            phrasesDf.columns.name = phrasesDf.index.name
+            st.dataframe(phrasesDf, width=800, height=40*number)
+
     def __filterInterface(self, data: pd.DataFrame()) -> Tuple[any, list[str]]:
-        dyn_rephrase_options = st.multiselect(self.cf["Wordcloud_filterInterface"], 
-                                    DataProvider.getDynRephDimentions(), 
-                                    DataProvider.getDynRephDimentions()[:],
-                                    key = "multi_sel"+str(self.__keyCtr))
-        self.__keyCtr += 1
-        data_WS = data.loc[data[self.cf['colNameWS']].isin(dyn_rephrase_options)]
+        col_radio1, = st.columns(1)
+        with col_radio1:
+            display_complexity = st.radio("Choose complexity level: ",
+                ("4-categories",
+                    "6-categories"),                                                  
+                key="Rephrase_Piechart_ADU_4-6cat")
+        if display_complexity == '4-categories':
+            dyn_rephrase_options = st.multiselect(self.cf["Wordcloud_filterInterface"], 
+                                        DataProvider.getDynRephDimentions(), 
+                                        DataProvider.getDynRephDimentions()[:],
+                                        key = "multi_sel"+str(self.__keyCtr))
+            self.__keyCtr += 1
+            data_tmp = data.loc[data[self.cf['colName']].isin(dyn_rephrase_options)]
+        elif display_complexity == '6-categories':
+            dyn_rephrase_options = st.multiselect(self.cf["Wordcloud_filterInterface"], 
+                                        DataProvider.getDynRephDimentionsWS(), 
+                                        DataProvider.getDynRephDimentionsWS()[:],
+                                        key = "multi_sel"+str(self.__keyCtr))
+            self.__keyCtr += 1
+            data_tmp = data.loc[data[self.cf['colNameWS']].isin(dyn_rephrase_options)]
         source_options = st.multiselect("Choose source of data you would like to visualise", 
                                     ["input","output"], 
                                     ["input","output"][:],
                                     key = "multi_sel"+str(self.__keyCtr))
         self.__keyCtr += 1
-        return data_WS, source_options
+        return data_tmp, source_options
     
     def __prepareWordCloud(self, data: pd.DataFrame()) -> list():
         #st.subheader(f"Word Clouds for distribution of ethos dynamics in rephrase:")
@@ -48,9 +75,11 @@ class WordCloudOfEmotions:
         for inOut in columnNamesLst: 
             emo_set = set(",".join(filteredDf[inOut].dropna().to_numpy(na_value="")).split(","))
             joined_set = joined_set | emo_set
-        return list(joined_set)
+        return list(joined_set), filteredDf, columnNamesLst
 
     def __textAnalysis(self, data: pd.DataFrame()) -> None:
+        def backgroung_color(v):
+            return f"background-color: {DataProvider.getRephraseAndEmptycolors()['Rephrase']};"
         filteredDf, columnNamesLst = self.__filterInterface(data)
         text = ""
         for inOut in columnNamesLst: 
@@ -58,12 +87,27 @@ class WordCloudOfEmotions:
         if text != "":
             wordLst = sorted(WordCloud(stopwords=self.__stop_words).process_text(text).items(), key=lambda x:x[1], reverse=True)
             number = st.slider("Pick top n words/phrases: ", 1, value=10, max_value=len(wordLst))
-            index = []
-            for i in range(1,number+1):
-                index.append(i)
-            phrasesDf = pd.DataFrame(wordLst[:number],columns = ['Top phrase', 'Frequency'],index=pd.Index(index, name='Ranking'))
-            phrasesDf.columns.name = phrasesDf.index.name
-            st.dataframe(phrasesDf, width=800, height=30*number)
+            st.subheader("Pick word to analyse: ")
+            w = [item[0] for item in wordLst]
+            word = st.selectbox("Pick word/phrase to analyse: ",w[:number],index=0,key='Dropdown_lst')
+            st.subheader("Selected phrase is marked in text below between stars: \*\*"+word+"\*\*")
+            col1, col2 = st.columns([2,2])
+            regexpStr = "^"+word+"\\s|\\s"+word+"\\s|\\s"+word+"$|^"+word+"$"
+            if 'input' in columnNamesLst:
+                with col1:
+                    filteredInputDF = filteredDf[filteredDf['input'].str.contains(regexpStr, case=False, regex=True)]
+                    tmpDf = filteredInputDF[['input','output']]
+                    tmpDf = tmpDf.replace(regexpStr," **"+word+"** ", regex=True)
+                    tmpDf = tmpDf.style.applymap(backgroung_color,subset="input")
+                    st.table(tmpDf)
+            if 'output' in columnNamesLst:
+                with col2:
+                    filteredOutputDF = filteredDf[filteredDf['output'].str.contains(regexpStr, case=False, regex=True)]
+                    filteredOutputDF.reset_index(inplace=True)
+                    tmpDf = filteredOutputDF[['input','output']]
+                    tmpDf = tmpDf.replace(regexpStr," **"+word+"** ", regex=True)
+                    st.table(tmpDf[['input','output']].style.applymap(backgroung_color,
+                        subset="output"))
 
     def __init__(self, data: pd.DataFrame(), analysisType: str, unit: str, configDic: dict[str , str]) -> None:
         self.cf = configDic
@@ -73,26 +117,36 @@ class WordCloudOfEmotions:
             if unit == "ADU-Based Analysis":
                 if analysisType == 'Wordcloud':
                     st.subheader(self.cf['Wordcloud_editReph_ADU'])
-                    wl = self.__prepareWordCloud(data)
-                    self.__Make_Word_Cloud(wl)
+                    wl, df, options = self.__prepareWordCloud(data)
+                    self.__Make_Word_Cloud(wl, df, options)
+                    
                 elif analysisType == 'Cases':
-                    st.subheader(self.cf['Cases_editReph_ADU'])
                     self.__textAnalysis(data)
             elif unit == "Speaker-Based Analysis":
                 sameSpeakerDf = data.loc[data['speaker_input'] == data['speaker_output']]
                 diffSpeakerDf = data.loc[data['speaker_input'] != data['speaker_output']]
+                col_radio1, col_radio2, col_radio3 = st.columns(3)
+                with col_radio2:
+                    display_speakers = st.radio("Choose speaker type: ",
+                        ("SS rephrase",
+                        "SO rephrase"),
+                        key="Rephrase_Wordcloud_SSvsSO")
                 if analysisType == 'Wordcloud':
-                    st.subheader(self.cf['Wordcloud_editReph_sameSp'])
-                    wl = self.__prepareWordCloud(sameSpeakerDf)
-                    self.__Make_Word_Cloud(wl)
-                    st.subheader(self.cf['Wordcloud_editReph_diffSp'])
-                    wl2 = self.__prepareWordCloud(diffSpeakerDf)
-                    self.__Make_Word_Cloud(wl2)
+                    if display_speakers == 'SS rephrase':
+                        st.subheader(self.cf['Wordcloud_editReph_sameSp'])
+                        wl, df, options = self.__prepareWordCloud(sameSpeakerDf)
+                        self.__Make_Word_Cloud(wl, df, options)
+                    elif display_speakers == 'SO rephrase':
+                        st.subheader(self.cf['Wordcloud_editReph_diffSp'])
+                        wl2, df, options = self.__prepareWordCloud(diffSpeakerDf)
+                        self.__Make_Word_Cloud(wl2, df, options)
                 elif analysisType == 'Cases':
-                    st.subheader(self.cf['Cases_editReph_sameSp'])
-                    self.__textAnalysis(sameSpeakerDf)
-                    st.subheader(self.cf['Cases_editReph_diffSp'])
-                    self.__textAnalysis(diffSpeakerDf)
+                    if display_speakers == 'SS rephrase':
+                        st.subheader(self.cf['Cases_editReph_sameSp'])
+                        self.__textAnalysis(sameSpeakerDf)
+                    elif display_speakers == 'SO rephrase':
+                        st.subheader(self.cf['Cases_editReph_diffSp'])
+                        self.__textAnalysis(diffSpeakerDf)
         else:
             st.warning("You have to provide corpora for text analysis.")
 

@@ -62,7 +62,6 @@ def MainPage():
 
 @st.cache_resource
 def SingleCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()], submenu_prefix: str, anType: str) -> SingleCorpusMenu:
-    print("dataDic: ",dataDic)
     return SingleCorpusMenu(dataDic = dataDic, prefix = submenu_prefix, anType=anType)
 
 #  *************************** sidebar  *********************************
