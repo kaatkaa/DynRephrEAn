@@ -11,20 +11,36 @@ from submenus.tweaker import st_tweaker
 
 class SingleCorpusMenu:
     def __init__(self, dataDic: dict[str : pd.DataFrame()], prefix: str="0_", anType: str="DynRephAn for Sentiment") -> None:
-        tmp = DataProvider.getDynRephrESconfig()
-        # ADU or Speaker
-        self.__units = ""
-        # Speaker type, default is ""
-        self.__speaker = ""
-        self.__anCfg = tmp[anType]
+        #dictionary containing all possible data with corpora indexed by name
         self.__dataDic = dataDic
-        self.__ticker = {}
-        for key in dataDic:
-            self.__ticker[key] = False
+        #Prefix to distinguish between different data sets
         self.__prefix = prefix
+        #loading config file for ethos and sentiment
+        tmp = DataProvider.getDynRephrESconfig()
+        #config file with messages and column names for Ethos and Sentiment
+        self.__anCfg = tmp[anType]
+
         self.__rephrase_df = pd.DataFrame()
         self.__rephrase_old = pd.DataFrame()
+
+        if self.__checkSessionState():
+            self.__update_corpora_checkbox
+        else:
+            # ADU or Speaker
+            st.session_state[self.__prefix + 'speakerOrAdu'] = ""
+            # Speaker type: "SS rephrase" or "SO rephrase", default is ""
+            st.session_state[self.__prefix + 'speakerType'] = ""
         print("Reloaded!!!")
+
+    def __checkSessionState(self) -> bool:
+        for key in self.__dataDic:
+            if self.__prefix + key not in st.session_state:
+                return False
+        if self.__prefix + 'speakerOrAdu' not in st.session_state:
+            return False
+        if self.__prefix + 'speakerType' not in st.session_state:
+            return False
+        return True
 
     def cleanSelections(self):
         for key in self.__dataDic:
@@ -107,6 +123,7 @@ class SingleCorpusMenu:
                     kwargs = {},
                     disabled=False
                 )
+        self.__update_corpora_checkbox()
         st.markdown("""
         <style>
         #Reddit0,#Reddit1,#Reddit2,#US2016tv3,#US2016tv4,#US2016tv5 {
@@ -148,10 +165,10 @@ class SingleCorpusMenu:
     def getCriteria(self) -> str:
         if len(self.__dataDic) > 0:
             newLst = []
-            if self.__units == "ADU-Based Analysis":
+            if st.session_state[self.__prefix + 'speakerOrAdu'] == "ADU-Based Analysis":
                 newLst = ['ADU based']
-            elif self.__units == "Speaker-Based Analysis":
-                newLst = ['Speaker '+self.__speaker]
+            elif st.session_state[self.__prefix + 'speakerOrAdu'] == "Speaker-Based Analysis":
+                newLst = ['Speaker '+st.session_state[self.__prefix + 'speakerType']]
             ctr = 1
             for key in self.__dataDic:
                 if st.session_state[self.__prefix + key]:
@@ -166,14 +183,14 @@ class SingleCorpusMenu:
         return self.criteria
 
     def tab(self, units):
-        self.__units = units
+        st.session_state[self.__prefix + 'speakerOrAdu'] = units
         st.subheader("Choose Corpora: ")
         self.__corporaPickerChckBox()
         if len(self.__rephrase_old) > 0:
-            if self.__units == "ADU-Based Analysis":
+            if st.session_state[self.__prefix + 'speakerOrAdu'] == "ADU-Based Analysis":
                 st.write("ADU units selected.")
                 self.__rephrase_df = self.__rephrase_old.copy(deep=True)
-            elif self.__units == "Speaker-Based Analysis":
+            elif st.session_state[self.__prefix + 'speakerOrAdu'] == "Speaker-Based Analysis":
                 speaker = st.radio("Choose Speaker Unit Type: ",
                     ("SS rephrase",
                     "SO rephrase"),
@@ -184,7 +201,7 @@ class SingleCorpusMenu:
                 elif speaker == "SO rephrase":
                     self.__rephrase_df = self.__rephrase_old.copy(deep=True)
                     self.__rephrase_df = self.__rephrase_df.loc[self.__rephrase_df['speaker_input'] != self.__rephrase_df['speaker_output']]
-                self.__speaker = speaker
+                st.session_state[self.__prefix + 'speakerType'] = speaker
         else:
             st.write("Choose corpora above.")
 
