@@ -85,3 +85,14 @@ class ComparativeCorporaSimple:
             )
         else:
             st.write("**Add More Data to Compara.**")
+
+# Save to file first or an image file has already existed.
+# fn = 'scatter.png'
+# plt.savefig(fn)
+# with open(fn, "rb") as img:
+#     btn = st.download_button(
+#         label="Download image",
+#         data=img,
+#         file_name=fn,
+#         mime="image/png"
+#     )
