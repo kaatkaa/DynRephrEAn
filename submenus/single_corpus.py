@@ -23,7 +23,7 @@ class SingleCorpusMenu:
             self.__ticker[key] = False
         self.__prefix = prefix
         self.__rephrase_df = pd.DataFrame()
-        self.__rephrase_old = self.__rephrase_df
+        self.__rephrase_old = pd.DataFrame()
         print("Reloaded!!!")
 
     def cleanSelections(self):
@@ -32,7 +32,7 @@ class SingleCorpusMenu:
         st.session_state[self.__prefix + "US2016reddit"] = False
         st.session_state[self.__prefix + "US2016tv"] = False
         self.__rephrase_df = pd.DataFrame()
-        self.__rephrase_old = self.__rephrase_df
+        self.__rephrase_old = self.__rephrase_df.copy(deep=True)
 
     def __update_corpora_checkbox(self):
         dfLst = []
@@ -45,7 +45,7 @@ class SingleCorpusMenu:
             self.__rephrase_df = dfLst[0]
         else:
             self.__rephrase_df = pd.DataFrame()
-        self.__rephrase_old = self.__rephrase_df
+        self.__rephrase_old = self.__rephrase_df.copy(deep=True)
 
     def __update_block(self, name: str):
         for key in self.__dataDic:
@@ -172,17 +172,17 @@ class SingleCorpusMenu:
         if len(self.__rephrase_old) > 0:
             if self.__units == "ADU-Based Analysis":
                 st.write("ADU units selected.")
-                self.__rephrase_df = self.__rephrase_old
+                self.__rephrase_df = self.__rephrase_old.copy(deep=True)
             elif self.__units == "Speaker-Based Analysis":
                 speaker = st.radio("Choose Speaker Unit Type: ",
                     ("SS rephrase",
                     "SO rephrase"),
                     key=self.__prefix+"Rephrase_Cmp_Speaker")
                 if speaker == "SS rephrase":
-                    self.__rephrase_df = self.__rephrase_old
+                    self.__rephrase_df = self.__rephrase_old.copy(deep=True)
                     self.__rephrase_df = self.__rephrase_df.loc[self.__rephrase_df['speaker_input'] == self.__rephrase_df['speaker_output']]
                 elif speaker == "SO rephrase":
-                    self.__rephrase_df = self.__rephrase_old
+                    self.__rephrase_df = self.__rephrase_old.copy(deep=True)
                     self.__rephrase_df = self.__rephrase_df.loc[self.__rephrase_df['speaker_input'] != self.__rephrase_df['speaker_output']]
                 self.__speaker = speaker
         else:
