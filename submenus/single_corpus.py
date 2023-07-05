@@ -34,8 +34,7 @@ class SingleCorpusMenu:
         self.__rephrase_df = pd.DataFrame()
         self.__rephrase_old = self.__rephrase_df
 
-    def __update_corpora_checkbox(self, id = ""):
-        self.__ticker[id] = st.session_state[self.__prefix + id]
+    def __update_corpora_checkbox(self):
         dfLst = []
         for key in self.__dataDic:
             if st.session_state[self.__prefix + key]:
@@ -51,8 +50,9 @@ class SingleCorpusMenu:
     def __update_block(self, name: str):
         for key in self.__dataDic:
             if key.find(name) != -1:
+                print("Block:", self.__prefix + name," Updates: ",self.__prefix + key)
                 st.session_state[self.__prefix + key] = st.session_state[self.__prefix + name]
-                self.__update_corpora_checkbox(key)
+                self.__update_corpora_checkbox()
 
     def __corporaPickerChckBox(self):
         tv = False
@@ -74,7 +74,7 @@ class SingleCorpusMenu:
                     help = self.__prefix + key,
                     value = False,
                     on_change=self.__update_corpora_checkbox,
-                    kwargs = {"id": key},
+                    kwargs = {},
                     disabled=False,
                     id = "Reddit" + str(ctr)
                 )
@@ -94,7 +94,7 @@ class SingleCorpusMenu:
                     help = self.__prefix + key,
                     value = False,
                     on_change=self.__update_corpora_checkbox,
-                    kwargs = {"id": key},
+                    kwargs = {},
                     disabled=False,
                     id = "US2016tv" + str(ctr) 
                 )                
@@ -104,7 +104,7 @@ class SingleCorpusMenu:
                     help = self.__prefix + key,
                     value = False,
                     on_change=self.__update_corpora_checkbox,
-                    kwargs = {"id": key},
+                    kwargs = {},
                     disabled=False
                 )
         st.markdown("""

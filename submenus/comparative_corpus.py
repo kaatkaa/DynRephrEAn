@@ -40,3 +40,7 @@ class CmpCorpusMenu:
                 with i:
                     st.subheader(self.__tabLabels[ctr])
                     ComparativeCorporaSimple(self.__dataDic, self.__anCf)
+
+    def clearTabsSelections(self) -> None:
+        for tab in self.__dataLoaders:
+            tab.cleanSelections()

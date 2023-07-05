@@ -69,6 +69,10 @@ def SingleCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()], submenu_prefix: s
 def ComparativeCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()], anType: str) -> CmpCorpusMenu:
     return CmpCorpusMenu(dataDict=dataDic, anType=anType)
 
+def resetData(single_corpus: SingleCorpusMenu, comparative_corpora: CmpCorpusMenu) -> None:
+    single_corpus.cleanSelections()
+    comparative_corpora.clearTabsSelections()
+
 #  *************************** sidebar  *********************************
 
 with st.sidebar:
@@ -76,6 +80,8 @@ with st.sidebar:
     st.write('<style>div.row-widget.stRadio > div{flex-direction:column;}</style>', unsafe_allow_html=True)
     dataDic = load_data(rephrase_xlsx)
     st.subheader("Analytics type")
+    single_corpora_menu = None
+    cmp_corpora_menu = None
     rAnalytics = st.radio("", ("DynRephAn for Ethos",
                             "DynRephAn for Sentiment"),
                 key="AnType")
@@ -90,10 +96,13 @@ elif contents_radio == "Single Corpus Analysis":
     single_corpora_menu.sidebar()
 elif contents_radio == "Comparative Corpora Analysis":
     with st.sidebar:
+        st.button("Clear All Tabs",key="tabs_clear",on_click=cmp_corpora_menu.clearTabsSelections)
         st.subheader("Analysis Units")
         units_choice = st.radio("", ("ADU-Based Analysis",
                                         "Speaker-Based Analysis"
-                                        ), key="Cmp_units")
+                                        ), key="Cmp_units",
+                                        on_change=resetData,
+                                        args=(single_corpora_menu, cmp_corpora_menu))
     cmp_corpora_menu.display(units_choice)
 else:
     st.error("Wrong option of main sidemenu radiobitton.")
