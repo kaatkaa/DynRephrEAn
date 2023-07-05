@@ -26,12 +26,15 @@ class SingleCorpusMenu:
         self.__rephrase_old = self.__rephrase_df
         print("Reloaded!!!")
 
-    def clearData(self):
-        self.__rephrase_df = pd.DataFrame()
-        self.__rephrase_old = self.__rephrase_df
+    def __checkData(self):
+        flag = True
         for key in self.__dataDic:
-            self.__ticker[key] = False
-            st.session_state[self.__prefix + key] = False        
+            if st.session_state[self.__prefix + key]:
+                flag = False
+                break
+        if flag:
+            self.__rephrase_df = pd.DataFrame()
+            self.__rephrase_old = self.__rephrase_df
 
     def __update_corpora_checkbox(self, id = ""):
         self.__ticker[id] = st.session_state[self.__prefix + id]
@@ -142,6 +145,7 @@ class SingleCorpusMenu:
             Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg)
         else:
             raise NotImplementedError("Unsupported option of Analytical module in single_corpus.py .")
+        self.__checkData()
         
     #Returns criteria to which data is selected
     def getCriteria(self) -> str:
@@ -186,6 +190,7 @@ class SingleCorpusMenu:
                 self.__speaker = speaker
         else:
             st.write("Choose corpora above.")
+        self.__checkData()
 
     #Returns data for diagrams
     def getDF(self) -> pd.DataFrame():
