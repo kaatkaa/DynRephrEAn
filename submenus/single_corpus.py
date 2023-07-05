@@ -26,21 +26,19 @@ class SingleCorpusMenu:
         self.__rephrase_old = self.__rephrase_df
         print("Reloaded!!!")
 
-    def __checkData(self):
-        flag = True
+    def cleanSelections(self):
         for key in self.__dataDic:
-            if st.session_state[self.__prefix + key]:
-                flag = False
-                break
-        if flag:
-            self.__rephrase_df = pd.DataFrame()
-            self.__rephrase_old = self.__rephrase_df
+            st.session_state[self.__prefix + key] = False
+        st.session_state[self.__prefix + "US2016reddit"] = False
+        st.session_state[self.__prefix + "US2016tv"] = False
+        self.__rephrase_df = pd.DataFrame()
+        self.__rephrase_old = self.__rephrase_df
 
     def __update_corpora_checkbox(self, id = ""):
         self.__ticker[id] = st.session_state[self.__prefix + id]
         dfLst = []
         for key in self.__dataDic:
-            if self.__ticker[key]:
+            if st.session_state[self.__prefix + key]:
                 dfLst.append(self.__dataDic[key])
         if len(dfLst) > 1:
             self.__rephrase_df = pd.concat(dfLst)          
@@ -120,9 +118,9 @@ class SingleCorpusMenu:
 
     def sidebar(self):
         with st.sidebar:
-            st.subheader("Choose Corpora: ")
+            st.subheader("Choose Corpora: ")           
+            st.button("Clean selection",key=self.__prefix+"clear_corpo_button",on_click=self.cleanSelections)
             self.__corporaPickerChckBox()
-
             st.write("****************************")
             st.subheader("Analysis Units")
             units_choice = st.radio("", ("ADU-Based Analysis",
@@ -145,7 +143,6 @@ class SingleCorpusMenu:
             Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg)
         else:
             raise NotImplementedError("Unsupported option of Analytical module in single_corpus.py .")
-        self.__checkData()
         
     #Returns criteria to which data is selected
     def getCriteria(self) -> str:
@@ -190,7 +187,6 @@ class SingleCorpusMenu:
                 self.__speaker = speaker
         else:
             st.write("Choose corpora above.")
-        self.__checkData()
 
     #Returns data for diagrams
     def getDF(self) -> pd.DataFrame():
