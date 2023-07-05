@@ -1,4 +1,5 @@
 import streamlit as st
+import io
 import sys
 import pandas as pd
 import seaborn as sns
@@ -72,6 +73,15 @@ class ComparativeCorporaSimple:
                         z.set_xlabel("Percentage",fontsize=20)
                         z.set_ylabel("", fontsize=20)
                         z.tick_params(labelsize=20)       
-            st.pyplot(fig=fig)
+            st.pyplot(fig=fig, config=DataProvider.getSaveConfig())
+            fn = 'comparative_analysis.png'
+            img = io.BytesIO()
+            fig.savefig(img,fig=fig, format='png',height=1080, width=800,bbox_inches="tight")
+            btn = st.download_button(
+                label="Download as image",
+                data=img,
+                file_name=fn,
+                mime="image/png"
+            )
         else:
             st.write("**Add More Data to Compara.**")
