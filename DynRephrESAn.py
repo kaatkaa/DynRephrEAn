@@ -12,6 +12,7 @@ import os
 import json
 
 from submenus.single_corpus import SingleCorpusMenu
+from submenus.comparative_corpus import CmpCorpusMenu
 from config.config_data_colector import DataProvider
 
 from PIL import Image
@@ -64,6 +65,10 @@ def MainPage():
 def SingleCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()], submenu_prefix: str, anType: str) -> SingleCorpusMenu:
     return SingleCorpusMenu(dataDic = dataDic, prefix = submenu_prefix, anType=anType)
 
+@st.cache_resource
+def ComparativeCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()], anType: str) -> CmpCorpusMenu:
+    return CmpCorpusMenu(dataDict=dataDic, anType=anType)
+
 #  *************************** sidebar  *********************************
 
 with st.sidebar:
@@ -75,6 +80,7 @@ with st.sidebar:
                             "DynRephAn for Sentiment"),
                 key="AnType")
     single_corpora_menu = SingleCorporaMenuLoader(dataDic=dataDic, submenu_prefix="0_", anType=rAnalytics)
+    cmp_corpora_menu = ComparativeCorporaMenuLoader(dataDic=dataDic, anType=rAnalytics)
     st.title("Contents")
     contents_radio = st.radio("Choose: ", ("Main Page", "Single Corpus Analysis", "Comparative Corpora Analysis"),label_visibility='collapsed')
 
@@ -83,6 +89,11 @@ if contents_radio == "Main Page":
 elif contents_radio == "Single Corpus Analysis":
     single_corpora_menu.sidebar()
 elif contents_radio == "Comparative Corpora Analysis":
-    pass
+    with st.sidebar:
+        st.subheader("Analysis Units")
+        units_choice = st.radio("", ("ADU-Based Analysis",
+                                        "Speaker-Based Analysis"
+                                        ), key="Cmp_units")
+    cmp_corpora_menu.display(units_choice)
 else:
     st.error("Wrong option of main sidemenu radiobitton.")

@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from typing import Tuple
 
 import sys
 sys.path.insert(0,"..")
@@ -11,6 +12,10 @@ from submenus.tweaker import st_tweaker
 class SingleCorpusMenu:
     def __init__(self, dataDic: dict[str : pd.DataFrame()], prefix: str="0_", anType: str="DynRephAn for Sentiment") -> None:
         tmp = DataProvider.getDynRephrESconfig()
+        # ADU or Speaker
+        self.__units = ""
+        # Speaker type, default is ""
+        self.__speaker = ""
         self.__anCfg = tmp[anType]
         self.__dataDic = dataDic
         self.__ticker = {}
@@ -18,7 +23,15 @@ class SingleCorpusMenu:
             self.__ticker[key] = False
         self.__prefix = prefix
         self.__rephrase_df = pd.DataFrame()
+        self.__rephrase_old = self.__rephrase_df
         print("Reloaded!!!")
+
+    def clearData(self):
+        self.__rephrase_df = pd.DataFrame()
+        self.__rephrase_old = self.__rephrase_df
+        for key in self.__dataDic:
+            self.__ticker[key] = False
+            st.session_state[self.__prefix + key] = False        
 
     def __update_corpora_checkbox(self, id = ""):
         self.__ticker[id] = st.session_state[self.__prefix + id]
@@ -27,11 +40,12 @@ class SingleCorpusMenu:
             if self.__ticker[key]:
                 dfLst.append(self.__dataDic[key])
         if len(dfLst) > 1:
-            self.__rephrase_df = pd.concat(dfLst)
+            self.__rephrase_df = pd.concat(dfLst)          
         elif len(dfLst) == 1:
             self.__rephrase_df = dfLst[0]
         else:
             self.__rephrase_df = pd.DataFrame()
+        self.__rephrase_old = self.__rephrase_df
 
     def __update_block(self, name: str):
         for key in self.__dataDic:
@@ -128,6 +142,50 @@ class SingleCorpusMenu:
             Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg)
         else:
             raise NotImplementedError("Unsupported option of Analytical module in single_corpus.py .")
+        
+    #Returns criteria to which data is selected
+    def getCriteria(self) -> str:
+        if len(self.__dataDic) > 0:
+            newLst = []
+            if self.__units == "ADU-Based Analysis":
+                newLst = ['ADU based']
+            elif self.__units == "Speaker-Based Analysis":
+                newLst = ['Speaker '+self.__speaker]
+            ctr = 1
+            for key in self.__dataDic:
+                if st.session_state[self.__prefix + key]:
+                    ctr += 1
+                    newLst.append(key)
+                    if ctr == 2:
+                        newLst.append("\n")
+                        ctr = 0
+            self.criteria = "|".join(newLst)
+        else:
+            self.criteria = ""
+        return self.criteria
+
+    def tab(self, units):
+        self.__units = units
+        st.subheader("Choose Corpora: ")
+        self.__corporaPickerChckBox()
+        if len(self.__rephrase_old) > 0:
+            if self.__units == "ADU-Based Analysis":
+                st.write("ADU units selected.")
+                self.__rephrase_df = self.__rephrase_old
+            elif self.__units == "Speaker-Based Analysis":
+                speaker = st.radio("Choose Speaker Unit Type: ",
+                    ("SS rephrase",
+                    "SO rephrase"),
+                    key=self.__prefix+"Rephrase_Cmp_Speaker")
+                if speaker == "SS rephrase":
+                    self.__rephrase_df = self.__rephrase_old
+                    self.__rephrase_df = self.__rephrase_df.loc[self.__rephrase_df['speaker_input'] == self.__rephrase_df['speaker_output']]
+                elif speaker == "SO rephrase":
+                    self.__rephrase_df = self.__rephrase_old
+                    self.__rephrase_df = self.__rephrase_df.loc[self.__rephrase_df['speaker_input'] != self.__rephrase_df['speaker_output']]
+                self.__speaker = speaker
+        else:
+            st.write("Choose corpora above.")
 
     #Returns data for diagrams
     def getDF(self) -> pd.DataFrame():

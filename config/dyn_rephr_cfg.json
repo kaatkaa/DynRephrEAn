@@ -1,5 +1,6 @@
 {
     "DynRephAn for Ethos": {
+        "anName": "DynRephAn etos",
         "colNameWS": "dyn_ethosWS",
         "colName": "dyn_ethos",
         "Wordcloud_filterInterface": "Choose dynamic ethos rephrase types: ",
@@ -18,6 +19,7 @@
         "Distribution_detailed_2speakers": "Detailed dynamic ethos analysis of 2 speakers: "
     },
     "DynRephAn for Sentiment": {
+        "anName": "DynRephAn sentiment",
         "colNameWS": "dyn_sentimentWS",
         "colName": "dyn_sentiment",
         "Wordcloud_filterInterface": "Choose dynamic sentiment rephrase types: ",
