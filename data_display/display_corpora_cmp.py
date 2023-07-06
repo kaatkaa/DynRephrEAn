@@ -65,6 +65,15 @@ class ComparativeCorporaSimple:
                         data = data.loc[data[selected].isin(options)]
                         denominator = len(data)
                         data = DataManipulator.extractBarPlotPercentageData(d=data, denominator=denominator, groupBy=selected, col_name='Percentage')
+                        axTmp = ax[four_dim[ctr][0],four_dim[ctr][1]]
+                        # # Create an array with the colors you want to use
+                        # colors = []
+                        # for name, val in sorted(DataProvider.getEthosColors().items(), key=lambda x:x[1], reverse=True):
+                        #     if name in options:
+                        #         colors.append(val)
+                        # # Set your custom color palette
+                        # customPalette = sns.set_palette(sns.color_palette(colors))
+                        # z = axTmp.pie(data.sort_values(by = [selected])['Percentage'], labels=options, colors=customPalette, autopct='%d%%')
                         z = sns.barplot(data = data, y = selected, x = 'Percentage', ax=ax[four_dim[ctr][0],four_dim[ctr][1]], 
                             palette = DataProvider.getEthosColors())
                         z.bar_label(z.containers[0], fmt='%d%%')

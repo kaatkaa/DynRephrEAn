@@ -4,11 +4,11 @@ import streamlit as st
 
 class DataProvider:
     __dyn_rephr_file = 'config/dyn_rephr_cfg.json'
-    __lst_of_dyn_rephr = ['Meliorization', 'Pejorativization', 'Neutralization','No_Change']
-    __lst_of_dyn_rephrWS = ['M_strong','M_weak','P_strong','P_weak','Neutralization','No_Change']
-    __color_sentiment = {'Meliorization':'#3FEE0F','M_strong':'#28B900','M_weak':'#7CFF57','Pejorativization':'#FF0000'
+    __lst_of_dyn_rephr = ['Amelioration', 'Pejorativization', 'Neutralization','No_Change']
+    __lst_of_dyn_rephrWS = ['A_strong','A_weak','P_strong','P_weak','Neutralization','No_Change']
+    __color_sentiment = {'Amelioration':'#3FEE0F','A_strong':'#28B900','A_weak':'#7CFF57','Pejorativization':'#FF0000'
                      ,'P_strong':'#BD0000','P_weak':'#FF5656','Neutralization':'#2EBDFF','No_Change': '#414040'}
-    __color_ethos = {'Meliorization':'#3FEE0F','M_strong':'#28B900','M_weak':'#7CFF57','Pejorativization':'#FF0000'
+    __color_ethos = {'Amelioration':'#3FEE0F','A_strong':'#28B900','A_weak':'#7CFF57','Pejorativization':'#FF0000'
                      ,'P_strong':'#BD0000','P_weak':'#FF5656','Neutralization':'#2EBDFF','No_Change': '#414040'}
     __color_rephr = {'C': '#7FB3D5','D': '#76D7C4',
             'I':'#02FF70', 'O': '#F4D03F','P':'#C56EE7'}
