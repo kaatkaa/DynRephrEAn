@@ -28,7 +28,7 @@ class SingleCorpusMenu:
         else:
             # ADU or Speaker
             st.session_state[self.__prefix + 'speakerOrAdu'] = ""
-            # Speaker type: "SS rephrase" or "SO rephrase", default is ""
+            # Speaker type: "SS rephrase" or "OS rephrase", default is ""
             st.session_state[self.__prefix + 'speakerType'] = ""
         print("Reloaded!!!")
 
@@ -193,12 +193,12 @@ class SingleCorpusMenu:
             elif st.session_state[self.__prefix + 'speakerOrAdu'] == "Speaker-Based Analysis":
                 speaker = st.radio("Choose Speaker Unit Type: ",
                     ("SS rephrase",
-                    "SO rephrase"),
+                    "OS rephrase"),
                     key=self.__prefix+"Rephrase_Cmp_Speaker")
                 if speaker == "SS rephrase":
                     self.__rephrase_df = self.__rephrase_old.copy(deep=True)
                     self.__rephrase_df = self.__rephrase_df.loc[self.__rephrase_df['speaker_input'] == self.__rephrase_df['speaker_output']]
-                elif speaker == "SO rephrase":
+                elif speaker == "OS rephrase":
                     self.__rephrase_df = self.__rephrase_old.copy(deep=True)
                     self.__rephrase_df = self.__rephrase_df.loc[self.__rephrase_df['speaker_input'] != self.__rephrase_df['speaker_output']]
                 st.session_state[self.__prefix + 'speakerType'] = speaker
