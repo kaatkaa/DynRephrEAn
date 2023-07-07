@@ -13,10 +13,10 @@
         "Distribution_top": "**Distribution of ethos dynamics in rephrase:**",
         "Distribution_general_plot": "General dynamic ethos ADU based plot",
         "Distribution_detailed_plot": "Detailed dynamic ethos ADU based plot",
-        "Distribution_general_1speaker": "4 kategories dynamic ethos OS rephrase: ",
-        "Distribution_detailed_1speaker": "6 kategories dynamic ethos OS rephrase: ",
-        "Distribution_general_2speakers": "4 kategories dynamic sentiment SS rephrase: ",
-        "Distribution_detailed_2speakers": "6 kategories dynamic sentiment SS rephrase: "
+        "Distribution_general_1speaker": "4 kategories dynamic ethos SS rephrase: ",
+        "Distribution_detailed_1speaker": "6 kategories dynamic ethos SS rephrase: ",
+        "Distribution_general_2speakers": "4 kategories dynamic sentiment OS rephrase: ",
+        "Distribution_detailed_2speakers": "6 kategories dynamic sentiment OS rephrase: "
     },
     "DynRephAn for Sentiment": {
         "anName": "DynRephAn sentiment",
@@ -32,9 +32,9 @@
         "Distribution_top": "**Distribution of sentiment dynamics in rephrase:**",
         "Distribution_general_plot": "General dynamic sentiment ADU based plot",
         "Distribution_detailed_plot": "Detailed dynamic sentiment ADU based plot",
-        "Distribution_general_1speaker": "4 kategories dynamic sentiment OS rephrase: ",
-        "Distribution_detailed_1speaker": "6 kategories dynamic sentiment OS rephrase: ",
-        "Distribution_general_2speakers": "4 kategories dynamic sentiment SS rephrase: ",
-        "Distribution_detailed_2speakers": "6 kategories dynamic sentiment SS rephrase: "
+        "Distribution_general_1speaker": "4 kategories dynamic sentiment SS rephrase: ",
+        "Distribution_detailed_1speaker": "6 kategories dynamic sentiment SS rephrase: ",
+        "Distribution_general_2speakers": "4 kategories dynamic sentiment OS rephrase: ",
+        "Distribution_detailed_2speakers": "6 kategories dynamic sentiment OS rephrase: "
     }
 }
