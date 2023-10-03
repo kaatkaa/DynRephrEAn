@@ -9,6 +9,9 @@ import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import plotly.express as px
 from wordcloud import WordCloud, STOPWORDS
+from nltk.util import ngrams
+from nltk import FreqDist
+import re
 
 sys.path.insert(0,"..")
 from config.config_data_colector import DataProvider
@@ -31,18 +34,27 @@ class WordCloudOfEmotions:
             text += " ".join(map(str,",".join(data[inOut].dropna().to_numpy(na_value="")).split(",")))
         if text != "":
             wordLst = sorted(WordCloud(stopwords=self.__stop_words).process_text(text).items(), key=lambda x:x[1], reverse=True)
-            number = st.slider("Pick top n words/phrases: ", 1, value=10, max_value=len(wordLst))
+            number = st.slider("Pick top n unigrams: ", 1, value=10, max_value=len(wordLst))
             index = []
             for i in range(1,number+1):
                 index.append(i)
-            phrasesDf = pd.DataFrame(wordLst[:number],columns = ['Top phrase', 'Frequency'],index=pd.Index(index, name='Ranking'))
-            phrasesDf.columns.name = phrasesDf.index.name
-            st.dataframe(phrasesDf, width=800, height=40*number)
+            unigramsDf = pd.DataFrame(wordLst[:number],columns = ['Top phrase', 'Frequency'],index=pd.Index(index, name='Ranking'))
+            unigramsDf.columns.name = unigramsDf.index.name
+            st.dataframe(unigramsDf, width=800, height=40*number)
+
+    def __RemoveStopWordsFromDf(self, dataF: pd.DataFrame(), columns: list[str]) -> pd.DataFrame:
+        tmpDf = dataF[columns]
+        for stop_phrase in self.__stop_words_set:
+            middleTokenRegExp = r"\s"+stop_phrase+r"\s"
+            edgeTokenRegExp = r"^"+stop_phrase+r"\s|\s"+stop_phrase+r"$|^"+stop_phrase+r"$"
+            tmpDf = tmpDf.replace("(?i)"+middleTokenRegExp, " ", regex=True)
+            tmpDf = tmpDf.replace("(?i)"+edgeTokenRegExp, "", regex=True)
+        return tmpDf
 
     def __filterInterface(self, data: pd.DataFrame()) -> Tuple[any, list[str]]:
         col_radio1, = st.columns(1)
         with col_radio1:
-            display_complexity = st.radio("Choose complexity level: ",
+            display_complexity = st.radio("Choose complexity level: WordCloudOfEmotions",
                 ("4-categories",
                     "6-categories"),                                                  
                 key="Rephrase_Piechart_ADU_4-6cat")
@@ -60,12 +72,15 @@ class WordCloudOfEmotions:
                                         key = "multi_sel"+str(self.__keyCtr))
             self.__keyCtr += 1
             data_tmp = data.loc[data[self.cf['colNameWS']].isin(dyn_rephrase_options)]
+        else:
+            st.warning("Oprion not implemented in __filterInterface, class: ")
         source_options = st.multiselect("Choose source of data you would like to visualise", 
                                     ["input","output"], 
                                     ["input","output"][:],
                                     key = "multi_sel"+str(self.__keyCtr))
+        
         self.__keyCtr += 1
-        return data_tmp, source_options
+        return self.__RemoveStopWordsFromDf(dataF=data_tmp, columns=source_options), source_options    
     
     def __prepareWordCloud(self, data: pd.DataFrame()) -> list():
         #st.subheader(f"Word Clouds for distribution of ethos dynamics in rephrase:")
@@ -84,30 +99,42 @@ class WordCloudOfEmotions:
         text = ""
         for inOut in columnNamesLst: 
             text += " ".join(map(str,",".join(filteredDf[inOut].dropna().to_numpy(na_value="")).split(",")))
-        if text != "":
-            wordLst = sorted(WordCloud(stopwords=self.__stop_words).process_text(text).items(), key=lambda x:x[1], reverse=True)
-            number = st.slider("Pick top n words/phrases: ", 1, value=10, max_value=len(wordLst))
-            st.subheader("Pick word to analyse: ")
+        wordLst = sorted(WordCloud().process_text(text).items(), key=lambda x:x[1], reverse=True)
+        number = st.slider("Pick top n words/phrases: ", 1, value=10, max_value=len(wordLst))
+        ngramType = st.slider("Choose n-gram type: (1-4)",1,value=1, max_value=4)
+        st.subheader("Pick phrase to analyse: ")
+        if ngramType == 1:
             w = [item[0] for item in wordLst]
-            word = st.selectbox("Pick word/phrase to analyse: ",w[:number],index=0,key='Dropdown_lst')
-            st.subheader("Selected phrase is marked in text below between stars: \*\*"+word+"\*\*")
-            col1, col2 = st.columns([2,2])
-            #regexpStr = "^"+word+"('){0,1}\\s|\\s"+word+"('|\\s){0,1}|\\s"+word+"('){0,1}$|^"+word+"('){0,1}$"
+            word = st.selectbox("Pick unigram to analyse: ",w[:number],index=0,key='Dropdown_unigram_lst')
             regexpStr = word
+        else:
+            #st.write(self.__stop_words_set)
+            NgramLst = []
+            for inOut in columnNamesLst:
+                for token in map(str,",".join(filteredDf[inOut].dropna().to_numpy(na_value="")).split(",")):
+                    NgramLst.extend(ngrams(token.split(" "), ngramType))
+            NgramLst = FreqDist(NgramLst)
+            w2 = [" ".join(item[0])+" : "+str(item[1]) for item in NgramLst.most_common(number)]
+            word = st.selectbox("Pick "+str(ngramType)+"-gram to analyse: ",w2,index=0,key='Dropdown_'+str(ngramType)+'-gramLst')
+            regexpStr = re.sub(r"^(.*)\s:\s[0-9]+$", r"\1", word)
+        if text != "":
+            regExpCode = r"\s"+regexpStr+r"\s|^"+regexpStr+r"\s|\s"+regexpStr+r"$|^"+regexpStr+r"$"
+            st.subheader("Selected phrase is marked in text below between stars: \*\*"+regexpStr+"\*\*")
+            col1, col2 = st.columns([2,2])
             if 'input' in columnNamesLst:
                 with col1:
-                    filteredInputDF = filteredDf[filteredDf['input'].str.contains(regexpStr, case=False, regex=True)]
+                    filteredInputDF = filteredDf[filteredDf['input'].str.contains(regExpCode, case=False, regex=True)]
                     filteredInputDF.reset_index(inplace=True)
                     tmpDf = filteredInputDF[['input','output']]
-                    tmpDf = tmpDf.replace(regexpStr," **"+word+"** ", regex=True)
+                    tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
                     tmpDf = tmpDf.style.applymap(backgroung_color,subset="input")
                     st.table(tmpDf)
             if 'output' in columnNamesLst:
                 with col2:
-                    filteredOutputDF = filteredDf[filteredDf['output'].str.contains(regexpStr, case=False, regex=True)]
+                    filteredOutputDF = filteredDf[filteredDf['output'].str.contains(regExpCode, case=False, regex=True)]
                     filteredOutputDF.reset_index(inplace=True)
                     tmpDf = filteredOutputDF[['input','output']]
-                    tmpDf = tmpDf.replace(regexpStr," **"+word+"** ", regex=True)
+                    tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
                     st.table(tmpDf[['input','output']].style.applymap(backgroung_color,
                         subset="output"))
         else:
@@ -118,6 +145,11 @@ class WordCloudOfEmotions:
         if len(data) > 0:
             self.__keyCtr = 0
             self.__stop_words = DataProvider.getCustomStopWords() + list(STOPWORDS)
+            self.__stop_words_set = set()
+            for word in DataProvider.getCustomStopWords():
+                self.__stop_words_set.add(word)
+            for word in list(STOPWORDS):
+                self.__stop_words_set.add(word)
             if unit == "ADU-Based Analysis":
                 if analysisType == 'Wordcloud':
                     st.subheader(self.cf['Wordcloud_editReph_ADU'])
