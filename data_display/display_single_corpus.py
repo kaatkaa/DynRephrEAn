@@ -51,7 +51,7 @@ class WordCloudOfEmotions:
             tmpDf = tmpDf.replace("(?i)"+edgeTokenRegExp, "", regex=True)
         return tmpDf
 
-    def __filterInterface(self, data: pd.DataFrame()) -> Tuple[any, list[str]]:
+    def __filterInterface(self, data: pd.DataFrame(), hideInOut: bool=False) -> Tuple[any, list[str]]:
         col_radio1, = st.columns(1)
         with col_radio1:
             display_complexity = st.radio("Choose complexity level: WordCloudOfEmotions",
@@ -73,12 +73,14 @@ class WordCloudOfEmotions:
             self.__keyCtr += 1
             data_tmp = data.loc[data[self.cf['colNameWS']].isin(dyn_rephrase_options)]
         else:
-            st.warning("Oprion not implemented in __filterInterface, class: ")
-        source_options = st.multiselect("Choose source of data you would like to visualise", 
-                                    ["input","output"], 
-                                    ["input","output"][:],
-                                    key = "multi_sel"+str(self.__keyCtr))
-        
+            st.warning("Oprion not implemented in __filterInterface, class: WordCloudOfEmotions")
+        if not hideInOut:
+            source_options = st.multiselect("Choose source of data you would like to visualise", 
+                                        ["input","output"], 
+                                        ["input","output"][:],
+                                        key = "multi_sel"+str(self.__keyCtr))
+        else:
+            source_options = ["input","output"]
         self.__keyCtr += 1
         return self.__RemoveStopWordsFromDf(dataF=data_tmp, columns=source_options), source_options    
     
@@ -95,7 +97,7 @@ class WordCloudOfEmotions:
     def __textAnalysis(self, data: pd.DataFrame()) -> None:
         def backgroung_color(v):
             return f"background-color: {DataProvider.getRephraseAndEmptycolors()['Rephrase']};"
-        filteredDf, columnNamesLst = self.__filterInterface(data)
+        filteredDf, columnNamesLst = self.__filterInterface(data, hideInOut=True)
         text = ""
         for inOut in columnNamesLst: 
             text += " ".join(map(str,",".join(filteredDf[inOut].dropna().to_numpy(na_value="")).split(",")))
