@@ -1,17 +1,19 @@
 import streamlit as st
 import sys
 import pandas as pd
-from typing import Tuple
-from pandas.api.types import CategoricalDtype
 import seaborn as sns
 import numpy as np
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import plotly.express as px
+import re
+import plotly.data as pdata
+from data_display.barchart3d import barchart3d
+from pandas.api.types import CategoricalDtype
+from typing import Tuple
 from wordcloud import WordCloud, STOPWORDS
 from nltk.util import ngrams
 from nltk import FreqDist
-import re
 
 sys.path.insert(0,"..")
 from config.config_data_colector import DataProvider
@@ -43,20 +45,21 @@ class WordCloudOfEmotions:
             st.dataframe(unigramsDf, width=800, height=40*number)
 
     def __RemoveStopWordsFromDf(self, dataF: pd.DataFrame(), columns: list[str]) -> pd.DataFrame:
-        tmpDf = dataF[columns]
         for stop_phrase in self.__stop_words_set:
-            middleTokenRegExp = r"\s"+stop_phrase+r"\s"
-            edgeTokenRegExp = r"^"+stop_phrase+r"\s|\s"+stop_phrase+r"$|^"+stop_phrase+r"$"
-            tmpDf = tmpDf.replace("(?i)"+middleTokenRegExp, " ", regex=True)
-            tmpDf = tmpDf.replace("(?i)"+edgeTokenRegExp, "", regex=True)
-        return tmpDf
+            p1 = re.compile(r"\s"+stop_phrase+r"\s", flags=re.IGNORECASE)
+            p2 = re.compile(r"^"+stop_phrase+r"\s|\s"+stop_phrase+r"$|^"+stop_phrase+r"$", flags=re.IGNORECASE)
+            for column in columns:
+                #dataF[column].str.lower()
+                dataF[column] = dataF[column].str.replace(p1, " ", regex=True)
+                dataF[column] = dataF[column].str.replace(p2, "", regex=True)
+        return dataF
 
-    def __filterInterface(self, data: pd.DataFrame(), hideInOut: bool=False) -> Tuple[any, list[str]]:
+    def __filterInterface(self, data: pd.DataFrame(), hideInOut: bool=False, useStopWords: bool=True) -> Tuple[any, list[str]]:
         col_radio1, = st.columns(1)
         with col_radio1:
             display_complexity = st.radio("Choose complexity level: WordCloudOfEmotions",
                 ("4-categories",
-                    "6-categories"),                                                  
+                    "6-categories"),                                                 
                 key="Rephrase_Piechart_ADU_4-6cat")
         if display_complexity == '4-categories':
             dyn_rephrase_options = st.multiselect(self.cf["Wordcloud_filterInterface"], 
@@ -82,8 +85,19 @@ class WordCloudOfEmotions:
         else:
             source_options = ["input","output"]
         self.__keyCtr += 1
-        return self.__RemoveStopWordsFromDf(dataF=data_tmp, columns=source_options), source_options    
-    
+        col1, col2 = st.columns([2,2])
+        showStopWords = False
+        with col1:
+            useStopWords = st.checkbox(label="Enable stop_words",value=useStopWords,key="StopWordsChck"+str(self.__keyCtr))
+        with col2:
+            showStopWords = st.checkbox(label="Show stop_words",value=showStopWords,key="ShowWordsChck"+str(self.__keyCtr))
+        if showStopWords:
+            st.write(self.__stop_words_set)
+        if useStopWords:
+            return self.__RemoveStopWordsFromDf(dataF=data_tmp, columns=source_options), source_options
+        else:
+            return data_tmp, source_options
+        
     def __prepareWordCloud(self, data: pd.DataFrame()) -> list():
         #st.subheader(f"Word Clouds for distribution of ethos dynamics in rephrase:")
         DataProvider.addSpacelines(1)        
@@ -98,49 +112,78 @@ class WordCloudOfEmotions:
         def backgroung_color(v):
             return f"background-color: {DataProvider.getRephraseAndEmptycolors()['Rephrase']};"
         filteredDf, columnNamesLst = self.__filterInterface(data, hideInOut=True)
-        text = ""
+        plotDf = DataManipulator.getGruppedData(filteredDf,self.cf['colName'],"Frequency")
+        wordLst = []
         for inOut in columnNamesLst: 
-            text += " ".join(map(str,",".join(filteredDf[inOut].dropna().to_numpy(na_value="")).split(",")))
-        wordLst = sorted(WordCloud().process_text(text).items(), key=lambda x:x[1], reverse=True)
+            for token in map(str,",".join(filteredDf[inOut].dropna().to_numpy(na_value="")).split(",")):
+                wordLst.extend(ngrams(token.split(" "), 1))
+        wordLst = FreqDist(wordLst)
         number = st.slider("Pick top n words/phrases: ", 1, value=10, max_value=len(wordLst))
         ngramType = st.slider("Choose n-gram type: (1-4)",1,value=1, max_value=4)
         st.subheader("Pick phrase to analyse: ")
-        if ngramType == 1:
-            w = [item[0] for item in wordLst]
-            word = st.selectbox("Pick unigram to analyse: ",w[:number],index=0,key='Dropdown_unigram_lst')
-            regexpStr = word
-        else:
-            #st.write(self.__stop_words_set)
-            NgramLst = []
-            for inOut in columnNamesLst:
-                for token in map(str,",".join(filteredDf[inOut].dropna().to_numpy(na_value="")).split(",")):
-                    NgramLst.extend(ngrams(token.split(" "), ngramType))
-            NgramLst = FreqDist(NgramLst)
-            w2 = [" ".join(item[0])+" : "+str(item[1]) for item in NgramLst.most_common(number)]
-            word = st.selectbox("Pick "+str(ngramType)+"-gram to analyse: ",w2,index=0,key='Dropdown_'+str(ngramType)+'-gramLst')
-            regexpStr = re.sub(r"^(.*)\s:\s[0-9]+$", r"\1", word)
-        if text != "":
-            regExpCode = r"\s"+regexpStr+r"\s|^"+regexpStr+r"\s|\s"+regexpStr+r"$|^"+regexpStr+r"$"
-            st.subheader("Selected phrase is marked in text below between stars: \*\*"+regexpStr+"\*\*")
-            col1, col2 = st.columns([2,2])
-            if 'input' in columnNamesLst:
-                with col1:
-                    filteredInputDF = filteredDf[filteredDf['input'].str.contains(regExpCode, case=False, regex=True)]
-                    filteredInputDF.reset_index(inplace=True)
-                    tmpDf = filteredInputDF[['input','output']]
-                    tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
-                    tmpDf = tmpDf.style.applymap(backgroung_color,subset="input")
-                    st.table(tmpDf)
-            if 'output' in columnNamesLst:
-                with col2:
-                    filteredOutputDF = filteredDf[filteredDf['output'].str.contains(regExpCode, case=False, regex=True)]
-                    filteredOutputDF.reset_index(inplace=True)
-                    tmpDf = filteredOutputDF[['input','output']]
-                    tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
-                    st.table(tmpDf[['input','output']].style.applymap(backgroung_color,
-                        subset="output"))
-        else:
-            st.write('No maches for given criteria.')
+        NgramLst = []
+        for inOut in columnNamesLst:
+            for token in map(str,",".join(filteredDf[inOut].dropna().to_numpy(na_value="")).split(",")):
+                NgramLst.extend(ngrams(token.split(" "), ngramType))
+        NgramLst = FreqDist(NgramLst)
+        common = NgramLst.most_common(number)
+        w2 = [" ".join(item[0])+" : "+str(item[1]) for item in common]
+        ndic = {}
+        for ngram in common:
+            if self.cf['colName'] in ndic:
+                ndic[self.cf['colName']].append(" ".join(ngram[0]))
+            else:
+                ndic[self.cf['colName']] = [" ".join(ngram[0])]
+            if 'Frequency' in ndic:
+                ndic['Frequency'].append(ngram[1])
+            else:
+                ndic['Frequency'] = [ngram[1]]
+        word = st.selectbox("Pick "+str(ngramType)+"-gram to analyse: ",w2,index=0,key='Dropdown_'+str(ngramType)+'-gramLst')
+        regexpStr = re.sub(r"^(.*)\s:\s[0-9]+$", r"\1", word)
+        regExpCode = r"\s"+regexpStr+r"\s|^"+regexpStr+r"\s|\s"+regexpStr+r"$|^"+regexpStr+r"$"
+        st.subheader("Selected phrase is marked in text below between stars: \*\*"+regexpStr+"\*\*")
+        col1, col2 = st.columns([2,2])
+        if 'input' in columnNamesLst:
+            with col1:
+                filteredInputDF = filteredDf[filteredDf['input'].str.contains(regExpCode, case=False, regex=True)]
+                filteredInputDF.reset_index(inplace=True)
+                tmpDf = filteredInputDF[['input','output']]
+                tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
+                tmpDf = tmpDf.style.applymap(backgroung_color,subset="input")
+                st.table(tmpDf)
+        if 'output' in columnNamesLst:
+            with col2:
+                filteredOutputDF = filteredDf[filteredDf['output'].str.contains(regExpCode, case=False, regex=True)]
+                filteredOutputDF.reset_index(inplace=True)
+                tmpDf = filteredOutputDF[['input','output']]
+                tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
+                st.table(tmpDf[['input','output']].style.applymap(backgroung_color,
+                    subset="output"))
+
+        wyk = pd.DataFrame(ndic)            
+        plotDf = pd.concat([plotDf, pd.DataFrame(ndic)])
+        plotDf.reset_index(inplace=True)
+        #st.write(len(plotDf[self.cf['colName']]))
+        fig = barchart3d( \
+            plotDf[self.cf['colName']], \
+            plotDf['Frequency'].to_list(), \
+            "Top "+str(number)+" most freguent "+str(ngramType)+"-grams", \
+            str(ngramType)+"-gram frequency", \
+            colorscale='Bluered', \
+            opacity=0.6, \
+            flatshading=True)
+
+        #fig = go.Figure(
+        #    data=go.Surface(z=filteredDf),
+        #    layout=go.Layout(
+        #        title="N-gram frequencies: ",
+        #        width=500,
+        #        height=500,
+        #    )
+        #)
+        #fig.update_layout(template="plotly_dark", title="This is test")
+
+        st.plotly_chart(fig, config=DataProvider.getSaveConfig())
 
     def __init__(self, data: pd.DataFrame(), analysisType: str, unit: str, configDic: dict[str , str]) -> None:
         self.cf = configDic

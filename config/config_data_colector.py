@@ -25,29 +25,29 @@ class DataProvider:
     }
 
     __custom_stop_words = [
-            "http", "https", "co", "RT",
-            "Donald", "Trump", "Mike", "Pence",
-            "Hillary","Hilary", "Clinton", "Joe", "Biden",
-            "Michael", "Bloomberg", "Jeb", "Bush","Nicholas", "Ridley",
-            "Ben", "Carson", "Lincoln" "Chafee",
-            "Chris", "Christie", "Ted", "Cruz",
-            "Carly", "Fiorina", "Obama", "OBAMA",
-            "Jim", "Gilmore","Sanders'",
-            "Lindsey", "Graham"
-            "Mike", "Huckabee",
-            "Bobby", "Jindal",
-            "John", "Kasich",
-            "Lawrence", "Lessig",
-            "Martin", "O'Malley",
-            "George", "Pataki",
-            "Rand", "Paul",
-            "Rick", "Perry",
-            "Marco", "Rubio",
-            "Bernie", "Sanders",
-            "Rick", "Santorum",
-            "Scott", "Walker",
-            "Elizabeth", "Warren",
-            "Jim", "Webb","Mr"
+            "http", "https", "co", "rt",
+            "donald", "trump", "mike", "pence",
+            "hillary","hilary", "clinton", "joe", "biden",
+            "michael", "bloomberg", "jeb", "bush","nicholas", "ridley",
+            "ben", "carson", "lincoln" "chafee",
+            "chris", "christie", "ted", "cruz",
+            "carly", "fiorina", "obama", "obama",
+            "jim", "gilmore",
+            "lindsey", "graham"
+            "mike", "huckabee",
+            "bobby", "jindal",
+            "john", "kasich",
+            "lawrence", "lessig",
+            "martin", "o'malley",
+            "george", "pataki",
+            "rand", "paul",
+            "rick", "perry",
+            "marco", "rubio",
+            "bernie", "sanders",
+            "rick", "santorum",
+            "scott", "walker",
+            "elizabeth", "warren",
+            "jim", "webb","mr"
     ]
 
     @staticmethod
