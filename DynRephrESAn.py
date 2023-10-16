@@ -13,6 +13,7 @@ import json
 
 from submenus.single_corpus import SingleCorpusMenu
 from submenus.comparative_corpus import CmpCorpusMenu
+from submenus.three_d_corpus import ThreeDCorpusMenu
 from config.config_data_colector import DataProvider
 
 from PIL import Image
@@ -69,6 +70,10 @@ def SingleCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()], submenu_prefix: s
 def ComparativeCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()], anType: str) -> CmpCorpusMenu:
     return CmpCorpusMenu(dataDict=dataDic, anType=anType)
 
+@st.cache_resource
+def ThreeDCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()],submenu_prefix: str, anType: str) -> ThreeDCorpusMenu:
+    return ThreeDCorpusMenu(dataDic=dataDic, prefix=submenu_prefix, anType=anType)
+
 def resetData(single_corpus: SingleCorpusMenu, comparative_corpora: CmpCorpusMenu) -> None:
     single_corpus.cleanSelections()
     comparative_corpora.clearTabsSelections()
@@ -87,8 +92,9 @@ with st.sidebar:
                 key="AnType")
     single_corpora_menu = SingleCorporaMenuLoader(dataDic=dataDic, submenu_prefix="0_", anType=rAnalytics)
     cmp_corpora_menu = ComparativeCorporaMenuLoader(dataDic=dataDic, anType=rAnalytics)
+    threeD_corpora_menu = ThreeDCorporaMenuLoader(dataDic=dataDic, submenu_prefix="3D_0", anType=rAnalytics)
     st.title("Contents")
-    contents_radio = st.radio("Choose: ", ("Main Page", "Single Corpus Analysis", "Comparative Corpora Analysis"),label_visibility='collapsed')
+    contents_radio = st.radio("Choose: ", ("Main Page", "Single Corpus Analysis", "Comparative Corpora Analysis","3D Charts"),label_visibility='collapsed')
 
 if contents_radio == "Main Page":
     MainPage()
@@ -104,5 +110,7 @@ elif contents_radio == "Comparative Corpora Analysis":
                                         on_change=resetData,
                                         args=(single_corpora_menu, cmp_corpora_menu))
     cmp_corpora_menu.display(units_choice)
+elif contents_radio == "3D Charts":
+    threeD_corpora_menu.draw3D()
 else:
     st.error("Wrong option of main sidemenu radiobitton.")
