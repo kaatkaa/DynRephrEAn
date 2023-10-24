@@ -7,7 +7,7 @@ from config.config_data_colector import DataProvider
 #from data_display.barchart3d import barchart3d
 class ThreeD_Charts:
     @staticmethod
-    def CorporaVsDynRephrasePlot(matrix: Dict[str, Dict[str, int]],title: str="Test title", h_title: str="Heat map title",
+    def CorporaVsDynRephrasePlot(matrix: Dict[str, Dict[str, int]],treshold: int=100,title: str="Test title", h_title: str="Heat map title",
         width=900, height=900, thikness=0.7, colorscale='Viridis',
         **kwargs) -> None:
         """
@@ -24,6 +24,52 @@ class ThreeD_Charts:
         :param **kwargs: Passed to Mesh3d()
         :return: 3D barchart figure
         """
+        def edgesUpdate(color):
+            fig.add_scatter3d(mode='lines',
+                x=[x_min, x_min, x_max, x_max, x_min],
+                y=[y_min, y_max, y_max, y_min, y_min],
+                z=[0, 0, 0, 0, 0],
+                showlegend=False,
+                line=dict(color='red')
+            )
+
+            fig.add_scatter3d(mode='lines',
+                x=[x_min, x_min, x_max, x_max, x_min],
+                y=[y_min, y_max, y_max, y_min, y_min],
+                z=[z_dic[1]['Frequency'], z_dic[1]['Frequency'], z_dic[1]['Frequency'], z_dic[1]['Frequency'], z_dic[1]['Frequency']],
+                showlegend=False,
+                line=dict(color=color)
+            )
+
+            fig.add_scatter3d(mode='lines',
+                x=[x_min, x_min],
+                y=[y_max, y_max],
+                z=[0, z_dic[1]['Frequency']],
+                showlegend=False,
+                line=dict(color=color)
+            )
+            fig.add_scatter3d(mode='lines',
+                x=[x_min, x_min],
+                y=[y_min, y_min],
+                z=[0, z_dic[1]['Frequency']],
+                showlegend=False,
+                line=dict(color=color)
+            )
+
+            fig.add_scatter3d(mode='lines',
+                x=[x_max, x_max],
+                y=[y_min, y_min],
+                z=[0, z_dic[1]['Frequency']],
+                showlegend=False,
+                line=dict(color=color)
+            )
+            fig.add_scatter3d(mode='lines',
+                x=[x_max, x_max],
+                y=[y_max, y_max],
+                z=[0, z_dic[1]['Frequency']],
+                showlegend=False,
+                line=dict(color=color)
+            )        
 
         thikness *= 0.5
         ann = []
@@ -43,7 +89,6 @@ class ThreeD_Charts:
         for y_dic in matrix.items():
             ctrY = 0
             for z_dic in y_dic[1].items():
-                #x_cnt, y_cnt = iz % n_row, iz // n_row
                 x_min, y_min = ctrX - thikness, ctrY - thikness
                 x_max, y_max = ctrX + thikness, ctrY + thikness
 
@@ -52,13 +97,18 @@ class ThreeD_Charts:
                     y=[y_min, y_max, y_max, y_min, y_min, y_max, y_max, y_min],
                     z=[0, 0, 0, 0, z_dic[1]['Frequency'], z_dic[1]['Frequency'], z_dic[1]['Frequency'], z_dic[1]['Frequency']],
                     alphahull=0,
+                    #intensitymode='vertex',
+                    #flatshading=True,
                     intensity=[0, 0, 0, 0, z_dic[1]['Frequency'], z_dic[1]['Frequency'], z_dic[1]['Frequency'], z_dic[1]['Frequency']],
-                    #text="x_min"+str(x_min),
+                    text="x_min"+str(x_min),
                     coloraxis='coloraxis',
                     hoverinfo='text',
                     **kwargs))
                 
-                #st.write("x_min = ",x_min," y_min = ",y_min," z_dic[1]['Frequency'] = ",z_dic)
+                if z_dic[1]['Frequency'] >= treshold:
+                    edgesUpdate('red')
+                else: 
+                    edgesUpdate('blue')
 
                 ann.append(dict(
                     showarrow=False,

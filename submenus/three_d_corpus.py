@@ -49,7 +49,7 @@ class ThreeDCorpusMenu:
             st.error("Wrong column option in __onFilterChange.")
 
     def __filterAPNNch(self) -> Tuple[any, list[str]]:
-        col_radio1, = st.columns(1)
+        col_radio1, col_radio2 = st.columns(2)
         def get_new_values_list(key: str="", colName: str=""):
             self.__onFilterChange(st.session_state[key],colName=colName)
         def set_show_stopwords(key: str):
@@ -78,7 +78,12 @@ class ThreeDCorpusMenu:
             display_complexity = st.radio("Choose complexity level: WordCloudOfEmotions",
                 ("4-categories",
                     "6-categories"),                                                 
-                key="Rephrase_Piechart_ADU_4-6cat")
+                key=self.__prefix+"Rephrase_Piechart_ADU_4-6cat")
+        with col_radio2:
+            Computation_type = st.radio("Choose %percentage/#number",
+                ("Percentage",
+                    "Number"),                                                 
+                key=self.__prefix+"PercentNumber")
         if display_complexity == '4-categories':
             colName = self.__anCfg['colName']
             dyn_rephrase_options = st.multiselect(self.__anCfg["Wordcloud_filterInterface"], 
@@ -97,7 +102,7 @@ class ThreeDCorpusMenu:
                                         key = str(self.__prefix)+"2multi_sel")
         else:
             st.warning("Option not implemented in __filterInterface, class: WordCloudOfEmotions")
-        return dyn_rephrase_options, colName
+        return dyn_rephrase_options, Computation_type, colName
 
     def __loader(self, mySet: set[str]):
         tmp = pd.DataFrame()
@@ -114,10 +119,16 @@ class ThreeDCorpusMenu:
              'Media': {'US2016tvD1','US2016tvR1','US2016tvG1'},
              'F2F': {'Hansard'}
         }
-        filterLst, dataColumn = self.__filterAPNNch()
+        filterLst, computation_type, dataColumn = self.__filterAPNNch()
         dic3D = {}
         for item in corpus3Ddic.items():
-            tmpDf = DataManipulator.getGruppedData(self.__loader(item[1]),dataColumn,"Frequency")
+            my_data = self.__loader(item[1])
+            if computation_type == "Percentage":
+                tmpDf = DataManipulator.getGruppedPercentages(my_data,len(my_data),dataColumn,"Frequency")
+            elif computation_type == "Number":
+                tmpDf = DataManipulator.getGruppedData(my_data,dataColumn,"Frequency")
+            else:
+                st.error("Unknown opion: ",computation_type," in __prepCorpora_and_DynRephType")
             tmpDf = tmpDf.set_index(dataColumn)
             tmpDict = tmpDf.to_dict('index')
             dic3D[item[0]] = dict()
@@ -148,15 +159,15 @@ class ThreeDCorpusMenu:
                 self.__filterLstSW = st.session_state[str(self.__prefix + 'filterLstSW')]
             else:
                 self.__filterLstSW = DataProvider.getDynRephDimentionsWS()
-                st.session_state[str(self.__prefix + 'filterLstSW')] = self.__filterLst
-            if str(self.__prefix)+"ShowWordsChck" in st.session_state:
-                self.__showStopWords = st.session_state(str(self.__prefix)+"ShowWordsChck")
+                st.session_state[str(self.__prefix + 'filterLstSW')] = self.__filterLstSW
+            if str(self.__prefix+"ShowWordsChck") in st.session_state:
+                self.__showStopWords = st.session_state[str(self.__prefix+"ShowWordsChck")]
             else:
-                st.session_state[str(self.__prefix)+"ShowWordsChck"] = self.__showStopWords
-            if str(self.__prefix)+"StopWordsChck" in st.session_state:
-                self.__useStopWords = st.session_state[str(self.__prefix)+"StopWordsChck"]
+                st.session_state[str(self.__prefix+"ShowWordsChck")] = self.__showStopWords
+            if str(self.__prefix+"StopWordsChck") in st.session_state:
+                self.__useStopWords = st.session_state[str(self.__prefix+"StopWordsChck")]
             else:
-                st.session_state[str(self.__prefix)+"StopWordsChck"] = self.__useStopWords
+                st.session_state[str(self.__prefix+"StopWordsChck")] = self.__useStopWords
             self.__plotData1 = None
             #dictionary containing all possible data with corpora indexed by name
             self.__dataDic = dataDic
@@ -181,6 +192,7 @@ class ThreeDCorpusMenu:
         #print("*******************************")
         ploter = ThreeD_Charts()
         ploter.CorporaVsDynRephrasePlot(self.__plotData1,
+                                        10,
                                         "Corpora VS DynamicRephType distribution",
                                         "Color Scale"
                                         )

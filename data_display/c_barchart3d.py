@@ -2,7 +2,7 @@ import math
 import plotly.graph_objects as go
 import streamlit as st
 
-def barchart3d(labels, z_data, title, z_title,
+def c_barchart3d(labels, z_data, title, z_title,
                n_row=0, width=900, height=900, thikness=0.7, colorscale='Viridis',
                **kwargs):
     """
@@ -40,7 +40,7 @@ def barchart3d(labels, z_data, title, z_title,
             intensity=[0, 0, 0, 0, z_max, z_max, z_max, z_max],
             #text="x_min"+str(x_min),
             coloraxis='coloraxis',
-            hoverinfo='none',
+            hoverinfo='text',
             **kwargs))
 
         ann.append(dict(
@@ -51,7 +51,7 @@ def barchart3d(labels, z_data, title, z_title,
             font=dict(color='white', size=11),
             bgcolor='rgba(0, 0, 0, 0.3)',
             xanchor='center', yanchor='middle',
-            hovertext=f'frequency: {z_max}, seguence: "{labels[iz]}"'))
+            hovertext=f'z_max: {z_max} = {labels[iz]}'))
    
     # mesh3d doesn't currently support showLegend param, so
     # add invisible scatter3d with names to show legend
