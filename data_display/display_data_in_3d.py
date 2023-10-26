@@ -7,8 +7,8 @@ from config.config_data_colector import DataProvider
 #from data_display.barchart3d import barchart3d
 class ThreeD_Charts:
     @staticmethod
-    def CorporaVsDynRephrasePlot(matrix: Dict[str, Dict[str, int]],treshold: int=100,title: str="Test title", h_title: str="Heat map title",
-        width=900, height=900, thikness=0.7, colorscale='Viridis',
+    def CorporaVsDynRephrasePlot(matrix: Dict[str, Dict[str, int]],threshold: list=[int],title: str="Test title", h_title: str="Heat map title",
+        width=900, height=900, thikness=0.8, colorscale='Viridis',
         **kwargs) -> None:
         """
         Draws a 3D barchart
@@ -76,11 +76,13 @@ class ThreeD_Charts:
         
         fig = go.Figure(
             layout=dict(
-                barmode = 'stack',
+                barmode = 'overlay',
                 bargap=0,
                 bargroupgap=0,
                 boxgap = 0,
-                barnorm = 'percent'
+                boxmode = 'overlay',
+                barnorm = 'percent',
+                funnelmode = 'overlay'
             )
         )
 
@@ -92,7 +94,8 @@ class ThreeD_Charts:
                 x_min, y_min = ctrX - thikness, ctrY - thikness
                 x_max, y_max = ctrX + thikness, ctrY + thikness
 
-                fig.add_trace(go.Mesh3d(
+                fig.add_trace(
+                    go.Mesh3d(
                     x=[x_min, x_min, x_max, x_max, x_min, x_min, x_max, x_max],
                     y=[y_min, y_max, y_max, y_min, y_min, y_max, y_max, y_min],
                     z=[0, 0, 0, 0, z_dic[1]['Frequency'], z_dic[1]['Frequency'], z_dic[1]['Frequency'], z_dic[1]['Frequency']],
@@ -100,15 +103,15 @@ class ThreeD_Charts:
                     #intensitymode='vertex',
                     #flatshading=True,
                     intensity=[0, 0, 0, 0, z_dic[1]['Frequency'], z_dic[1]['Frequency'], z_dic[1]['Frequency'], z_dic[1]['Frequency']],
-                    text="x_min"+str(x_min),
+                    #text="x_min"+str(x_min),
                     coloraxis='coloraxis',
                     hoverinfo='text',
                     **kwargs))
                 
-                if z_dic[1]['Frequency'] >= treshold:
-                    edgesUpdate('red')
-                else: 
+                if z_dic[1]['Frequency'] >= matrix['Total'][z_dic[0]]['Frequency']-threshold and z_dic[1]['Frequency'] <= matrix['Total'][z_dic[0]]['Frequency']+threshold:
                     edgesUpdate('blue')
+                else: 
+                    edgesUpdate('red')
 
                 ann.append(dict(
                     showarrow=False,
@@ -130,20 +133,29 @@ class ThreeD_Charts:
                 ctr += 1
                 ctrY +=1
             ctrX += 1
+        #eyeX = st.slider(label="eyeX",value=2.0,min_value=-2.0, max_value=2.0,step=0.01)
+        #exeY = st.slider(label="eyeY",value=2.0,min_value=-2.0, max_value=2.0,step=0.01)
+        #eyeZ = st.slider(label="eyeZ",value=0.1,min_value=-2.0, max_value=2.0,step=0.01)
+        camera = dict(
+            up=dict(x=0, y=0, z=1),
+            center=dict(x=0, y=0, z=0),
+            eye=dict(x=1.74, y=-1.01, z=1.20)
+        )
         fig.update_layout(
             width=width, height=height,
             title=title, title_x=0.5,
             bargap=0,bargroupgap=0,
+            scene_camera=camera,
             scene=dict(
                 aspectmode="cube",
                 aspectratio=dict(x=1),
                 xaxis=dict(showticklabels=True,
                            ticktext = list(matrix.keys()),
-                           tickvals = [ ctr*thikness*2.5 for ctr in range(len(matrix))],
+                           tickvals = [ ctr for ctr in range(len(matrix))],
                            title='X axis'),
                 yaxis=dict(showticklabels=True, 
                            ticktext = list(matrix['Total'].keys()),
-                           tickvals = [ ctr*thikness*2.5 for ctr in range(len(matrix['Total']))],
+                           tickvals = [ ctr for ctr in range(len(matrix['Total']))],
                            title='Y axis'),
                 zaxis=dict(title='Z axis'),
                 annotations=ann),
@@ -165,6 +177,7 @@ class ThreeD_Charts:
             showlegend=True)
         fig.update_layout(bargap=0.25,bargroupgap=0.0)
         st.plotly_chart(fig, config=DataProvider.getSaveConfig())
+        #st.write(fig.to_dict()['layout']['scene']['camera'])
 
     def __init__(self) -> None:
         pass

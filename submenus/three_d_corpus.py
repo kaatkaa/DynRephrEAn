@@ -77,13 +77,17 @@ class ThreeDCorpusMenu:
         with col_radio1:
             display_complexity = st.radio("Choose complexity level: WordCloudOfEmotions",
                 ("4-categories",
-                    "6-categories"),                                                 
+                    "6-categories"),
                 key=self.__prefix+"Rephrase_Piechart_ADU_4-6cat")
         with col_radio2:
             Computation_type = st.radio("Choose %percentage/#number",
                 ("Percentage",
-                    "Number"),                                                 
+                    "Number"),
                 key=self.__prefix+"PercentNumber")
+        if Computation_type == "Percentage":
+            higherThen = st.slider("Choose +/- tolerance in % (Red edges do not fulfill tolerance)",1,value=1, max_value=100, key=self.__prefix+"HigherSlider") 
+        else:
+            higherThen = 0
         if display_complexity == '4-categories':
             colName = self.__anCfg['colName']
             dyn_rephrase_options = st.multiselect(self.__anCfg["Wordcloud_filterInterface"], 
@@ -102,7 +106,7 @@ class ThreeDCorpusMenu:
                                         key = str(self.__prefix)+"2multi_sel")
         else:
             st.warning("Option not implemented in __filterInterface, class: WordCloudOfEmotions")
-        return dyn_rephrase_options, Computation_type, colName
+        return dyn_rephrase_options, Computation_type, colName, higherThen
 
     def __loader(self, mySet: set[str]):
         tmp = pd.DataFrame()
@@ -119,7 +123,7 @@ class ThreeDCorpusMenu:
              'Media': {'US2016tvD1','US2016tvR1','US2016tvG1'},
              'F2F': {'Hansard'}
         }
-        filterLst, computation_type, dataColumn = self.__filterAPNNch()
+        filterLst, computation_type, dataColumn, threshold = self.__filterAPNNch()
         dic3D = {}
         for item in corpus3Ddic.items():
             my_data = self.__loader(item[1])
@@ -132,14 +136,13 @@ class ThreeDCorpusMenu:
             tmpDf = tmpDf.set_index(dataColumn)
             tmpDict = tmpDf.to_dict('index')
             dic3D[item[0]] = dict()
-            #st.write(tmpDict)
             for dyn in filterLst:
                 #st.write(tmpDict)
                 if dyn in tmpDict:
                     dic3D[item[0]][dyn] = tmpDict[dyn]
                 else:
                     dic3D[item[0]][dyn] = {'Frequency': 0}
-        return dic3D
+        return dic3D, threshold
 
     def __init__(self, dataDic: dict[str : pd.DataFrame()], prefix: str="3D_", anType: str="DynRephAn for Ethos") -> None:
             self.__prefix = prefix
@@ -188,11 +191,11 @@ class ThreeDCorpusMenu:
         return dataF
     
     def draw3D(self):
-        self.__plotData1 = self.__prepCorpora_and_DynRephType()
+        self.__plotData1, threshold = self.__prepCorpora_and_DynRephType()
         #print("*******************************")
         ploter = ThreeD_Charts()
         ploter.CorporaVsDynRephrasePlot(self.__plotData1,
-                                        10,
+                                        threshold,
                                         "Corpora VS DynamicRephType distribution",
                                         "Color Scale"
                                         )
