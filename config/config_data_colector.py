@@ -13,6 +13,17 @@ class DataProvider:
     __color_rephr = {'C': '#7FB3D5','D': '#76D7C4',
             'I':'#02FF70', 'O': '#F4D03F','P':'#C56EE7'}
     __color_rephr_empty = {'Rephrase': '#E9B711','No rephrase': '#706351'}
+
+    __3d_colors = {
+        'F2F' : {'Amelioration':'#33FF99','A_strong':'#33FF66','A_weak':'#33FF99','Pejorativization':'#FF6600'
+                     ,'P_strong':'#FF0033','P_weak':'#FF0066','Neutralization':'#0000FF','No_Change': '#A8A8A8'},
+        'Media': {'Amelioration':'#33CC33','A_strong':'#33CC33','A_weak':'#33CC66','Pejorativization':'#FF3300'
+                     ,'P_strong':'#FF6600','P_weak':'#FF6666','Neutralization':'#0000CC','No_Change': '#909090'},
+        'SocialMedia': {'Amelioration':'#33CC00','A_strong':'#33CC00','A_weak':'#33FF99','Pejorativization':'#FF0033'
+                     ,'P_strong':'#FF3300','P_weak':'#FF3366','Neutralization':'#000099','No_Change': '#686868'},
+        'Total': {'Amelioration':'#336600','A_strong':'#336600','A_weak':'#339933','Pejorativization':'#CC0000'
+                     ,'P_strong':'#CC0000','P_weak':'#CC0066','Neutralization':'#000066','No_Change': '#404040'}
+    }
         
     __sav_image = {
         'toImageButtonOptions': {
@@ -49,6 +60,10 @@ class DataProvider:
             "elizabeth", "warren",
             "jim", "webb","mr"
     ]
+
+    @staticmethod
+    def get3D_ColorMatrix():
+        return DataProvider.__3d_colors
 
     @staticmethod
     def getDynRephrESconfig():

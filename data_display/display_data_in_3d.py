@@ -8,8 +8,9 @@ from config.config_data_colector import DataProvider
 class ThreeD_Charts:
     @staticmethod
     def CorporaVsDynRephrasePlot(matrix: Dict[str, Dict[str, int]],threshold: list=[int],title: str="Test title", h_title: str="Heat map title",
-        width=900, height=900, thikness=0.8, colorscale='Viridis',
+        width=900, height=900, thikness=0.8, colorscale='Viridis',mixed: bool=False,
         **kwargs) -> None:
+
         """
         Draws a 3D barchart
         :param labels: Array_like of bar labels
@@ -69,10 +70,12 @@ class ThreeD_Charts:
                 z=[0, z_dic[1]['Frequency']],
                 showlegend=False,
                 line=dict(color=color)
-            )        
+            )
 
         thikness *= 0.5
         ann = []
+
+        colorDic = DataProvider.get3D_ColorMatrix()
         
         fig = go.Figure(
             layout=dict(
@@ -94,24 +97,28 @@ class ThreeD_Charts:
                 x_min, y_min = ctrX - thikness, ctrY - thikness
                 x_max, y_max = ctrX + thikness, ctrY + thikness
 
+                #if z_dic[0].find("_Eth") != -1 or mixed:
                 fig.add_trace(
                     go.Mesh3d(
                     x=[x_min, x_min, x_max, x_max, x_min, x_min, x_max, x_max],
                     y=[y_min, y_max, y_max, y_min, y_min, y_max, y_max, y_min],
                     z=[0, 0, 0, 0, z_dic[1]['Frequency'], z_dic[1]['Frequency'], z_dic[1]['Frequency'], z_dic[1]['Frequency']],
                     alphahull=0,
+                    flatshading=True,
+                    color=colorDic[str(y_dic[0])][str(z_dic[0]).replace("_Eth","").replace("_Sent","")],
                     #intensitymode='vertex',
                     #flatshading=True,
-                    intensity=[0, 0, 0, 0, z_dic[1]['Frequency'], z_dic[1]['Frequency'], z_dic[1]['Frequency'], z_dic[1]['Frequency']],
+                    #intensity=[0, 0, 0, 0, z_dic[1]['Frequency'], z_dic[1]['Frequency'], z_dic[1]['Frequency'], z_dic[1]['Frequency']],
                     #text="x_min"+str(x_min),
-                    coloraxis='coloraxis',
+                    #coloraxis='coloraxis',
                     hoverinfo='text',
-                    **kwargs))
+                    **kwargs)
+                )             
                 
-                if z_dic[1]['Frequency'] >= matrix['Total'][z_dic[0]]['Frequency']-threshold and z_dic[1]['Frequency'] <= matrix['Total'][z_dic[0]]['Frequency']+threshold:
-                    edgesUpdate('blue')
-                else: 
-                    edgesUpdate('red')
+                if z_dic[1]['Frequency'] < matrix['Total'][z_dic[0]]['Frequency']+threshold and z_dic[1]['Frequency'] >= matrix['Total'][z_dic[0]]['Frequency'] and y_dic[0] != 'Total':
+                    edgesUpdate('white')
+                elif z_dic[1]['Frequency'] > matrix['Total'][z_dic[0]]['Frequency']-threshold and  matrix['Total'][z_dic[0]]['Frequency'] <= matrix['Total'][z_dic[0]]['Frequency'] and y_dic[0] != 'Total':
+                    edgesUpdate('black')
 
                 ann.append(dict(
                     showarrow=False,

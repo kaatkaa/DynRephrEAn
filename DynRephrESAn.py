@@ -35,6 +35,8 @@ def style_css(file):
     with open(file) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
+#style_css('multi_style.css')
+
 @st.cache_data
 def load_data(dir_address: str) -> dict[str : pd.DataFrame()]:
     tmpDic = pd.read_excel(dir_address, sheet_name=None)
@@ -92,7 +94,8 @@ with st.sidebar:
                 key="AnType")
     single_corpora_menu = SingleCorporaMenuLoader(dataDic=dataDic, submenu_prefix="0_", anType=rAnalytics)
     cmp_corpora_menu = ComparativeCorporaMenuLoader(dataDic=dataDic, anType=rAnalytics)
-    threeD_corpora_menu = ThreeDCorporaMenuLoader(dataDic=dataDic, submenu_prefix="3D_0", anType=rAnalytics)
+    threeD_corpora_EthOrSent = ThreeDCorporaMenuLoader(dataDic=dataDic, submenu_prefix="3D_1", anType=rAnalytics)
+    threeD_corpora_EthAndSent = ThreeDCorporaMenuLoader(dataDic=dataDic, submenu_prefix="3D_2", anType=rAnalytics)
     st.title("Contents")
     contents_radio = st.radio("Choose: ", ("Main Page", "Single Corpus Analysis", "Comparative Corpora Analysis","3D Charts"),label_visibility='collapsed')
 
@@ -111,6 +114,13 @@ elif contents_radio == "Comparative Corpora Analysis":
                                         args=(single_corpora_menu, cmp_corpora_menu))
     cmp_corpora_menu.display(units_choice)
 elif contents_radio == "3D Charts":
-    threeD_corpora_menu.draw3D()
+    with st.sidebar:
+        _3D_Choice = st.radio("Choose 3D diagram", ("Ethos or Sentiment","Ethos and Sentiment"))
+    if _3D_Choice == "Ethos or Sentiment":
+        threeD_corpora_EthOrSent.draw3D(bothEthosPathos=False)
+    elif _3D_Choice == "Ethos and Sentiment":
+        threeD_corpora_EthAndSent.draw3D(bothEthosPathos=True)
+    else:
+        st.warning("This option of 3D chart: '",_3D_Choice,"' is not implemented.")
 else:
     st.error("Wrong option of main sidemenu radiobitton.")
