@@ -188,7 +188,7 @@ class WordCloudOfEmotions:
             #)
             #fig.update_layout(template="plotly_dark", title="This is test")
 
-            st.plotly_chart(fig, config=DataProvider.getSaveConfig())
+            #st.plotly_chart(fig, config=DataProvider.getSaveConfig())
 
         else:
             st.warning("Not enought data to display in text analysis.")
