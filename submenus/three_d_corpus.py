@@ -89,10 +89,11 @@ class ThreeDCorpusMenu:
                 ("Percentage",
                     "Number"),
                 key=self.__prefix+"PercentNumber")
-        if Computation_type == "Percentage":
-            threshold = st.slider("Choose +/- tolerance in % (Red edges do not fulfill tolerance)",1,value=7, max_value=100, key=self.__prefix+"HigherSlider") 
-        else:
-            threshold = 0
+        # if Computation_type == "Percentage":
+        #     threshold = st.slider("Choose +/- tolerance in % (Red edges do not fulfill tolerance)",1,value=7, max_value=100, key=self.__prefix+"HigherSlider") 
+        # else:
+        #     threshold = 0
+            threshold = 7
         sortDic = dict()
         marker = ''
         if display_complexity == '4-categories':

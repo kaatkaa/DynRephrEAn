@@ -140,6 +140,27 @@ class ThreeD_Charts:
                 ctr += 1
                 ctrY +=1
             ctrX += 1
+
+        fig.add_trace(go.Scatter3d(
+            x=[None], y=[None], z=[None],
+            opacity=0,
+            name=f'\n')
+        )
+        fig.add_trace(go.Scatter3d(
+            x=[None], y=[None], z=[None],
+            opacity=0,
+            name=f'White edges - higher than "Total"')
+        )
+        fig.add_trace(go.Scatter3d(
+            x=[None], y=[None], z=[None],
+            opacity=0,
+            name=f'\n')
+        )
+        fig.add_trace(go.Scatter3d(
+            x=[None], y=[None], z=[None],
+            opacity=0,
+            name=f'Black edges - lower than "Total"')
+        )
         #eyeX = st.slider(label="eyeX",value=2.0,min_value=-2.0, max_value=2.0,step=0.01)
         #exeY = st.slider(label="eyeY",value=2.0,min_value=-2.0, max_value=2.0,step=0.01)
         #eyeZ = st.slider(label="eyeZ",value=0.1,min_value=-2.0, max_value=2.0,step=0.01)
