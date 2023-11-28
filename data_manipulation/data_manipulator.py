@@ -1,5 +1,7 @@
 import pandas as pd
-import streamlit as st
+import numpy as np
+import ast
+from typing import Dict, Set, List
 
 class DataManipulator:
 
@@ -11,6 +13,32 @@ class DataManipulator:
         d[col_name] = d[col_name].round().astype(int)
         return d
     
+    @staticmethod
     def getGruppedData(d: pd, groupBy: str="", col_name: str="Number"):
         d = d.groupby([groupBy]).size().reset_index(name = col_name)
         return d
+    
+    @staticmethod
+    def getTagsFreq(d: pd, colLst: List[str]) -> Set[str]:
+        tags = dict()
+        for column in colLst:
+            for tag in pd.Series(np.concatenate(d[column], axis=None)):
+                for t in ast.literal_eval(tag):
+                    tags[t] = tags.get(t, 0) + 1
+        return tags
+    
+    @staticmethod
+    def getTagsPercentageFreq(d: pd, colLst: List[str], PSPset: Set[str]) -> Dict[str, int]:
+        tags = dict()
+        ctr = 0
+        for column in colLst:
+            for tag in pd.Series(np.concatenate(d[column], axis=None)):
+                for t in ast.literal_eval(tag):
+                    if t in PSPset:
+                        tags[t] = tags.get(t, 0) + 1
+                        ctr += 1
+        for tag in tags.keys():
+            tags[tag] /=  ctr
+            tags[tag] *= 100
+            tags[tag] = int(round(tags[tag]))
+        return tags

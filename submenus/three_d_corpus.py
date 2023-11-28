@@ -21,16 +21,6 @@ from data_manipulation.data_manipulator import DataManipulator
 from data_display.display_data_in_3d import ThreeD_Charts
 
 class ThreeDCorpusMenu:
-
-    def __RemoveStopWordsFromDf(self, dataF: pd.DataFrame(), columns: list[str]) -> pd.DataFrame:
-        for stop_phrase in self.__stop_words_set:
-            p1 = re.compile(r"\s"+stop_phrase+r"\s", flags=re.IGNORECASE)
-            p2 = re.compile(r"^"+stop_phrase+r"\s|\s"+stop_phrase+r"$|^"+stop_phrase+r"$", flags=re.IGNORECASE)
-            for column in columns:
-                #dataF[column].str.lower()
-                dataF[column] = dataF[column].str.replace(p1, " ", regex=True)
-                dataF[column] = dataF[column].str.replace(p2, "", regex=True)
-        return dataF
     
     def __onFilterChange(self, lst: list[str], colName = "") -> None:
         if colName == self.__anCfg['colName']:
@@ -52,31 +42,11 @@ class ThreeDCorpusMenu:
         col_radio1, col_radio2 = st.columns(2)
         def get_new_values_list(key: str="", colName: str=""):
             self.__onFilterChange(st.session_state[key],colName=colName)
-        def set_show_stopwords(key: str):
-            self.__showStopWords = st.session_state[key]
-            if self.__showStopWords:
-                st.title("Stop words: ")
-                st.write(self.__stop_words_set)
-        def set_use_stopwords(key: str):
-            self.__useStopWords = st.session_state[key]
         def prepareSortDict(lst: list[str]) -> Dict[str, int]:
             my_dict = dict()
             for ctr, val in enumerate(lst):
                 my_dict[val] = ctr
             return my_dict
-        col1, col2 = st.columns([2,2])
-        with col1:
-            st.checkbox(label="Enable stop_words",
-                value=self.__useStopWords,
-                on_change=set_use_stopwords,
-                kwargs={'key': str(self.__prefix)+"StopWordsChck"},
-                key=str(self.__prefix)+"StopWordsChck")
-        with col2:
-            st.checkbox(label="Show stop_words",
-                value=self.__showStopWords,
-                on_change=set_show_stopwords,
-                kwargs={'key': str(self.__prefix)+"ShowWordsChck"},
-                key=str(self.__prefix)+"ShowWordsChck")
         dyn_rephrase_options = []
         colName = ""
         with col_radio1:
@@ -186,8 +156,6 @@ class ThreeDCorpusMenu:
     def __init__(self, dataDic: dict[str : pd.DataFrame()], prefix: str="3D_", anType: str="DynRephAn for Ethos") -> None:
         self.__prefix = prefix
         self.__stop_words_set = set()
-        self.__showStopWords = False
-        self.__useStopWords = True
         for word in DataProvider.getCustomStopWords():
             self.__stop_words_set.add(word)
         for word in list(STOPWORDS):
@@ -202,14 +170,6 @@ class ThreeDCorpusMenu:
         else:
             self.__filterLstSW = DataProvider.getDynRephDimentionsWS()
             st.session_state[str(self.__prefix + 'filterLstSW')] = self.__filterLstSW
-        if str(self.__prefix+"ShowWordsChck") in st.session_state:
-            self.__showStopWords = st.session_state[str(self.__prefix+"ShowWordsChck")]
-        else:
-            st.session_state[str(self.__prefix+"ShowWordsChck")] = self.__showStopWords
-        if str(self.__prefix+"StopWordsChck") in st.session_state:
-            self.__useStopWords = st.session_state[str(self.__prefix+"StopWordsChck")]
-        else:
-            st.session_state[str(self.__prefix+"StopWordsChck")] = self.__useStopWords
         self.__plotData1 = None
         #dictionary containing all possible data with corpora indexed by name
         self.__dataDic = dataDic
@@ -218,16 +178,6 @@ class ThreeDCorpusMenu:
         self.__mainCfg = DataProvider.getDynRephrESconfig()
         #config file with messages and column names for Ethos and Sentiment
         self.__anCfg = self.__mainCfg[anType]
-
-    def __RemoveStopWordsFromDf(self, dataF: pd.DataFrame(), columns: list[str]) -> pd.DataFrame:
-        for stop_phrase in self.__stop_words_set:
-            p1 = re.compile(r"\s"+stop_phrase+r"\s", flags=re.IGNORECASE)
-            p2 = re.compile(r"^"+stop_phrase+r"\s|\s"+stop_phrase+r"$|^"+stop_phrase+r"$", flags=re.IGNORECASE)
-            for column in columns:
-                #dataF[column].str.lower()
-                dataF[column] = dataF[column].str.replace(p1, " ", regex=True)
-                dataF[column] = dataF[column].str.replace(p2, "", regex=True)
-        return dataF
     
     def draw3D(self, bothEthosPathos = False):
         self.__plotData1, threshold = self.__prepCorpora_and_DynRephType(bothEthosPathos=bothEthosPathos)

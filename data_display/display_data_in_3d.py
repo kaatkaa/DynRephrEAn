@@ -128,7 +128,7 @@ class ThreeD_Charts:
                     font=dict(color='white', size=11),
                     bgcolor='rgba(0, 0, 0, 0.3)',
                     xanchor='center', yanchor='middle',
-                    hovertext=f'{y_dic[0]}.{z_dic[0]} = {z_dic[1]}'))
+                    hovertext= str(y_dic[0])+"."+str(z_dic[0])+"="+str(z_dic[1]['Frequency'])))
     
                 # mesh3d doesn't currently support showLegend param, so
                 # add invisible scatter3d with names to show legend
