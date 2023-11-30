@@ -15,7 +15,7 @@ class CmpCorpusMenu:
         #Below are tab labels
         self.__tabLabels: list[str] = ["Data("+str(x)+")" for x in range(1,9,1)]
         #Below is loaded SingleCorpusMenu for each tab
-        self.__dataLoaders: list[SingleCorpusMenu] = [SingleCorpusMenu(dataDic=dataDict, prefix=str(ctr)+"_",anType=anType) for ctr in range(1,9,1)]
+        self.__dataLoaders: list[SingleCorpusMenu] = [SingleCorpusMenu(dataDic=dataDict, prefix=str(ctr)+"0_",anType=anType) for ctr in range(1,9,1)]
         self.__tabLabels.append("Comparative Analysis"+self.__anCf['anName'])
         # In dictionary below all __dataDic keys are stored for Data(1)-(8)
         self.__keyDic = {}
