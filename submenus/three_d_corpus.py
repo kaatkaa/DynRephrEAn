@@ -111,6 +111,7 @@ class ThreeDCorpusMenu:
         dic3D = {}
         for item in corpus3Ddic.items():
             my_data = self.__loader(item[1])
+            my_data = my_data.loc[my_data[dataColumn].isin(filterLst)]
             if computation_type == "Percentage":
                 if bothEthosPathos:
                     tmpDf1 = DataManipulator.getGruppedPercentages(my_data,len(my_data),self.__mainCfg['DynRephAn for Ethos'][marker],"Frequency")
