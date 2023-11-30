@@ -102,7 +102,7 @@ class ThreeDCorpusMenu:
 
     def __prepCorpora_and_DynRephType(self, bothEthosPathos: bool=False) -> Dict[str, Dict[str, int]]:
         corpus3Ddic = {
-             'Total': {'US2016redditD1','US2016redditR1','US2016redditG1','US2016tvD1','US2016tvR1','US2016tvG1','Hansard'},
+             'Total': {'US2016redditD1','US2016redditR1','US2016redditG1','US2016tvD1','US2016tvR1','US2016tvG1','Hansard','PolarIs1vacc'},
              'SocialMedia': {'US2016redditD1','US2016redditR1','US2016redditG1','PolarIs1vacc'},
              'Media': {'US2016tvD1','US2016tvR1','US2016tvG1'},
              'F2F': {'Hansard'}
