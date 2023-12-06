@@ -115,9 +115,9 @@ class ThreeD_Charts:
                     **kwargs)
                 )             
                 
-                if z_dic[1]['Frequency'] < matrix['Total'][z_dic[0]]['Frequency']+threshold and z_dic[1]['Frequency'] >= matrix['Total'][z_dic[0]]['Frequency'] and y_dic[0] != 'Total':
+                if z_dic[1]['Frequency'] > matrix['Total'][z_dic[0]]['Frequency']:
                     edgesUpdate('white')
-                elif z_dic[1]['Frequency'] > matrix['Total'][z_dic[0]]['Frequency']-threshold and  matrix['Total'][z_dic[0]]['Frequency'] <= matrix['Total'][z_dic[0]]['Frequency'] and y_dic[0] != 'Total':
+                elif z_dic[1]['Frequency'] < matrix['Total'][z_dic[0]]['Frequency']:
                     edgesUpdate('black')
 
                 ann.append(dict(
