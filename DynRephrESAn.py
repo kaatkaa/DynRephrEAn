@@ -118,7 +118,7 @@ elif contents_radio == "Comparative Corpora Analysis":
                                         ), key="Cmp_units",
                                         on_change=resetData,
                                         args=(single_corpora_menu, cmp_corpora_menu))
-        cmp_corpora_menu.display(units_choice)
+    cmp_corpora_menu.display(units_choice)
 elif contents_radio == "3D Charts":
     with st.sidebar:
         _3D_Choice = st.radio("Choose 3D diagram", ("Ethos or Sentiment","Ethos and Sentiment", "3D_PartsOfSpeech"))
