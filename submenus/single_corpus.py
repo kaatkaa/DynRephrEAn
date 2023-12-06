@@ -168,7 +168,10 @@ class SingleCorpusMenu:
             if st.session_state[self.__prefix + 'speakerOrAdu'] == "ADU-Based Analysis":
                 newLst = ['ADU based']
             elif st.session_state[self.__prefix + 'speakerOrAdu'] == "Speaker-Based Analysis":
-                newLst = ['Speaker '+st.session_state[self.__prefix + 'speakerType']]
+                if self.__prefix + 'speakerType' in st.session_state:
+                    newLst = ['Speaker '+st.session_state[self.__prefix + 'speakerType']]
+                else:
+                    newLst = ['error']
             ctr = 1
             for key in self.__dataDic:
                 if st.session_state[self.__prefix + key]:
