@@ -32,8 +32,9 @@ class CmpCorpusMenu:
                     self.__dataLoaders[ctr].tab(units)
                     # if __dataDic was previously filled, now new data will be stored in it so it has to be cleared.
                     if str(ctr)+"_" in self.__keyDic:
-                        #print('self.__keyDic['+str(ctr)+'_] = ' +self.__keyDic[str(ctr)+"_"])
+                        #st.text(self.__keyDic[str(ctr)+'_'])
                         del self.__dataDic[self.__keyDic[str(ctr)+"_"]]
+                        del self.__keyDic[str(ctr)+"_"]
                     self.__keyDic[str(ctr)+"_"] = self.__tabLabels[ctr]+" |"+self.__dataLoaders[ctr].getCriteria()
                     self.__dataDic[self.__keyDic[str(ctr)+"_"]] = self.__dataLoaders[ctr].getDF()
             else:
