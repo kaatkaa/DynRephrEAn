@@ -190,6 +190,7 @@ class SingleCorpusMenu:
             if st.session_state[self.__prefix + 'speakerOrAdu'] == "ADU-Based Analysis":
                 st.write("ADU units selected.")
                 self.__rephrase_df = self.__rephrase_old.copy(deep=True)
+                st.session_state[self.__prefix + 'speakerType'] = ""
             elif st.session_state[self.__prefix + 'speakerOrAdu'] == "Speaker-Based Analysis":
                 speaker = st.radio("Choose Speaker Unit Type: ",
                     ("SS rephrase",
