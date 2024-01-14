@@ -111,10 +111,10 @@ class WordCloudOfEmotions:
     def __textAnalysis(self, data: pd.DataFrame()) -> None:
         def backgroung_color(v):
             return f"background-color: {DataProvider.getRephraseAndEmptycolors()['Rephrase']};"
-        filteredDf, columnNamesLst = self.__filterInterface(data, hideInOut=True)
+        filteredDf, columnNamesLst = self.__filterInterface(data, hideInOut=False)
         plotDf = DataManipulator.getGruppedData(filteredDf,self.cf['colName'],"Frequency")
         wordLst = []
-        display = True
+        display = False if len(columnNamesLst) == 0 else True
         for inOut in columnNamesLst: 
             if len(filteredDf[inOut]) == 0:
                 display = False
@@ -132,7 +132,7 @@ class WordCloudOfEmotions:
                     NgramLst.extend(ngrams(token.split(" "), ngramType))
             NgramLst = FreqDist(NgramLst)
             common = NgramLst.most_common(number)
-            w2 = [" ".join(item[0])+" : "+str(item[1]) for item in common]
+            w2 = [" ".join(item[0])+" : "+str(item[1]) for item in common if item[0] != ('',)]
             ndic = {}
             for ngram in common:
                 if self.cf['colName'] in ndic:
@@ -147,23 +147,29 @@ class WordCloudOfEmotions:
             regexpStr = re.sub(r"^(.*)\s:\s[0-9]+$", r"\1", word)
             regExpCode = r"\s"+regexpStr+r"\s|^"+regexpStr+r"\s|\s"+regexpStr+r"$|^"+regexpStr+r"$"
             st.subheader("Selected phrase is marked in text below between stars: \*\*"+regexpStr+"\*\*")
-            col1, col2 = st.columns([2,2])
-            if 'input' in columnNamesLst:
-                with col1:
-                    filteredInputDF = filteredDf[filteredDf['input'].str.contains(regExpCode, case=False, regex=True)]
-                    filteredInputDF.reset_index(inplace=True)
-                    tmpDf = filteredInputDF[['input','output']]
-                    tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
-                    tmpDf = tmpDf.style.applymap(backgroung_color,subset="input")
-                    st.table(tmpDf)
-            if 'output' in columnNamesLst:
-                with col2:
-                    filteredOutputDF = filteredDf[filteredDf['output'].str.contains(regExpCode, case=False, regex=True)]
-                    filteredOutputDF.reset_index(inplace=True)
-                    tmpDf = filteredOutputDF[['input','output']]
-                    tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
-                    st.table(tmpDf[['input','output']].style.applymap(backgroung_color,
-                        subset="output"))
+            if 'input' in columnNamesLst and 'output' in columnNamesLst:
+                filteredInputDF = filteredDf[filteredDf['input'].str.contains(regExpCode, case=False, regex=True)]
+                filteredInputDF.reset_index(inplace=True)
+                filterInOutDF = filteredInputDF[filteredInputDF['output'].str.contains(regExpCode, case=False, regex=True)]
+                tmpDf = filterInOutDF[['input','output']]
+                tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
+                st.table(tmpDf[['input','output']].style.applymap(backgroung_color))
+            elif 'input' in columnNamesLst:
+                filteredInputDF = filteredDf[filteredDf['input'].str.contains(regExpCode, case=False, regex=True)]
+                filteredInputDF.reset_index(inplace=True)
+                tmpDf = filteredInputDF[['input','output']]
+                tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
+                tmpDf = tmpDf.style.applymap(backgroung_color,subset="input")
+                st.table(tmpDf)
+            elif 'output' in columnNamesLst:
+                filteredOutputDF = filteredDf[filteredDf['output'].str.contains(regExpCode, case=False, regex=True)]
+                filteredOutputDF.reset_index(inplace=True)
+                tmpDf = filteredOutputDF[['input','output']]
+                tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
+                st.table(tmpDf[['input','output']].style.applymap(backgroung_color,
+                    subset="output"))
+            else:
+                st.error("Wrong input-output options for dataframe in __textAnalysis")
 
             wyk = pd.DataFrame(ndic)            
             plotDf = pd.concat([plotDf, pd.DataFrame(ndic)])
