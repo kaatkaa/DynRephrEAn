@@ -10,7 +10,7 @@ import plotly.express as px
 
 sys.path.insert(0,"..")
 from config.config_data_colector import DataProvider
-from config.config_data_manipulator import DataManipulator
+from data_manipulation.data_manipulator import DataManipulator
 
 class ComparativeCorporaSimple:
 
@@ -64,7 +64,7 @@ class ComparativeCorporaSimple:
                     if len(data) > 0:
                         data = data.loc[data[selected].isin(options)]
                         denominator = len(data)
-                        data = DataManipulator.extractBarPlotPercentageData(d=data, denominator=denominator, groupBy=selected, col_name='Percentage')
+                        data = DataManipulator.getGruppedPercentages(d=data, denominator=denominator, groupBy=selected, col_name='Percentage')
                         axTmp = ax[four_dim[ctr][0],four_dim[ctr][1]]
                         # # Create an array with the colors you want to use
                         # colors = []
