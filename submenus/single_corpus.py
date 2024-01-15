@@ -131,9 +131,8 @@ class SingleCorpusMenu:
         }
         </style>
         """,unsafe_allow_html=True)
-            
-
-    def sidebar(self):
+        
+    def container(self):
         with st.sidebar:
             st.subheader("Choose Corpora: ")           
             st.button("Clean selection",key=self.__prefix+"clear_corpo_button",on_click=self.cleanSelections)
@@ -143,23 +142,18 @@ class SingleCorpusMenu:
             units_choice = st.radio("", ("ADU-Based Analysis",
                                             "Speaker-Based Analysis"
                                             ), key=self.__prefix+"units")
-
-            #if units == "ADU-Based Analysis":
-            st.write("****************************")
-            st.subheader("Analitics module")
-            module_choice = st.radio("An. Module", \
-                                        ("Distribution","Wordcloud","Cases"), \
-                                        key=self.__prefix+"post", label_visibility="hidden"
-                                    )
-
-        if module_choice == "Cases":
-            WordCloudOfEmotions(self.__rephrase_df,analysisType="Cases",unit=units_choice, configDic=self.__anCfg)
-        elif module_choice == "Wordcloud":
-            WordCloudOfEmotions(self.__rephrase_df,analysisType="Wordcloud",unit=units_choice, configDic=self.__anCfg)
-        elif module_choice == "Distribution":
-            Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg)
-        else:
-            raise NotImplementedError("Unsupported option of Analytical module in single_corpus.py .")
+        pieTab, tableTab, wordcloudTab, casesTab = st.tabs([":pizza: PieChart",":black_square_button: Table",":cloud: WordCloud",":speech_balloon: Cases"])
+        with pieTab:
+            #Distribution of ethos/sentiment dynamics in rephrase
+            Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg, prefix="PieChart", table=False)
+        with tableTab:
+            #To be formatted
+            Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg,prefix="Table", table=True)
+        with wordcloudTab:
+            #Word cloud
+            WordCloudOfEmotions(self.__rephrase_df,analysisType="Wordcloud",unit=units_choice, configDic=self.__anCfg, prefix="WordCloud")
+        with casesTab:
+            WordCloudOfEmotions(self.__rephrase_df,analysisType="Cases",unit=units_choice, configDic=self.__anCfg, prefix="Cases")
         
     #Returns criteria to which data is selected
     def getCriteria(self) -> str:

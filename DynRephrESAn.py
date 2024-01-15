@@ -108,7 +108,7 @@ with st.sidebar:
 if contents_radio == "Main Page":
     MainPage()
 elif contents_radio == "Single Corpus Analysis":
-    single_corpora_menu.sidebar()
+    single_corpora_menu.container()
 elif contents_radio == "Comparative Corpora Analysis":
     with st.sidebar:
         st.button("Clear All Tabs",key="tabs_clear",on_click=cmp_corpora_menu.clearTabsSelections)

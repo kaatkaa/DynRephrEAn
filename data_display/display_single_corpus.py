@@ -10,7 +10,7 @@ import re
 import plotly.data as pdata
 from data_display.barchart3d import barchart3d
 from pandas.api.types import CategoricalDtype
-from typing import Tuple
+from typing import Tuple, List
 from wordcloud import WordCloud, STOPWORDS
 from nltk.util import ngrams
 from nltk import FreqDist
@@ -60,19 +60,19 @@ class WordCloudOfEmotions:
             display_complexity = st.radio("Choose complexity level: WordCloudOfEmotions",
                 ("4-categories",
                     "6-categories"),                                                 
-                key="Rephrase_Piechart_ADU_4-6cat")
+                key=self.prefix+"_Rephrase_Piechart_ADU_4-6cat")
         if display_complexity == '4-categories':
             dyn_rephrase_options = st.multiselect(self.cf["Wordcloud_filterInterface"], 
                                         DataProvider.getDynRephDimentions(), 
                                         DataProvider.getDynRephDimentions()[:],
-                                        key = "multi_sel"+str(self.__keyCtr))
+                                        key = self.prefix+"_multi_sel"+str(self.__keyCtr))
             self.__keyCtr += 1
             data_tmp = data.loc[data[self.cf['colName']].isin(dyn_rephrase_options)]
         elif display_complexity == '6-categories':
             dyn_rephrase_options = st.multiselect(self.cf["Wordcloud_filterInterface"], 
                                         DataProvider.getDynRephDimentionsWS(), 
                                         DataProvider.getDynRephDimentionsWS()[:],
-                                        key = "multi_sel"+str(self.__keyCtr))
+                                        key = self.prefix+"_multi_selWS"+str(self.__keyCtr))
             self.__keyCtr += 1
             data_tmp = data.loc[data[self.cf['colNameWS']].isin(dyn_rephrase_options)]
         else:
@@ -81,16 +81,16 @@ class WordCloudOfEmotions:
             source_options = st.multiselect("Choose source of data you would like to visualise", 
                                         ["input","output"], 
                                         ["input","output"][:],
-                                        key = "multi_sel"+str(self.__keyCtr))
+                                        key = self.prefix+"_multi_selInOut"+str(self.__keyCtr))
         else:
             source_options = ["input","output"]
         self.__keyCtr += 1
         col1, col2 = st.columns([2,2])
         showStopWords = False
         with col1:
-            useStopWords = st.checkbox(label="Enable stop_words",value=useStopWords,key="StopWordsChck"+str(self.__keyCtr))
+            useStopWords = st.checkbox(label="Enable stop_words",value=useStopWords,key=self.prefix+"_StopWordsChck"+str(self.__keyCtr))
         with col2:
-            showStopWords = st.checkbox(label="Show stop_words",value=showStopWords,key="ShowWordsChck"+str(self.__keyCtr))
+            showStopWords = st.checkbox(label="Show stop_words",value=showStopWords,key=self.prefix+"_ShowWordsChck"+str(self.__keyCtr))
         if showStopWords:
             st.write(self.__stop_words_set)
         if useStopWords:
@@ -199,8 +199,9 @@ class WordCloudOfEmotions:
         else:
             st.warning("Not enought data to display in text analysis.")
 
-    def __init__(self, data: pd.DataFrame(), analysisType: str, unit: str, configDic: dict[str , str]) -> None:
+    def __init__(self, data: pd.DataFrame(), analysisType: str, unit: str, configDic: dict[str , str], prefix: str) -> None:
         self.cf = configDic
+        self.prefix = prefix
         if len(data) > 0:
             self.__keyCtr = 0
             self.__stop_words = DataProvider.getCustomStopWords() + list(STOPWORDS)
@@ -225,7 +226,7 @@ class WordCloudOfEmotions:
                     display_speakers = st.radio("Choose speaker type: ",
                         ("SS rephrase",
                         "OS rephrase"),
-                        key="Rephrase_Wordcloud_SSvsSO")
+                        key=self.prefix+"_Rephrase_Wordcloud_SSvsSO")
                 if analysisType == 'Wordcloud':
                     if display_speakers == 'SS rephrase':
                         st.subheader(self.cf['Wordcloud_editReph_sameSp'])
@@ -246,6 +247,37 @@ class WordCloudOfEmotions:
             st.warning("You have to provide corpora for text analysis.")
 
 class Piechart:
+
+    def __dataDisp(self, d: pd.DataFrame(),chart, unit: str, col_name: str, dk: List[str], tableFlag: bool):
+        if tableFlag:
+            self.postfix_ctr += 1
+            def make_pretty(styler):
+                styler.set_caption("Table")
+                styler.set_table_styles(
+                    [{"selector": "", "props": [("border", "1px solid grey")]},
+                    {"selector": "tbody td", "props": [("border", "1px solid grey")]},
+                    {"selector": "th", "props": [("border", "2px solid black")]}
+                    ]
+                )
+                #styler.background_gradient(axis=None, vmin=1, vmax=5, cmap="YlGnBu")
+                return styler
+            if dk != "":
+                dyn_rephrase_options = st.multiselect("Filter data for table: ", 
+                    dk, 
+                    dk[:],
+                    key = self.prefix+"_multi_selTable"+str(self.postfix_ctr))
+                tmpDF = d.loc[d[col_name].isin(dyn_rephrase_options)]
+            else:
+                tmpDF = d
+            if unit == 'number':
+                tmpDF = DataManipulator.getGruppedData(tmpDF, groupBy=col_name, col_name=unit)
+            else:
+                tmpDF = DataManipulator.getGruppedPercentages(tmpDF, len(tmpDF), groupBy=col_name, col_name=unit)
+            tmpDF.index += 1 
+            st.table(make_pretty(tmpDF.style))
+        else:
+            st.plotly_chart(chart, config=DataProvider.getSaveConfig())
+
     def __drawDistribution(self, data, unit, col_name):
         displayer = ""
         if unit == "percentage":
@@ -261,8 +293,10 @@ class Piechart:
                     textinfo=displayer)
         return fig
 
-    def __init__(self, data: pd.DataFrame(), unit: str, configDic: dict[str , str]) -> None:
+    def __init__(self, data: pd.DataFrame(), unit: str, configDic: dict[str , str], prefix: str, table: False) -> None:
         self.cf = configDic
+        self.postfix_ctr = 0
+        self.prefix = prefix
         st.subheader(self.cf['Distribution_top'])
         DataProvider.addSpacelines(1)
         if len(data) > 0:
@@ -272,20 +306,20 @@ class Piechart:
                     display_unit = st.radio("Choose display type: ",
                         ("percentage",
                         "number"),
-                        key="Rephrase_Piechart_ADU_%_#")
+                        key=prefix+"Rephrase_Piechart_ADU_%_#")
                 with col_radio2:
                     display_complexity = st.radio("Choose complexity level: ",
                         ("4-categories",
                          "6-categories"),                                                  
-                        key="Rephrase_Piechart_ADU_4-6cat")
+                        key=prefix+"Rephrase_Piechart_ADU_4-6cat")
                 if display_complexity == "4-categories":
                     #st.subheader(self.cf['Distribution_general_plot'])
                     f1 = self.__drawDistribution(data, display_unit, self.cf['colName'])
-                    st.plotly_chart(f1, config=DataProvider.getSaveConfig())
+                    self.__dataDisp(d=data, chart=f1, unit=display_unit, col_name=self.cf['colName'], dk=DataProvider.getDynRephDimentions(), tableFlag=table)
                 elif display_complexity == "6-categories":
                     #st.subheader(self.cf['Distribution_detailed_plot'])
                     f2 = self.__drawDistribution(data, display_unit, self.cf['colNameWS'])
-                    st.plotly_chart(f2, config=DataProvider.getSaveConfig())
+                    self.__dataDisp(d=data, chart=f2, unit=display_unit,col_name=self.cf['colNameWS'], dk=DataProvider.getDynRephDimentionsWS(), tableFlag=table)
             elif unit == "Speaker-Based Analysis":
                 sameSpeakerDf = data.loc[data['speaker_input'] == data['speaker_output']]
                 diffSpeakerDf = data.loc[data['speaker_input'] != data['speaker_output']]
@@ -294,32 +328,32 @@ class Piechart:
                     display_unit = st.radio("Choose display type: ",
                         ("percentage",
                         "number"),
-                        key="Rephrase_Piechart_Speaker_%_#")
+                        key=prefix+"Rephrase_Piechart_Speaker_%_#")
                 with col_radio2:
                     display_complexity = st.radio("Choose complexity level: ",
                         ("4-categories",
                          "6-categories"),                                                  
-                        key="Rephrase_Piechart_Speaker_4-6cat")
+                        key=prefix+"Rephrase_Piechart_Speaker_4-6cat")
                 with col_radio3:
-                    display_SSRephr_chckbox = st.checkbox("SS rephrase",value=True,key="SS_rephr_chckbox")
-                    display_SORephr_chckbox = st.checkbox("OS rephrase",value=False,key="SO_rephr_chckbox")
+                    display_SSRephr_chckbox = st.checkbox("SS rephrase",value=True,key=self.prefix+"_SS_rephr_chckbox")
+                    display_SORephr_chckbox = st.checkbox("OS rephrase",value=False,key=self.prefix+"_SO_rephr_chckbox")
                 if display_SSRephr_chckbox:
                     if display_complexity == "4-categories":
                         st.subheader(self.cf['Distribution_general_1speaker'])
                         f1 = self.__drawDistribution(sameSpeakerDf, display_unit, self.cf['colName'])
-                        st.plotly_chart(f1, config=DataProvider.getSaveConfig())
+                        self.__dataDisp(d=sameSpeakerDf, chart=f1, unit=display_unit,col_name=self.cf['colName'], dk=DataProvider.getDynRephDimentions(), tableFlag=table)
                     elif display_complexity == '6-categories':
                         st.subheader(self.cf['Distribution_detailed_1speaker'])
                         f2 = self.__drawDistribution(sameSpeakerDf, display_unit, self.cf['colNameWS'])
-                        st.plotly_chart(f2, config=DataProvider.getSaveConfig())
+                        self.__dataDisp(d=sameSpeakerDf, chart=f2, unit=display_unit,col_name=self.cf['colNameWS'], dk=DataProvider.getDynRephDimentionsWS(), tableFlag=table)
                 if display_SORephr_chckbox:
                     if display_complexity == "4-categories":
                         st.subheader(self.cf['Distribution_general_2speakers'])
                         f3 = self.__drawDistribution(diffSpeakerDf, display_unit, self.cf['colName'])
-                        st.plotly_chart(f3, config=DataProvider.getSaveConfig())
+                        self.__dataDisp(d=diffSpeakerDf, chart=f3, unit=display_unit,col_name=self.cf['colName'], dk=DataProvider.getDynRephDimentions(), tableFlag=table)
                     elif display_complexity == '6-categories':
                         st.subheader(self.cf['Distribution_detailed_2speakers'])
                         f4 = self.__drawDistribution(diffSpeakerDf, display_unit, self.cf['colNameWS'])
-                        st.plotly_chart(f4, config=DataProvider.getSaveConfig())
+                        self.__dataDisp(d=diffSpeakerDf, char=f4, unit=display_unit,col_name=self.cf['colNameWS'], dk=DataProvider.getDynRephDimentionsWS(), tableFlag=table)
         else:
             st.warning("You have to select data for analysis.")
