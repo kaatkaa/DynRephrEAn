@@ -131,6 +131,34 @@ class SingleCorpusMenu:
         }
         </style>
         """,unsafe_allow_html=True)
+            
+
+    def sidebar(self):
+        with st.sidebar:
+            st.subheader("Choose Corpora: ")           
+            st.button("Clean selection",key=self.__prefix+"clear_corpo_button",on_click=self.cleanSelections)
+            self.__corporaPickerChckBox()
+            st.write("****************************")
+            st.subheader("Analysis Units")
+            units_choice = st.radio("", ("ADU-Based Analysis",
+                                            "Speaker-Based Analysis"
+                                            ), key=self.__prefix+"units")
+
+            #if units == "ADU-Based Analysis":
+            st.write("****************************")
+            st.subheader("Analitics module")
+            module_choice = st.radio("An. Module", \
+                                        ("Distribution","Wordcloud","Cases"), \
+                                        key=self.__prefix+"post", label_visibility="hidden"
+                                    )
+        if module_choice == "Cases":
+            WordCloudOfEmotions(self.__rephrase_df,analysisType="Cases",unit=units_choice, configDic=self.__anCfg, prefix="CasesA")
+        elif module_choice == "Wordcloud":
+            WordCloudOfEmotions(self.__rephrase_df,analysisType="Wordcloud",unit=units_choice, configDic=self.__anCfg, prefix="WordCloud")
+        elif module_choice == "Distribution":
+            Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg, prefix="PieChart", table=False)
+        else:
+            raise NotImplementedError("Unsupported option of Analytical module in single_corpus.py .")
         
     def container(self):
         with st.sidebar:
@@ -148,6 +176,7 @@ class SingleCorpusMenu:
             Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg, prefix="PieChart", table=False)
         with tableTab:
             #To be formatted
+            #st.header(self.getCriteria())
             Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg,prefix="Table", table=True)
         with wordcloudTab:
             #Word cloud

@@ -248,11 +248,11 @@ class WordCloudOfEmotions:
 
 class Piechart:
 
-    def __dataDisp(self, d: pd.DataFrame(),chart, unit: str, col_name: str, dk: List[str], tableFlag: bool):
+    def __dataDisp(self, d: pd.DataFrame(),chart, unit: str, col_name: str, dk: List[str], tableFlag: bool, info: str=""):
         if tableFlag:
             self.postfix_ctr += 1
             def make_pretty(styler):
-                styler.set_caption("Table")
+                styler.set_caption(info)
                 styler.set_table_styles(
                     [{"selector": "", "props": [("border", "1px solid grey")]},
                     {"selector": "tbody td", "props": [("border", "1px solid grey")]},
@@ -293,7 +293,7 @@ class Piechart:
                     textinfo=displayer)
         return fig
 
-    def __init__(self, data: pd.DataFrame(), unit: str, configDic: dict[str , str], prefix: str, table: False) -> None:
+    def __init__(self, data: pd.DataFrame(), unit: str, configDic: dict[str , str], prefix: str, table: False, info: str="") -> None:
         self.cf = configDic
         self.postfix_ctr = 0
         self.prefix = prefix
@@ -315,11 +315,11 @@ class Piechart:
                 if display_complexity == "4-categories":
                     #st.subheader(self.cf['Distribution_general_plot'])
                     f1 = self.__drawDistribution(data, display_unit, self.cf['colName'])
-                    self.__dataDisp(d=data, chart=f1, unit=display_unit, col_name=self.cf['colName'], dk=DataProvider.getDynRephDimentions(), tableFlag=table)
+                    self.__dataDisp(d=data, chart=f1, unit=display_unit, col_name=self.cf['colName'], dk=DataProvider.getDynRephDimentions(), tableFlag=table,info=info)
                 elif display_complexity == "6-categories":
                     #st.subheader(self.cf['Distribution_detailed_plot'])
                     f2 = self.__drawDistribution(data, display_unit, self.cf['colNameWS'])
-                    self.__dataDisp(d=data, chart=f2, unit=display_unit,col_name=self.cf['colNameWS'], dk=DataProvider.getDynRephDimentionsWS(), tableFlag=table)
+                    self.__dataDisp(d=data, chart=f2, unit=display_unit,col_name=self.cf['colNameWS'], dk=DataProvider.getDynRephDimentionsWS(), tableFlag=table,info=info)
             elif unit == "Speaker-Based Analysis":
                 sameSpeakerDf = data.loc[data['speaker_input'] == data['speaker_output']]
                 diffSpeakerDf = data.loc[data['speaker_input'] != data['speaker_output']]
@@ -341,19 +341,19 @@ class Piechart:
                     if display_complexity == "4-categories":
                         st.subheader(self.cf['Distribution_general_1speaker'])
                         f1 = self.__drawDistribution(sameSpeakerDf, display_unit, self.cf['colName'])
-                        self.__dataDisp(d=sameSpeakerDf, chart=f1, unit=display_unit,col_name=self.cf['colName'], dk=DataProvider.getDynRephDimentions(), tableFlag=table)
+                        self.__dataDisp(d=sameSpeakerDf, chart=f1, unit=display_unit,col_name=self.cf['colName'], dk=DataProvider.getDynRephDimentions(), tableFlag=table,info=info)
                     elif display_complexity == '6-categories':
                         st.subheader(self.cf['Distribution_detailed_1speaker'])
                         f2 = self.__drawDistribution(sameSpeakerDf, display_unit, self.cf['colNameWS'])
-                        self.__dataDisp(d=sameSpeakerDf, chart=f2, unit=display_unit,col_name=self.cf['colNameWS'], dk=DataProvider.getDynRephDimentionsWS(), tableFlag=table)
+                        self.__dataDisp(d=sameSpeakerDf, chart=f2, unit=display_unit,col_name=self.cf['colNameWS'], dk=DataProvider.getDynRephDimentionsWS(), tableFlag=table,info=info)
                 if display_SORephr_chckbox:
                     if display_complexity == "4-categories":
                         st.subheader(self.cf['Distribution_general_2speakers'])
                         f3 = self.__drawDistribution(diffSpeakerDf, display_unit, self.cf['colName'])
-                        self.__dataDisp(d=diffSpeakerDf, chart=f3, unit=display_unit,col_name=self.cf['colName'], dk=DataProvider.getDynRephDimentions(), tableFlag=table)
+                        self.__dataDisp(d=diffSpeakerDf, chart=f3, unit=display_unit,col_name=self.cf['colName'], dk=DataProvider.getDynRephDimentions(), tableFlag=table,info=info)
                     elif display_complexity == '6-categories':
                         st.subheader(self.cf['Distribution_detailed_2speakers'])
                         f4 = self.__drawDistribution(diffSpeakerDf, display_unit, self.cf['colNameWS'])
-                        self.__dataDisp(d=diffSpeakerDf, char=f4, unit=display_unit,col_name=self.cf['colNameWS'], dk=DataProvider.getDynRephDimentionsWS(), tableFlag=table)
+                        self.__dataDisp(d=diffSpeakerDf, char=f4, unit=display_unit,col_name=self.cf['colNameWS'], dk=DataProvider.getDynRephDimentionsWS(), tableFlag=table,info=info)
         else:
             st.warning("You have to select data for analysis.")

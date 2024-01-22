@@ -9,36 +9,61 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 
 sys.path.insert(0,"..")
+from data_display.display_single_corpus import Piechart
 from config.config_data_colector import DataProvider
 from data_manipulation.data_manipulator import DataManipulator
 
 class ComparativeCorporaSimple:
 
-    def __filterInterface(self, anCfg: dict[str,str]):
+    def __filterInterface(self, anCfg: dict[str,str],prefix: str):
         col_radio1, = st.columns(1)
         with col_radio1:
             display_complexity = st.radio("Choose complexity level: ",
                 ("4-categories",
                     "6-categories"),                                                  
-                key="Rephrase_Comp_4-6cat")
+                key="Rephrase_Comp_4-6cat"+prefix)
         if display_complexity == '4-categories':
             dyn_rephrase_options = st.multiselect(anCfg["Wordcloud_filterInterface"], 
                                         DataProvider.getDynRephDimentions(), 
                                         DataProvider.getDynRephDimentions()[:],
-                                        key = "multi_sel1")
+                                        key = "multi_sel1"+prefix)
             selected = anCfg['colName']
         elif display_complexity == '6-categories':
             dyn_rephrase_options = st.multiselect(anCfg["Wordcloud_filterInterface"], 
                                         DataProvider.getDynRephDimentionsWS(), 
                                         DataProvider.getDynRephDimentionsWS()[:],
-                                        key = "multi_sel2")
+                                        key = "multi_sel2"+prefix)
             selected = anCfg['colNameWS']
         return dyn_rephrase_options, selected
     
 
     def __init__(self, data_dic: dict[str,pd.DataFrame()], anCfg: dict[str,str]):
-        options, selected = self.__filterInterface(anCfg=anCfg)
+        chart, table = st.tabs([":pizza: PieChart",":black_square_button: Table"])
+        self.prefixCtr = 1
+        with chart:
+            self.bigPlotDisp(data_dic=data_dic, anCfg=anCfg, prefix=str(self.prefixCtr)+"ColectiveChart")
+            self.prefixCtr +=1
+        with table:
+            self.tableDisp(data_dic=data_dic, anCfg=anCfg, prefix=str(self.prefixCtr)+"Table")
+            #st.write("To be implemented")
+            self.prefixCtr += 1
+
+    def tableDisp(self, data_dic: dict[str,pd.DataFrame()], anCfg: dict[str,str], prefix: str):
+        options, selected = self.__filterInterface(anCfg=anCfg, prefix=prefix)
         units = st.radio("Choose: ", ("Percentage","Number"),label_visibility='collapsed')
+        
+        for ctr, pairs in enumerate(data_dic.items()):
+            data = pairs[1]
+            if len(data) > 0:
+                data = data.loc[data[selected].isin(options)]
+                Piechart(data=data,unit=units, configDic=anCfg, prefix=str(ctr)+"Table", table=True, info=pairs[0])
+        else:
+            st.write("**Add More Data to Compara.**")
+
+
+    def bigPlotDisp(self, data_dic: dict[str,pd.DataFrame()], anCfg: dict[str,str], prefix: str):
+        options, selected = self.__filterInterface(anCfg=anCfg, prefix=prefix)
+        units = st.radio("Choose: ", ("Percentage","Number"),label_visibility='collapsed', key="units_"+prefix)
         fig, ax = plt.subplots(4, 2, figsize=(10,45), sharex=True)
         fig.subplots_adjust(left=-1, bottom=0.1, right=1.2, top=0.9, wspace=0.2, hspace=0.2)
         sns.set(font_scale=2)
