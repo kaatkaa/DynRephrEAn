@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import streamlit as st
 import ast
 from typing import Dict, Set, List
 
@@ -19,12 +20,13 @@ class DataManipulator:
         return d
     
     @staticmethod
-    def getTagsFreq(d: pd, colLst: List[str]) -> Set[str]:
+    def getTagsFreq(d: pd, colLst: List[str], PSPset: Set[str]) -> Set[str]:
         tags = dict()
         for column in colLst:
-            for tag in pd.Series(np.concatenate(d[column], axis=None)):
+            for tag in d[column].tolist():
                 for t in ast.literal_eval(tag):
-                    tags[t] = tags.get(t, 0) + 1
+                    if t in PSPset:
+                        tags[t] = tags.get(t, 0) + 1
         return tags
     
     @staticmethod
@@ -32,7 +34,7 @@ class DataManipulator:
         tags = dict()
         ctr = 0
         for column in colLst:
-            for tag in pd.Series(np.concatenate(d[column], axis=None)):
+            for tag in d[column].tolist():
                 for t in ast.literal_eval(tag):
                     if t in PSPset:
                         tags[t] = tags.get(t, 0) + 1

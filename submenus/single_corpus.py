@@ -1,15 +1,38 @@
 import streamlit as st
 import pandas as pd
-from typing import Tuple
+from typing import Tuple, List, Dict, Any
 
 import sys
 sys.path.insert(0,"..")
+from graphic_components.filter import Filter
 from data_display.display_single_corpus import WordCloudOfEmotions
 from data_display.display_single_corpus import Piechart
+from graphic_components.pieChart import Piechart2
+from graphic_components.barChart import Barchart2
+from graphic_components.table import Table2
+from graphic_components.textAnalysis import Cases2
+from graphic_components.PoScharts import PoS
 from config.config_data_colector import DataProvider
 from submenus.tweaker import st_tweaker
 
 class SingleCorpusMenu:
+
+    __folterConfig: Dict[str, Any] = {
+        'generalConfig':DataProvider.getDynRephrESconfig()['DynRephAn for Sentiment'],
+        'prefix':'no_prefix',
+        'showUnits':True,
+        'units': ("Percentage","Number"),
+        'unit': 'Percentage',
+        'showCategoriesInterface': True,
+        'categoriesInterfaceTitle': 'Wordcloud_filterInterface',
+        'showInOutInterface': True,
+        'inOutLst': DataProvider.getInOutColLst(),
+        'showStopWordsInterface':True,
+        'showStopwords':False,
+        'useStopwords':True,
+        'showPOSInterface':False
+    }
+
     def __init__(self, dataDic: dict[str : pd.DataFrame()], prefix: str="0_", anType: str="DynRephAn for Sentiment") -> None:
         #dictionary containing all possible data with corpora indexed by name
         self.__dataDic = dataDic
@@ -19,6 +42,11 @@ class SingleCorpusMenu:
         tmp = DataProvider.getDynRephrESconfig()
         #config file with messages and column names for Ethos and Sentiment
         self.__anCfg = tmp[anType]
+
+        #filterConfig:
+        self.__cf = SingleCorpusMenu.__folterConfig
+        self.__cf['generalConfig'] = self.__anCfg
+        self.__cf['prefix'] = prefix
 
         self.__rephrase_df = pd.DataFrame()
         self.__rephrase_old = pd.DataFrame()
@@ -134,6 +162,27 @@ class SingleCorpusMenu:
             
 
     def sidebar(self):
+
+        __defaultConfig: Dict[str, Any]={
+            'generalConfig':self.__anCfg,
+            'prefix':'PoS_',
+            'column': "",
+            'showUnits': True,
+            'units': ("Percentage","Number"),
+            'unit': 'Percentage',
+            'showCategoriesInterface': True,
+            'categoriesInterfaceTitle': 'Wordcloud_filterInterface',
+            'AnalysisUnit': "",
+            'SS rephrase': True,
+            'OS rephrase': False,
+            'showInOutInterface': False,
+            'inOutLst': DataProvider.getInOutColLst(),
+            'showStopWordsInterface':False,
+            'showStopwords':False,
+            'useStopwords':False,
+            'showPOSInterface':True
+        }
+        
         with st.sidebar:
             st.subheader("Choose Corpora: ")           
             st.button("Clean selection",key=self.__prefix+"clear_corpo_button",on_click=self.cleanSelections)
@@ -148,41 +197,40 @@ class SingleCorpusMenu:
             st.write("****************************")
             st.subheader("Analitics module")
             module_choice = st.radio("An. Module", \
-                                        ("Distribution","Wordcloud","Cases"), \
+                                        ("Distribution","Wordcloud","n-grams","PoS"), \
                                         key=self.__prefix+"post", label_visibility="hidden"
                                     )
-        if module_choice == "Cases":
-            WordCloudOfEmotions(self.__rephrase_df,analysisType="Cases",unit=units_choice, configDic=self.__anCfg, prefix="CasesA")
+        if module_choice == "n-grams":
+            WordCloudOfEmotions(self.__rephrase_df,analysisType="Cases",unit=units_choice, configDic=self.__anCfg, prefix="CasesA",x="n-gram")
         elif module_choice == "Wordcloud":
             WordCloudOfEmotions(self.__rephrase_df,analysisType="Wordcloud",unit=units_choice, configDic=self.__anCfg, prefix="WordCloud")
         elif module_choice == "Distribution":
-            Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg, prefix="PieChart", table=False)
+            #Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg, prefix="PieChart", table=False)
+            self.container(s="_sub", units_choice=units_choice)
+        elif module_choice == "PoS":
+            PoS(df=self.__rephrase_df,config=__defaultConfig)
         else:
             raise NotImplementedError("Unsupported option of Analytical module in single_corpus.py .")
         
-    def container(self):
-        with st.sidebar:
-            st.subheader("Choose Corpora: ")           
-            st.button("Clean selection",key=self.__prefix+"clear_corpo_button",on_click=self.cleanSelections)
-            self.__corporaPickerChckBox()
-            st.write("****************************")
-            st.subheader("Analysis Units")
-            units_choice = st.radio("", ("ADU-Based Analysis",
-                                            "Speaker-Based Analysis"
-                                            ), key=self.__prefix+"units")
-        pieTab, tableTab, wordcloudTab, casesTab = st.tabs([":pizza: PieChart",":black_square_button: Table",":cloud: WordCloud",":speech_balloon: Cases"])
+    def container(self, s: str="",units_choice: str=""):
+        self.__cf['AnalysisUnit'] = units_choice
+        filter1 = Filter(data=self.__rephrase_df, config=self.__cf)
+        dataDic, config = filter1.getData()
+        pieTab, barTab, tableTab, casesTab = st.tabs([":pizza: PieChart",":bar_chart: BarChart",":black_square_button: Table",":speech_balloon: Cases"])
         with pieTab:
             #Distribution of ethos/sentiment dynamics in rephrase
-            Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg, prefix="PieChart", table=False)
+            #Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg, prefix="PieChart"+s, table=False)
+            Piechart2(dataDic=dataDic,config=config)
+        with barTab:
+            Barchart2(dataDic=dataDic, config=config)
         with tableTab:
             #To be formatted
             #st.header(self.getCriteria())
-            Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg,prefix="Table", table=True)
-        with wordcloudTab:
-            #Word cloud
-            WordCloudOfEmotions(self.__rephrase_df,analysisType="Wordcloud",unit=units_choice, configDic=self.__anCfg, prefix="WordCloud")
+            #Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg,prefix="Table"+s, table=True)
+            Table2(dataDic=dataDic, config=config)
         with casesTab:
-            WordCloudOfEmotions(self.__rephrase_df,analysisType="Cases",unit=units_choice, configDic=self.__anCfg, prefix="Cases")
+            #WordCloudOfEmotions(self.__rephrase_df,analysisType="Cases",unit=units_choice, configDic=self.__anCfg, prefix="Cases"+s,x="simple")
+            Cases2(dataDic=dataDic, config=config)
         
     #Returns criteria to which data is selected
     def getCriteria(self) -> str:

@@ -23,26 +23,30 @@ class WordCloudOfEmotions:
 
     def __Make_Word_Cloud(self, lexicon, data: pd.DataFrame(), options: list[str]) -> None:
         st.subheader("Word Cloud : ")
-        wordcloud = WordCloud(stopwords=self.__stop_words, background_color="#493E38", colormap='YlOrRd', width=500, height=400,
-                            normalize_plurals=False).generate(" ".join(lexicon))
-        fig, ax = plt.subplots(figsize=(10, 10), facecolor=None)
-        ax.imshow(wordcloud)
-        plt.axis("off")
-        plt.tight_layout(pad=0)
-        st.pyplot(fig=fig)
+        wordcloudTab, tableTab = st.tabs([":cloud: Wordcloud",":black_square_button: Table"])
 
-        text = ""
-        for inOut in options: 
-            text += " ".join(map(str,",".join(data[inOut].dropna().to_numpy(na_value="")).split(",")))
-        if text != "":
-            wordLst = sorted(WordCloud(stopwords=self.__stop_words).process_text(text).items(), key=lambda x:x[1], reverse=True)
-            number = st.slider("Pick top n unigrams: ", 1, value=10, max_value=len(wordLst))
-            index = []
-            for i in range(1,number+1):
-                index.append(i)
-            unigramsDf = pd.DataFrame(wordLst[:number],columns = ['Top phrase', 'Frequency'],index=pd.Index(index, name='Ranking'))
-            unigramsDf.columns.name = unigramsDf.index.name
-            st.dataframe(unigramsDf, width=800, height=40*number)
+        with wordcloudTab:
+            wordcloud = WordCloud(stopwords=self.__stop_words, background_color="#493E38", colormap='YlOrRd', width=500, height=400,
+                                normalize_plurals=False).generate(" ".join(lexicon))
+            fig, ax = plt.subplots(figsize=(10, 10), facecolor=None)
+            ax.imshow(wordcloud)
+            plt.axis("off")
+            plt.tight_layout(pad=0)
+            st.pyplot(fig=fig)
+
+        with tableTab:
+            text = ""
+            for inOut in options: 
+                text += " ".join(map(str,",".join(data[inOut].dropna().to_numpy(na_value="")).split(",")))
+            if text != "":
+                wordLst = sorted(WordCloud(stopwords=self.__stop_words).process_text(text).items(), key=lambda x:x[1], reverse=True)
+                number = st.slider("Pick top n unigrams: ", 1, value=10, max_value=len(wordLst))
+                index = []
+                for i in range(1,number+1):
+                    index.append(i)
+                unigramsDf = pd.DataFrame(wordLst[:number],columns = ['Top phrase', 'Frequency'],index=pd.Index(index, name='Ranking'))
+                unigramsDf.columns.name = unigramsDf.index.name
+                st.dataframe(unigramsDf, width=800, height=40*number)
 
     def __RemoveStopWordsFromDf(self, dataF: pd.DataFrame(), columns: list[str]) -> pd.DataFrame:
         for stop_phrase in self.__stop_words_set:
@@ -108,98 +112,82 @@ class WordCloudOfEmotions:
             joined_set = joined_set | emo_set
         return list(joined_set), filteredDf, columnNamesLst
 
-    def __textAnalysis(self, data: pd.DataFrame()) -> None:
+    def __textAnalysis(self, data: pd.DataFrame(), x: str="n-gram") -> None:
+        #anType = "n-gram"
+        #anType = "simple"
         def backgroung_color(v):
             return f"background-color: {DataProvider.getRephraseAndEmptycolors()['Rephrase']};"
         filteredDf, columnNamesLst = self.__filterInterface(data, hideInOut=False)
-        plotDf = DataManipulator.getGruppedData(filteredDf,self.cf['colName'],"Frequency")
+        #plotDf = DataManipulator.getGruppedData(filteredDf,self.cf['colName'],"Frequency")
         wordLst = []
         display = False if len(columnNamesLst) == 0 else True
         for inOut in columnNamesLst: 
             if len(filteredDf[inOut]) == 0:
                 display = False
                 break
-            for token in map(str,",".join(filteredDf[inOut].dropna().to_numpy(na_value="")).split(",")):
-                wordLst.extend(ngrams(token.split(" "), 1))
-        if display:
-            wordLst = FreqDist(wordLst)
-            number = st.slider("Pick top n words/phrases: ", 1, value=10, max_value=len(wordLst))
-            ngramType = st.slider("Choose n-gram type: (1-4)",1,value=1, max_value=4)
-            st.subheader("Pick phrase to analyse: ")
-            NgramLst = []
-            for inOut in columnNamesLst:
+            if x == "n-gram":
                 for token in map(str,",".join(filteredDf[inOut].dropna().to_numpy(na_value="")).split(",")):
-                    NgramLst.extend(ngrams(token.split(" "), ngramType))
-            NgramLst = FreqDist(NgramLst)
-            common = NgramLst.most_common(number)
-            w2 = [" ".join(item[0])+" : "+str(item[1]) for item in common if item[0] != ('',)]
-            ndic = {}
-            for ngram in common:
-                if self.cf['colName'] in ndic:
-                    ndic[self.cf['colName']].append(" ".join(ngram[0]))
+                    wordLst.extend(ngrams(token.split(" "), 1))
+        if display:
+            if x == "n-gram":
+                wordLst = FreqDist(wordLst)
+                number = st.slider("Pick top n words/phrases: ", 1, value=10, max_value=len(wordLst))
+                ngramType = st.slider("Choose n-gram type: (1-4)",1,value=1, max_value=4)
+                st.subheader("Pick phrase to analyse: ")
+                NgramLst = []
+                for inOut in columnNamesLst:
+                    for token in map(str,",".join(filteredDf[inOut].dropna().to_numpy(na_value="")).split(",")):
+                        NgramLst.extend(ngrams(token.split(" "), ngramType))
+                NgramLst = FreqDist(NgramLst)
+                common = NgramLst.most_common(number)
+                w2 = [" ".join(item[0])+" : "+str(item[1]) for item in common if item[0] != ('',)]
+                ndic = {}
+                for ngram in common:
+                    if self.cf['colName'] in ndic:
+                        ndic[self.cf['colName']].append(" ".join(ngram[0]))
+                    else:
+                        ndic[self.cf['colName']] = [" ".join(ngram[0])]
+                    if 'Frequency' in ndic:
+                        ndic['Frequency'].append(ngram[1])
+                    else:
+                        ndic['Frequency'] = [ngram[1]]
+                word = st.selectbox("Pick "+str(ngramType)+"-gram to analyse: ",w2,index=0,key='Dropdown_'+str(ngramType)+'-gramLst')
+                regexpStr = re.sub(r"^(.*)\s:\s[0-9]+$", r"\1", word)
+                regExpCode = r"\s"+regexpStr+r"\s|^"+regexpStr+r"\s|\s"+regexpStr+r"$|^"+regexpStr+r"$"
+                st.subheader("Selected phrase is marked in text below between stars: \*\*"+regexpStr+"\*\*")
+                if 'input' in columnNamesLst and 'output' in columnNamesLst:
+                    filteredInputDF = filteredDf[filteredDf['input'].str.contains(regExpCode, case=False, regex=True)]
+                    filteredInputDF.reset_index(inplace=True)
+                    filterInOutDF = filteredInputDF[filteredInputDF['output'].str.contains(regExpCode, case=False, regex=True)]
+                    tmpDf = filterInOutDF[['input','output']]
+                    tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
+                    st.table(tmpDf[['input','output']].style.applymap(backgroung_color))
+                elif 'input' in columnNamesLst:
+                    filteredInputDF = filteredDf[filteredDf['input'].str.contains(regExpCode, case=False, regex=True)]
+                    filteredInputDF.reset_index(inplace=True)
+                    tmpDf = filteredInputDF[['input','output']]
+                    tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
+                    tmpDf = tmpDf.style.applymap(backgroung_color,subset="input")
+                    st.table(tmpDf)
+                elif 'output' in columnNamesLst:
+                    filteredOutputDF = filteredDf[filteredDf['output'].str.contains(regExpCode, case=False, regex=True)]
+                    filteredOutputDF.reset_index(inplace=True)
+                    tmpDf = filteredOutputDF[['input','output']]
+                    tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
+                    st.table(tmpDf[['input','output']].style.applymap(backgroung_color,
+                        subset="output"))
                 else:
-                    ndic[self.cf['colName']] = [" ".join(ngram[0])]
-                if 'Frequency' in ndic:
-                    ndic['Frequency'].append(ngram[1])
-                else:
-                    ndic['Frequency'] = [ngram[1]]
-            word = st.selectbox("Pick "+str(ngramType)+"-gram to analyse: ",w2,index=0,key='Dropdown_'+str(ngramType)+'-gramLst')
-            regexpStr = re.sub(r"^(.*)\s:\s[0-9]+$", r"\1", word)
-            regExpCode = r"\s"+regexpStr+r"\s|^"+regexpStr+r"\s|\s"+regexpStr+r"$|^"+regexpStr+r"$"
-            st.subheader("Selected phrase is marked in text below between stars: \*\*"+regexpStr+"\*\*")
-            if 'input' in columnNamesLst and 'output' in columnNamesLst:
-                filteredInputDF = filteredDf[filteredDf['input'].str.contains(regExpCode, case=False, regex=True)]
-                filteredInputDF.reset_index(inplace=True)
-                filterInOutDF = filteredInputDF[filteredInputDF['output'].str.contains(regExpCode, case=False, regex=True)]
-                tmpDf = filterInOutDF[['input','output']]
-                tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
-                st.table(tmpDf[['input','output']].style.applymap(backgroung_color))
-            elif 'input' in columnNamesLst:
-                filteredInputDF = filteredDf[filteredDf['input'].str.contains(regExpCode, case=False, regex=True)]
-                filteredInputDF.reset_index(inplace=True)
-                tmpDf = filteredInputDF[['input','output']]
-                tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
-                tmpDf = tmpDf.style.applymap(backgroung_color,subset="input")
-                st.table(tmpDf)
-            elif 'output' in columnNamesLst:
-                filteredOutputDF = filteredDf[filteredDf['output'].str.contains(regExpCode, case=False, regex=True)]
-                filteredOutputDF.reset_index(inplace=True)
-                tmpDf = filteredOutputDF[['input','output']]
-                tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
-                st.table(tmpDf[['input','output']].style.applymap(backgroung_color,
-                    subset="output"))
-            else:
-                st.error("Wrong input-output options for dataframe in __textAnalysis")
+                    st.error("Wrong input-output options for dataframe in __textAnalysis")
 
-            wyk = pd.DataFrame(ndic)            
-            plotDf = pd.concat([plotDf, pd.DataFrame(ndic)])
-            plotDf.reset_index(inplace=True)
-            #st.write(len(plotDf[self.cf['colName']]))
-            fig = barchart3d( \
-                wyk[self.cf['colName']], \
-                wyk['Frequency'].to_list(), \
-                "Top "+str(number)+" most freguent "+str(ngramType)+"-grams", \
-                "Z axis: "+str(ngramType)+"-gram frequency", \
-                colorscale='blackbody', \
-                opacity=0.6, \
-                flatshading=True)
-
-            #fig = go.Figure(
-            #    data=go.Surface(z=filteredDf),
-            #    layout=go.Layout(
-            #        title="N-gram frequencies: ",
-            #        width=900,
-            #        height=900,
-            #    )
-            #)
-            #fig.update_layout(template="plotly_dark", title="This is test")
-
-            #st.plotly_chart(fig, config=DataProvider.getSaveConfig())
-
+                #wyk = pd.DataFrame(ndic)            
+                #plotDf = pd.concat([plotDf, pd.DataFrame(ndic)])
+                #plotDf.reset_index(inplace=True)
+            elif x == "simple":
+                st.table(filteredDf[['input','output']])
         else:
             st.warning("Not enought data to display in text analysis.")
 
-    def __init__(self, data: pd.DataFrame(), analysisType: str, unit: str, configDic: dict[str , str], prefix: str) -> None:
+    def __init__(self, data: pd.DataFrame(), analysisType: str, unit: str, configDic: dict[str , str], prefix: str, x: str = "n-gram") -> None:
         self.cf = configDic
         self.prefix = prefix
         if len(data) > 0:
@@ -217,7 +205,7 @@ class WordCloudOfEmotions:
                     self.__Make_Word_Cloud(wl, df, options)
                     
                 elif analysisType == 'Cases':
-                    self.__textAnalysis(data)
+                    self.__textAnalysis(data, x=x)
             elif unit == "Speaker-Based Analysis":
                 sameSpeakerDf = data.loc[data['speaker_input'] == data['speaker_output']]
                 diffSpeakerDf = data.loc[data['speaker_input'] != data['speaker_output']]
@@ -239,10 +227,10 @@ class WordCloudOfEmotions:
                 elif analysisType == 'Cases':
                     if display_speakers == 'SS rephrase':
                         st.subheader(self.cf['Cases_editReph_sameSp'])
-                        self.__textAnalysis(sameSpeakerDf)
+                        self.__textAnalysis(sameSpeakerDf,x=x)
                     elif display_speakers == 'OS rephrase':
                         st.subheader(self.cf['Cases_editReph_diffSp'])
-                        self.__textAnalysis(diffSpeakerDf)
+                        self.__textAnalysis(diffSpeakerDf, x=x)
         else:
             st.warning("You have to provide corpora for text analysis.")
 

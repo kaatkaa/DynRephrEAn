@@ -16,7 +16,12 @@
         "Distribution_general_1speaker": "4 categories dynamic ethos SS rephrase: ",
         "Distribution_detailed_1speaker": "6 categories dynamic ethos SS rephrase: ",
         "Distribution_general_2speakers": "4 categories dynamic sentiment OS rephrase: ",
-        "Distribution_detailed_2speakers": "6 categories dynamic sentiment OS rephrase: "
+        "Distribution_detailed_2speakers": "6 categories dynamic sentiment OS rephrase: ",
+        "POS_title":"Choose parts of speech to analyse",
+        "POS_inOut": "Choose Parts of Speech input or output",
+        "POS_piechart": "Parts of speech: Piechart",
+        "POS_barchart": "Parts of speech: Barchart",
+        "POS_table": "Parts of speech: in table"
     },
     "DynRephAn for Sentiment": {
         "anName": "DynRephAn sentiment",
@@ -35,6 +40,11 @@
         "Distribution_general_1speaker": "4 categories dynamic sentiment SS rephrase: ",
         "Distribution_detailed_1speaker": "6 categories dynamic sentiment SS rephrase: ",
         "Distribution_general_2speakers": "4 categories dynamic sentiment OS rephrase: ",
-        "Distribution_detailed_2speakers": "6 categories dynamic sentiment OS rephrase: "
+        "Distribution_detailed_2speakers": "6 categories dynamic sentiment OS rephrase: ",
+        "POS_title": "Choose parts of speech to analyse",
+        "POS_inOut": "Choose Parts of Speech input or output",
+        "POS_piechart": "Parts of speech: Piechart",
+        "POS_barchart": "Parts of speech: Barchart",
+        "POS_table": "Parts of speech: in table"
     }
 }

@@ -51,7 +51,7 @@ class _3D_PSP_corpus:
                 key=self.__prefix+"PercentNumber")
         dyn_rephrase_options = st.multiselect("Choose part of speech", 
                                     default=st.session_state[str(self.__prefix)+"filterLst"],
-                                    options=DataProvider.getPSPlst(),
+                                    options=sorted(DataProvider.getPSPlst()),
                                     on_change=get_new_values_list,
                                     kwargs={'key': str(self.__prefix)+"filterLst"},
                                     key = str(self.__prefix)+"filterLst")
@@ -82,7 +82,7 @@ class _3D_PSP_corpus:
             if computation_type == "Percentage":
                 tmpDict = DataManipulator.getTagsPercentageFreq(d=my_data,colLst=dataColumn,PSPset=set(tag for tag in filterLst))
             elif computation_type == "Number":
-                tmpDict = DataManipulator.getTagsFreq(my_data,colLst=dataColumn)
+                tmpDict = DataManipulator.getTagsFreq(my_data,colLst=dataColumn,PSPset=set(tag for tag in filterLst))
             else:
                 st.error("Unknown opion: ",computation_type," in __prepCorpora_and_DynRephType")
             dic3D[item[0]] = dict()

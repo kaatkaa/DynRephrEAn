@@ -3,9 +3,16 @@ import os
 import streamlit as st
 
 class DataProvider:
+    __tableFormat = [
+        {"selector": "", "props": [("border", "1px solid grey")]},
+        {"selector": "tbody td", "props": [("border", "1px solid grey")]},
+        {"selector": "th", "props": [("border", "2px solid black")]}
+    ]
+
     __dyn_rephr_file = 'config/dyn_rephr_cfg.json'
     __lst_of_dyn_rephr = ['Amelioration', 'Pejorativization', 'Neutralization','No_Change']
     __lst_of_dyn_rephrWS = ['A_strong','A_weak','P_strong','P_weak','Neutralization','No_Change']
+    __lst_of_dyn_in_out = ['input','output']
     __rephPSP_columns = ['inputPSP','outputPSP']
     __color_sentiment = {'Amelioration':'#3FEE0F','A_strong':'#28B900','A_weak':'#7CFF57','Pejorativization':'#FF0000'                     
                      ,'P_strong':'#BD0000','P_weak':'#FF5656','Neutralization':'#2EBDFF','No_Change': '#414040'}
@@ -14,6 +21,13 @@ class DataProvider:
     __color_rephr = {'C': '#7FB3D5','D': '#76D7C4',
             'I':'#02FF70', 'O': '#F4D03F','P':'#C56EE7'}
     __color_rephr_empty = {'Rephrase': '#E9B711','No rephrase': '#706351'}
+
+    __color_PoS ={
+        "PROPN": '#B3B3B3',"AUX": '#47CCD3',"VERB": '#FF0000',"PRON": '#0008FF',"NOUN": '#51FF00',
+        "CCONJ": '#dcb559',"ADP": '#f5bc6b',"DET": '#f5aa60',"PART": '#f39659',"ADJ": '#FF00FB',
+        "NUM": '#ec6e55',"PUNCT": '#e65857',"ADV": '#D0FF00',"INTJ": '#501D5B',"SYM": '#2D157B',
+        "SCONJ": '#2E3390',"SPACE": '#213766',"X": '#2A565C'
+    }
 
     __3d_colors = {
         'F2F' : {'Amelioration':'#33FF99','A_strong':'#33FF66','A_weak':'#33FF99','Pejorativization':'#FF6600'
@@ -85,6 +99,14 @@ class DataProvider:
     ]
 
     @staticmethod
+    def getTableFormat():
+        return DataProvider.__tableFormat
+
+    @staticmethod
+    def getInOutColLst():
+        return DataProvider.__lst_of_dyn_in_out
+
+    @staticmethod
     def getPSPcolumns():
         return DataProvider.__rephPSP_columns
 
@@ -132,6 +154,10 @@ class DataProvider:
     @staticmethod
     def getEthosColors():
         return DataProvider.__color_ethos
+    
+    @staticmethod
+    def getPoScolors():
+        return DataProvider.__color_PoS
 
     @staticmethod
     def addSpacelines(number=2):
