@@ -185,8 +185,9 @@ class Filter:
             for item in dict.items():
                 lstOfTuples.append(item)
             lstOfTuples = sorted(lstOfTuples,key=itemgetter(0))
-            lst1, lst2 = [l[0] for l in lstOfTuples], [l[1] for l in lstOfTuples]
-            return pd.DataFrame.from_dict({col1Name:lst1,col2Name:lst2})
+            cnv = DataProvider.getPoStagsConverter()
+            lst1, lst2, lst3 = [l[0] for l in lstOfTuples], [l[1] for l in lstOfTuples], [cnv[l[0]] for l in lstOfTuples]
+            return pd.DataFrame.from_dict({col1Name:lst1,col2Name:lst2,"PoS full name":lst3})
         inOutPOS = st.multiselect(self.__cf['generalConfig']['POS_inOut'], 
                                     sorted(DataProvider.getPSPcolumns()), 
                                     sorted(DataProvider.getPSPcolumns())[:],

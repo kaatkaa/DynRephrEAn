@@ -60,6 +60,12 @@ class DataProvider:
     }
 
     __3d_PSP = ["PROPN","AUX","VERB","PRON","NOUN","CCONJ","ADP","DET","PART","ADJ","NUM","PUNCT","ADV","INTJ","SYM","SCONJ","SPACE","X"]
+    __PoS_Converter = {"PROPN":"Proper noun","AUX":"Auxiliary verb",
+        "VERB":"Verb","PRON":"Pronoun","NOUN":"Noun","CCONJ":"Coordinating conjunction",
+        "ADP":"Adposition","DET":"Determinative","PART":"Part",
+        "ADJ":"Adjective","NUM":"Cardinal numbers","PUNCT":"Punctuation","ADV":"Adverb",
+        "INTJ":"Interjection","SYM":"Symbol","SCONJ":"Subordinating conjunction",
+        "SPACE":"Space","X":"Unknowx","":"--"}
     __3D_PSPdefalut = ["PROPN","AUX","VERB","PRON","NOUN","CCONJ","NUM"]
         
     __sav_image = {
@@ -158,6 +164,10 @@ class DataProvider:
     @staticmethod
     def getPoScolors():
         return DataProvider.__color_PoS
+    
+    @staticmethod
+    def getPoStagsConverter():
+        return DataProvider.__PoS_Converter
 
     @staticmethod
     def addSpacelines(number=2):
