@@ -2,7 +2,6 @@ import streamlit as st
 import sys
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 import plotly.express as px
 from typing import Tuple, List, Dict, Any
 
@@ -18,10 +17,16 @@ class Piechart2:
             displayer = 'percent+label'
         elif self.__cf['unit'] == "Number":
             displayer = 'text+label'
-        fig = px.pie(data, values=self.__cf['unit'], names=namesLst[0], color=namesLst[0],
-                    color_discrete_map=self.__cf['palette'],
-                    title=self.__cf['AnalysisUnit']+t
-        )
+        if len(namesLst) == 3:
+            fig = px.pie(data, values=self.__cf['unit'], names=namesLst[2], color=namesLst[0],
+                        color_discrete_map=self.__cf['palette'],
+                        title=self.__cf['AnalysisUnit']+t
+            )
+        else:
+            fig = px.pie(data, values=self.__cf['unit'], names=namesLst[0], color=namesLst[0],
+                        color_discrete_map=self.__cf['palette'],
+                        title=self.__cf['AnalysisUnit']+t
+            )
         fig.update_traces(textposition='inside', 
                     text=data[self.__cf['unit']].map("#{:,}".format),
                     textinfo=displayer)
