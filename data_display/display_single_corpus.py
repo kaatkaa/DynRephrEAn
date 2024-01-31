@@ -23,7 +23,7 @@ class WordCloudOfEmotions:
 
     def __Make_Word_Cloud(self, lexicon, data: pd.DataFrame(), options: list[str]) -> None:
         st.subheader("Word Cloud : ")
-        wordcloudTab, tableTab = st.tabs([":cloud: Wordcloud",":black_square_button: Table"])
+        wordcloudTab, tableTab = st.tabs([":cloud: Wordcloud",":black_square_button: Cases"])
 
         with wordcloudTab:
             wordcloud = WordCloud(stopwords=self.__stop_words, background_color="#493E38", colormap='YlOrRd', width=500, height=400,
