@@ -9,12 +9,16 @@ from config.config_data_colector import DataProvider
 
 class Table2:
     def __drawTable(self, df: Any, title: str):
+        columnLst = list(df.columns.values)
         def make_pretty(styler):
             styler.set_caption(self.__cf['AnalysisUnit']+title)
             styler.set_table_styles(DataProvider.getTableFormat())
             return styler
         df.index += 1
-        st.table(make_pretty(df.style))
+        tmpDf = df.copy(deep=True)
+        if len(columnLst) == 3:
+            tmpDf = tmpDf[[columnLst[2],columnLst[1]]]
+        st.table(make_pretty(tmpDf.style))
 
     def __init__(self, dataDic: Dict[str, Any], config: Dict[str, Any]) -> None:
         self.__cf = config
