@@ -73,13 +73,13 @@ def SingleCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()], submenu_prefix: s
 def ComparativeCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()], anType: str) -> CmpCorpusMenu:
     return CmpCorpusMenu(dataDict=dataDic, anType=anType)
 
-@st.cache_data
-def ThreeDCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()],submenu_prefix: str, anType: str) -> ThreeDCorpusMenu:
-    return ThreeDCorpusMenu(dataDic=dataDic, prefix=submenu_prefix, anType=anType)
+# @st.cache_data
+# def ThreeDCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()],submenu_prefix: str, anType: str) -> ThreeDCorpusMenu:
+#     return ThreeDCorpusMenu(dataDic=dataDic, prefix=submenu_prefix, anType=anType)
 
-@st.cache_data
-def _3D_PSPCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()],submenu_prefix: str, anType: str) -> _3D_PSP_corpus:
-    return _3D_PSP_corpus(dataDic=dataDic, prefix=submenu_prefix, anType=anType)
+# @st.cache_data
+# def _3D_PSPCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()],submenu_prefix: str, anType: str) -> _3D_PSP_corpus:
+#     return _3D_PSP_corpus(dataDic=dataDic, prefix=submenu_prefix, anType=anType)
 
 def resetData(single_corpus: SingleCorpusMenu, comparative_corpora: CmpCorpusMenu) -> None:
     single_corpus.cleanSelections()
@@ -99,11 +99,11 @@ with st.sidebar:
                 key="AnType")
     single_corpora_menu = SingleCorporaMenuLoader(dataDic=dataDic, submenu_prefix="0_", anType=rAnalytics)
     cmp_corpora_menu = ComparativeCorporaMenuLoader(dataDic=dataDic, anType=rAnalytics)
-    threeD_corpora_EthOrSent = ThreeDCorporaMenuLoader(dataDic=dataDic, submenu_prefix="3D_1", anType=rAnalytics)
-    threeD_corpora_EthAndSent = ThreeDCorporaMenuLoader(dataDic=dataDic, submenu_prefix="3D_2", anType=rAnalytics)
-    pSP = _3D_PSPCorporaMenuLoader(dataDic=dataDic, submenu_prefix="3D_3", anType=rAnalytics)
+    # threeD_corpora_EthOrSent = ThreeDCorporaMenuLoader(dataDic=dataDic, submenu_prefix="3D_1", anType=rAnalytics)
+    # threeD_corpora_EthAndSent = ThreeDCorporaMenuLoader(dataDic=dataDic, submenu_prefix="3D_2", anType=rAnalytics)
+    # pSP = _3D_PSPCorporaMenuLoader(dataDic=dataDic, submenu_prefix="3D_3", anType=rAnalytics)
     st.title("Contents")
-    contents_radio = st.radio("Choose: ", ("Main Page", "Single Corpus Analysis", "Comparative Corpora Analysis","3D Charts"),label_visibility='collapsed')
+    contents_radio = st.radio("Choose: ", ("Main Page", "Single Corpus Analysis", "Comparative Corpora Analysis"),label_visibility='collapsed')
 
 if contents_radio == "Main Page":
     MainPage()
@@ -119,16 +119,16 @@ elif contents_radio == "Comparative Corpora Analysis":
                                         on_change=resetData,
                                         args=(single_corpora_menu, cmp_corpora_menu))
     cmp_corpora_menu.display(units_choice)
-elif contents_radio == "3D Charts":
-    with st.sidebar:
-        _3D_Choice = st.radio("Choose 3D diagram", ("Ethos or Sentiment","Ethos and Sentiment", "3D_PartsOfSpeech"))
-    if _3D_Choice == "Ethos or Sentiment":
-        threeD_corpora_EthOrSent.draw3D(bothEthosPathos=False)
-    elif _3D_Choice == "Ethos and Sentiment":
-        threeD_corpora_EthAndSent.draw3D(bothEthosPathos=True)
-    elif _3D_Choice == "3D_PartsOfSpeech":
-        pSP.draw3D()
-    else:
-        st.warning("This option of 3D chart: '",_3D_Choice,"' is not implemented.")
+# elif contents_radio == "3D Charts":
+#     with st.sidebar:
+#         _3D_Choice = st.radio("Choose 3D diagram", ("Ethos or Sentiment","Ethos and Sentiment", "3D_PartsOfSpeech"))
+#     if _3D_Choice == "Ethos or Sentiment":
+#         threeD_corpora_EthOrSent.draw3D(bothEthosPathos=False)
+#     elif _3D_Choice == "Ethos and Sentiment":
+#         threeD_corpora_EthAndSent.draw3D(bothEthosPathos=True)
+#     elif _3D_Choice == "3D_PartsOfSpeech":
+#         pSP.draw3D()
+#     else:
+#         st.warning("This option of 3D chart: '",_3D_Choice,"' is not implemented.")
 else:
     st.error("Wrong option of main sidemenu radiobitton.")
