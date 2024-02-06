@@ -30,6 +30,5 @@ class PoS:
     def __init__(self, df: Any, config: Dict[str, Any]) -> None:
         dataDic, config = Filter(data=df,config=config).getData()
         self.__cf = config
-        self.__prefix = config['prefix']
         DataProvider.addSpacelines(1)
         self.__plot(dfDic=dataDic)

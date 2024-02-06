@@ -6,12 +6,13 @@ from typing import Tuple, List, Dict, Any
 
 sys.path.insert(0,"..")
 from config.config_data_colector import DataProvider
+from graphic_components.superComponent import SuperChartComponent
 
-class Table2:
-    def __drawTable(self, df: Any, title: str):
+class Table2(SuperChartComponent):
+    def dataDisplay(self, df: Any, title: str):
         columnLst = list(df.columns.values)
         def make_pretty(styler):
-            styler.set_caption(self.__cf['AnalysisUnit']+title)
+            styler.set_caption(self.cf['AnalysisUnit']+title)
             styler.set_table_styles(DataProvider.getTableFormat())
             return styler
         df.index += 1
@@ -19,15 +20,3 @@ class Table2:
         if len(columnLst) == 3:
             tmpDf = tmpDf[[columnLst[2],columnLst[1]]]
         st.table(make_pretty(tmpDf.style))
-
-    def __init__(self, dataDic: Dict[str, Any], config: Dict[str, Any]) -> None:
-        self.__cf = config
-        self.__prefix = config['prefix']
-        DataProvider.addSpacelines(1)
-        if 'gruppedAll' in dataDic:
-            self.__drawTable(dataDic['gruppedAll'],"")
-        else:
-            if 'gruppedSS' in dataDic:
-                self.__drawTable(dataDic['gruppedSS'],": Same Speaker")
-            if 'gruppedOS' in dataDic:
-                self.__drawTable(dataDic['gruppedOS'],": Other Speaker")

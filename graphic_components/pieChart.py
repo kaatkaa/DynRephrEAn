@@ -7,39 +7,28 @@ from typing import Tuple, List, Dict, Any
 
 sys.path.insert(0,"..")
 from config.config_data_colector import DataProvider
+from graphic_components.superComponent import SuperChartComponent
 
-class Piechart2:
+class Piechart2(SuperChartComponent):
 
-    def __drawPie(self, data: Any, t: str):
+    def dataDisplay(self, data: Any, t: str):
         displayer = ""
         namesLst = list(data.columns.values)
-        if self.__cf['unit'] == "Percentage":
+        if self.cf['unit'] == "Percentage":
             displayer = 'percent+label'
-        elif self.__cf['unit'] == "Number":
+        elif self.cf['unit'] == "Number":
             displayer = 'text+label'
         if len(namesLst) == 3:
-            fig = px.pie(data, values=self.__cf['unit'], names=namesLst[2], color=namesLst[0],
-                        color_discrete_map=self.__cf['palette'],
-                        title=self.__cf['AnalysisUnit']+t
+            fig = px.pie(data, values=self.cf['unit'], names=namesLst[2], color=namesLst[0],
+                        color_discrete_map=self.cf['palette'],
+                        title=self.cf['AnalysisUnit']+t
             )
         else:
-            fig = px.pie(data, values=self.__cf['unit'], names=namesLst[0], color=namesLst[0],
-                        color_discrete_map=self.__cf['palette'],
-                        title=self.__cf['AnalysisUnit']+t
+            fig = px.pie(data, values=self.cf['unit'], names=namesLst[0], color=namesLst[0],
+                        color_discrete_map=self.cf['palette'],
+                        title=self.cf['AnalysisUnit']+t
             )
         fig.update_traces(textposition='inside', 
-                    text=data[self.__cf['unit']].map("#{:,}".format),
+                    text=data[self.cf['unit']].map("#{:,}".format),
                     textinfo=displayer)
-        st.plotly_chart(fig, config=DataProvider.getSaveConfig())
-
-    def __init__(self, dataDic: Dict[str, Any], config: Dict[str, Any]) -> None:
-        self.__cf = config
-        self.__prefix = config['prefix']
-        DataProvider.addSpacelines(1)
-        if 'gruppedAll' in dataDic:
-                self.__drawPie(dataDic['gruppedAll'],"")
-        else:
-            if 'gruppedSS' in dataDic:
-                self.__drawPie(dataDic['gruppedSS'],": Same Speaker")
-            if 'gruppedOS' in dataDic:
-                self.__drawPie(dataDic['gruppedOS'],": Other Speaker")               
+        st.plotly_chart(fig, config=DataProvider.getSaveConfig())            
