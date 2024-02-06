@@ -17,7 +17,7 @@ from submenus.tweaker import st_tweaker
 
 class SingleCorpusMenu:
 
-    __folterConfig: Dict[str, Any] = {
+    __filterConfig: Dict[str, Any] = {
         'generalConfig':DataProvider.getDynRephrESconfig()['DynRephAn for Sentiment'],
         'prefix':'no_prefix',
         'showUnits':True,
@@ -44,7 +44,7 @@ class SingleCorpusMenu:
         self.__anCfg = tmp[anType]
 
         #filterConfig:
-        self.__cf = SingleCorpusMenu.__folterConfig
+        self.__cf = SingleCorpusMenu.__filterConfig
         self.__cf['generalConfig'] = self.__anCfg
         self.__cf['prefix'] = prefix
 
