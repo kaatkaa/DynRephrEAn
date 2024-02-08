@@ -13,7 +13,10 @@ class DataProvider:
     __lst_of_dyn_rephr = ['Amelioration', 'Pejorativization', 'Neutralization','No_Change']
     __lst_of_dyn_rephrWS = ['A_strong','A_weak','P_strong','P_weak','Neutralization','No_Change']
     __lst_of_dyn_in_out = ['input','output']
+    __lst_of_dyn_LocIn_LocOut = ['locution_input','locution_output']
     __rephPSP_columns = ['inputPSP','outputPSP']
+    __rephPSP_columns2 = ['LinputPSP','LoutputPSP']
+
     __color_sentiment = {'Amelioration':'#3FEE0F','A_strong':'#28B900','A_weak':'#7CFF57','Pejorativization':'#FF0000'                     
                      ,'P_strong':'#BD0000','P_weak':'#FF5656','Neutralization':'#2EBDFF','No_Change': '#414040'}
     __color_ethos = {'Amelioration':'#3FEE0F','A_strong':'#28B900','A_weak':'#7CFF57','Pejorativization':'#FF0000'
@@ -60,12 +63,14 @@ class DataProvider:
     }
 
     __3d_PSP = ["PROPN","AUX","VERB","PRON","NOUN","CCONJ","ADP","DET","PART","ADJ","NUM","PUNCT","ADV","INTJ","SYM","SCONJ","SPACE","X"]
+
     __PoS_Converter = {"PROPN":"Proper noun","AUX":"Auxiliary verb",
         "VERB":"Verb","PRON":"Pronoun","NOUN":"Noun","CCONJ":"Coordinating conjunction",
         "ADP":"Adposition","DET":"Determinative","PART":"Part",
         "ADJ":"Adjective","NUM":"Cardinal numbers","PUNCT":"Punctuation","ADV":"Adverb",
         "INTJ":"Interjection","SYM":"Symbol","SCONJ":"Subordinating conjunction",
         "SPACE":"Space","X":"Unknowx","":"--"}
+    
     __3D_PSPdefalut = ["PROPN","AUX","VERB","PRON","NOUN","CCONJ","NUM"]
         
     __sav_image = {
@@ -111,10 +116,18 @@ class DataProvider:
     @staticmethod
     def getInOutColLst():
         return DataProvider.__lst_of_dyn_in_out
+    
+    @staticmethod
+    def getLocInOut():
+        return DataProvider.__lst_of_dyn_LocIn_LocOut
 
     @staticmethod
-    def getPSPcolumns():
+    def getPSPcolumns1():
         return DataProvider.__rephPSP_columns
+    
+    @staticmethod
+    def getPSPcolumns2():
+        return DataProvider.__rephPSP_columns2
 
     @staticmethod
     def getPSPlst():

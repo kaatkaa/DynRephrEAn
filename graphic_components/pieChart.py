@@ -14,21 +14,21 @@ class Piechart2(SuperChartComponent):
     def dataDisplay(self, data: Any, t: str):
         displayer = ""
         namesLst = list(data.columns.values)
-        if self.cf['unit'] == "Percentage":
+        if self.cf['unitPercentNumber'] == "Percentage":
             displayer = 'percent+label'
-        elif self.cf['unit'] == "Number":
+        elif self.cf['unitPercentNumber'] == "Number":
             displayer = 'text+label'
         if len(namesLst) == 3:
-            fig = px.pie(data, values=self.cf['unit'], names=namesLst[2], color=namesLst[0],
+            fig = px.pie(data, values=self.cf['unitPercentNumber'], names=namesLst[2], color=namesLst[0],
                         color_discrete_map=self.cf['palette'],
-                        title=self.cf['AnalysisUnit']+t
+                        title=self.cf['ADU_or_Speaker']+" "+t
             )
         else:
-            fig = px.pie(data, values=self.cf['unit'], names=namesLst[0], color=namesLst[0],
+            fig = px.pie(data, values=self.cf['unitPercentNumber'], names=namesLst[0], color=namesLst[0],
                         color_discrete_map=self.cf['palette'],
-                        title=self.cf['AnalysisUnit']+t
+                        title=self.cf['ADU_or_Speaker']+" "+t
             )
         fig.update_traces(textposition='inside', 
-                    text=data[self.cf['unit']].map("#{:,}".format),
+                    text=data[self.cf['unitPercentNumber']].map("#{:,}".format),
                     textinfo=displayer)
         st.plotly_chart(fig, config=DataProvider.getSaveConfig())            

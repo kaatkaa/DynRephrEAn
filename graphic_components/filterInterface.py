@@ -1,0 +1,189 @@
+import streamlit as st
+import sys
+from typing import Tuple, List, Dict, Any
+from wordcloud import STOPWORDS
+
+
+sys.path.insert(0,"..")
+from config.config_data_colector import DataProvider
+from data_manipulation.data_manipulator import DataManipulator
+
+class FilterInterface:
+
+    __config: Dict[str, Any]={
+        'generalConfig':DataProvider.getDynRephrESconfig()['DynRephAn for Sentiment'],
+        'prefix':'no_prefix_set_',
+        # imediatePlot - set to True if plotting single corpora charts 
+        # - to False if plotting in comparative analysis charts
+        'imediatePlot': True,
+        'showPercentageNumber': False,
+        'unitPercentNumber': 'Percentage',
+        'unitsPercentageNumber': ('Percentage','Number'),
+        'showCategoriesInterface': False,
+        'categoriesColumn': '',
+        'categoriesLst': DataProvider.getDynRephDimentions(),
+        'categoriesInterfaceTitle': 'Wordcloud_filterInterface',
+        'ADU_or_Speaker': '',
+        'SS rephrase': False,
+        'OS rephrase': False,
+        'showInOutInterface': True,
+        'inOutLst': DataProvider.getInOutColLst(),
+        'palette': DataProvider.getEthosColors(),
+        'showStopWordsInterface':False,
+        'showStopwords':False,
+        'useStopwords':False,
+        'StopwordsSet': set(),
+        'showPOSInterface':False,
+        'posColumns': DataProvider.getPSPcolumns1(),
+        'posCategories': DataProvider.getPSPlst()
+    }
+
+    def __init__(self, config: Dict[str, Any]) -> None:
+        self.__cf=FilterInterface.__config
+        self.__keyCtr = 0
+        for cfg in config.items():
+            self.__cf[cfg[0]] = cfg[1]
+        self.__stop_words_set = set()
+        for word in DataProvider.getCustomStopWords():
+            self.__stop_words_set.add(word)
+        for word in list(STOPWORDS):
+            self.__stop_words_set.add(word)
+        self.__cf['StopwordsSet'] = self.__stop_words_set
+        self.__filterInterface()
+
+    def getConfig(self) -> Tuple[Dict[str, Any]]:
+        return self.__cf
+
+    def __filterInterface(self) -> Tuple[Any, list[str]]:
+
+        col_radio1, col_radio2, col_chckbox1= st.columns(3)
+
+        if self.__cf['showPercentageNumber']:
+            with col_radio1:
+                self.__units()
+            
+        if self.__cf['showCategoriesInterface']:
+            self.__categories(col_radio2)
+
+        if self.__cf['ADU_or_Speaker'] == 'Speaker-Based Analysis':
+            with col_chckbox1:
+                self.__cf['SS rephrase'] = st.checkbox("SS rephrase",
+                    value=self.__cf['SS rephrase'],
+                    key=self.__cf['prefix']+"_SS"+str(self.__keyCtr))
+                self.__keyCtr += 1
+                self.__cf['OS rephrase'] = st.checkbox("OS rephrase",
+                    value=self.__cf['OS rephrase'],
+                    key=self.__cf['prefix']+"_OS"+str(self.__keyCtr))
+                self.__keyCtr += 1
+        
+        if self.__cf['showInOutInterface']:
+            self.__inOut()
+
+        if self.__cf['showStopWordsInterface']:
+            self.__stopWords()
+
+        if self.__cf['showPOSInterface']:
+            self.__cf['palette'] = DataProvider.getPoScolors()
+            self.__PoSinterface()
+        else:
+            self.__cf['palette'] = DataProvider.getEthosColors()
+
+    def __units(self):
+        self.__cf['unitPercentNumber'] = st.radio("Choose units",
+            self.__cf['unitsPercentageNumber'],                                                
+            key=self.__cf['prefix']+"_Units"+str(self.__keyCtr))
+        self.__keyCtr += 1
+        
+    def __categories(self, col) -> str:
+        with col:
+            display_complexity = st.radio(self.__cf['generalConfig'][self.__cf['categoriesInterfaceTitle']],
+                ("4-categories",
+                    "6-categories"),                                                 
+                key=self.__cf['prefix']+"_Rephrase_4-6cat"+str(self.__keyCtr))
+            self.__keyCtr += 1
+        if display_complexity == '4-categories':
+            self.__cf['categoriesLst'] = st.multiselect(self.__cf["generalConfig"]["Wordcloud_filterInterface"], 
+                                        sorted(DataProvider.getDynRephDimentions()), 
+                                        sorted(DataProvider.getDynRephDimentions())[:],
+                                        key = self.__cf['prefix']+"_multi_sel"+str(self.__keyCtr))
+            self.__keyCtr += 1
+            self.__cf['categoriesColumn'] = self.__cf['generalConfig']['colName']
+        elif display_complexity == '6-categories':
+            self.__cf['categoriesLst'] = st.multiselect(self.__cf['generalConfig']["Wordcloud_filterInterface"], 
+                                        sorted(DataProvider.getDynRephDimentionsWS()), 
+                                        sorted(DataProvider.getDynRephDimentionsWS())[:],
+                                        key = self.__cf['prefix']+"_multi_selWS"+str(self.__keyCtr))
+            self.__keyCtr += 1
+            self.__cf['categoriesColumn'] = self.__cf['generalConfig']['colNameWS']
+        else:
+            st.error("Oprion not implemented in __filterInterface, class: WordCloudOfEmotions")
+
+    def __inOut(self):
+        col_radio1, col_radio2= st.columns(2)
+        with col_radio1:
+            phrasesType = st.radio(self.__cf['generalConfig']['InOutType'],
+                            ("Input_Output",
+                                "Locution_Input_Output"),                                                 
+                            key=self.__cf['prefix']+"_inOutType"+str(self.__keyCtr))
+            self.__keyCtr += 1
+        with col_radio2:
+            if phrasesType == "Input_Output":
+                self.__cf['inOutLst'] = st.multiselect("Choose source of data you would like to visualise", 
+                                            DataProvider.getInOutColLst(), 
+                                            DataProvider.getInOutColLst()[:],
+                                            key = self.__cf['prefix']+"_multi_selInOut"+str(self.__keyCtr))
+                self.__keyCtr += 1
+            elif phrasesType == "Locution_Input_Output":
+                self.__cf['inOutLst'] = st.multiselect("Choose source of data you would like to visualise", 
+                                            DataProvider.getLocInOut(), 
+                                            DataProvider.getLocInOut()[:],
+                                            key = self.__cf['prefix']+"_multi_selLocInOut"+str(self.__keyCtr))
+                self.__keyCtr += 1
+            else:
+                st.error("Unknown option: ",phrasesType," in __inOut method.")
+
+    def __stopWords(self):
+        col1, col2 = st.columns([2,2])
+        with col1:
+            useStopWords = st.checkbox(label="Enable stop_words",
+                                        value=self.__cf['useStopwords'],
+                                        key=self.__cf['prefix']+"_StopWordsChck"+str(self.__keyCtr),
+                                        )
+            self.__keyCtr += 1
+        with col2:
+            showStopWords = st.checkbox(label="Show stop_words",
+                                        value=self.__cf['showStopwords'],
+                                        key=self.__cf['prefix']+"_ShowWordsChck"+str(self.__keyCtr)
+                                        )
+            self.__keyCtr += 1
+        if showStopWords:
+            st.write(self.__stop_words_set)
+        self.__cf['useStopwords'] = useStopWords
+    
+    def __PoSinterface(self):
+        col1, col2 = st.columns(2)
+        with col1:
+            colType = st.radio(self.__cf['generalConfig'][self.__cf['categoriesInterfaceTitle']],
+                ("iLocutions",
+                    "Locutions"),                                                 
+                key=self.__cf['prefix']+"_Rephrase_4-6cat"+str(self.__keyCtr))
+        with col2:
+            if colType == "iLocutions":
+                self.__cf['posColumns'] = st.multiselect(self.__cf['generalConfig']['POS_inOut'], 
+                                            sorted(DataProvider.getPSPcolumns1()), 
+                                            sorted(DataProvider.getPSPcolumns1())[:],
+                                            key = self.__cf['prefix']+"_multiInOutPOS"+str(self.__keyCtr))
+                self.__keyCtr += 1
+            elif colType == "Locutions":
+                self.__cf['posColumns'] = st.multiselect(self.__cf['generalConfig']['POS_inOut'], 
+                                            sorted(DataProvider.getPSPcolumns2()), 
+                                            sorted(DataProvider.getPSPcolumns2())[:],
+                                            key = self.__cf['prefix']+"_multiInOutPOS"+str(self.__keyCtr))
+                self.__keyCtr += 1
+            else:
+                st.error("Wrong option in __PoSinterface: colType==",colType)                
+        self.__cf['posCategories'] = st.multiselect(self.__cf['generalConfig']['POS_title'], 
+                                    sorted(DataProvider.getPSPlst()), 
+                                    sorted(DataProvider.getPSPlstDefault())[:],
+                                    key = self.__cf['prefix']+"_multiPOS"+str(self.__keyCtr))
+        self.__keyCtr += 1

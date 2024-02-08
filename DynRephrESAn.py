@@ -13,8 +13,6 @@ import json
 
 from submenus.single_corpus import SingleCorpusMenu
 from submenus.comparative_corpus import CmpCorpusMenu
-from submenus.three_d_corpus import ThreeDCorpusMenu
-from submenus._3D_PSP_corpus import _3D_PSP_corpus
 from config.config_data_colector import DataProvider
 
 from PIL import Image

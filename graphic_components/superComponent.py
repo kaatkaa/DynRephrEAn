@@ -9,7 +9,7 @@ sys.path.insert(0,"..")
 
 class SuperChartComponent:
 
-    def dataDisplay(self, data: pd, title: str) -> None:
+    def dataDisplay(self, data: Any, t: str) -> None:
         st.write("This is SuperChartComponent of non overlapped method.")
 
     def __init__(self, dataDic: Dict[str, Any], config: Dict[str, Any]) -> None:
@@ -20,7 +20,7 @@ class SuperChartComponent:
 
 class SuperTextComponent:
 
-    def dataDisplay(self, data: pd, title: str) -> None:
+    def dataDisplay(self, data: Any, t: str) -> None:
         st.write("This is SuperTextComponent of non overlapped method.")
 
     def __init__(self, dataDic: Dict[str, Any], config: Dict[str, Any]) -> None:

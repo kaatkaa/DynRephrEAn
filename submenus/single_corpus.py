@@ -4,34 +4,18 @@ from typing import Tuple, List, Dict, Any
 
 import sys
 sys.path.insert(0,"..")
-from graphic_components.filter import Filter
+from graphic_components.filterInterface import FilterInterface
+from data_manipulation.data_filter import DataFilter
 from data_display.display_single_corpus import WordCloudOfEmotions
-from data_display.display_single_corpus import Piechart
 from graphic_components.pieChart import Piechart2
 from graphic_components.barChart import Barchart2
 from graphic_components.table import Table2
 from graphic_components.textAnalysis import Cases2
-from graphic_components.PoScharts import PoS
+from graphic_components.pos import PoS
 from config.config_data_colector import DataProvider
 from submenus.tweaker import st_tweaker
 
 class SingleCorpusMenu:
-
-    __filterConfig: Dict[str, Any] = {
-        'generalConfig':DataProvider.getDynRephrESconfig()['DynRephAn for Sentiment'],
-        'prefix':'no_prefix',
-        'showUnits':True,
-        'units': ("Percentage","Number"),
-        'unit': 'Percentage',
-        'showCategoriesInterface': True,
-        'categoriesInterfaceTitle': 'Wordcloud_filterInterface',
-        'showInOutInterface': True,
-        'inOutLst': DataProvider.getInOutColLst(),
-        'showStopWordsInterface':True,
-        'showStopwords':False,
-        'useStopwords':True,
-        'showPOSInterface':False
-    }
 
     def __init__(self, dataDic: dict[str : pd.DataFrame()], prefix: str="0_", anType: str="DynRephAn for Sentiment") -> None:
         #dictionary containing all possible data with corpora indexed by name
@@ -41,12 +25,8 @@ class SingleCorpusMenu:
         #loading config file for ethos and sentiment
         tmp = DataProvider.getDynRephrESconfig()
         #config file with messages and column names for Ethos and Sentiment
-        self.__anCfg = tmp[anType]
-
-        #filterConfig:
-        self.__cf = SingleCorpusMenu.__filterConfig
-        self.__cf['generalConfig'] = self.__anCfg
-        self.__cf['prefix'] = prefix
+        self.__anCfg = {}
+        self.__anCfg['generalConfig'] = tmp[anType]
 
         self.__rephrase_df = pd.DataFrame()
         self.__rephrase_old = pd.DataFrame()
@@ -162,26 +142,6 @@ class SingleCorpusMenu:
             
 
     def sidebar(self):
-
-        __defaultConfig: Dict[str, Any]={
-            'generalConfig':self.__anCfg,
-            'prefix':'PoS_',
-            'column': "",
-            'showUnits': True,
-            'units': ("Percentage","Number"),
-            'unit': 'Percentage',
-            'showCategoriesInterface': True,
-            'categoriesInterfaceTitle': 'Wordcloud_filterInterface',
-            'AnalysisUnit': "",
-            'SS rephrase': True,
-            'OS rephrase': False,
-            'showInOutInterface': False,
-            'inOutLst': DataProvider.getInOutColLst(),
-            'showStopWordsInterface':False,
-            'showStopwords':False,
-            'useStopwords':False,
-            'showPOSInterface':True
-        }
         
         with st.sidebar:
             st.subheader("Choose Corpora: ")           
@@ -189,10 +149,10 @@ class SingleCorpusMenu:
             self.__corporaPickerChckBox()
             st.write("****************************")
             st.subheader("Analysis Units")
-            units_choice = st.radio("", ("ADU-Based Analysis",
+            ADU_or_Speaker = st.radio("", ("ADU-Based Analysis",
                                             "Speaker-Based Analysis"
                                             ), key=self.__prefix+"units")
-
+            self.__anCfg['ADU_or_Speaker'] = ADU_or_Speaker
             #if units == "ADU-Based Analysis":
             st.write("****************************")
             st.subheader("Analitics module")
@@ -201,21 +161,33 @@ class SingleCorpusMenu:
                                         key=self.__prefix+"post", label_visibility="hidden"
                                     )
         if module_choice == "n-grams":
-            WordCloudOfEmotions(self.__rephrase_df,analysisType="Cases",unit=units_choice, configDic=self.__anCfg, prefix="CasesA",x="n-gram")
+            WordCloudOfEmotions(self.__rephrase_df,analysisType="Cases",unit=ADU_or_Speaker, configDic=self.__anCfg, prefix="CasesA",x="n-gram")
         elif module_choice == "Wordcloud":
-            WordCloudOfEmotions(self.__rephrase_df,analysisType="Wordcloud",unit=units_choice, configDic=self.__anCfg, prefix="WordCloud")
+            WordCloudOfEmotions(self.__rephrase_df,analysisType="Wordcloud",unit=ADU_or_Speaker, configDic=self.__anCfg, prefix="WordCloud")
         elif module_choice == "Distribution":
             #Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg, prefix="PieChart", table=False)
-            self.container(s="_sub", units_choice=units_choice)
+            self.container(s="_sub", units_choice=ADU_or_Speaker)
         elif module_choice == "PoS":
-            PoS(df=self.__rephrase_df,config=__defaultConfig)
+            PoS(df=self.__rephrase_df,cfg=self.__anCfg)
         else:
             raise NotImplementedError("Unsupported option of Analytical module in single_corpus.py .")
         
     def container(self, s: str="",units_choice: str=""):
-        self.__cf['AnalysisUnit'] = units_choice
-        filter1 = Filter(data=self.__rephrase_df, config=self.__cf)
-        dataDic, config = filter1.getData()
+        filterCfg = {
+            'prefix':'distributions_',
+            'ADU_or_Speaker': units_choice,
+            'showPercentageNumber': True,
+            'showCategoriesInterface': True,
+            'SS rephrase': True,
+            'OS rephrase': False,
+            'showInOutInterface': True,
+            'showStopWordsInterface':True,
+            'showStopwords':False,
+            'useStopwords':True,
+            'showPOSInterface':False
+        }
+        config = FilterInterface(config=filterCfg).getConfig()
+        dataDic = DataFilter(data=self.__rephrase_df,config=config).getDataDict()
         pieTab, barTab, tableTab, casesTab = st.tabs([":pizza: PieChart",":bar_chart: BarChart",":black_square_button: Table",":speech_balloon: Cases"])
         with pieTab:
             #Distribution of ethos/sentiment dynamics in rephrase

@@ -9,10 +9,10 @@ from config.config_data_colector import DataProvider
 from graphic_components.superComponent import SuperChartComponent
 
 class Table2(SuperChartComponent):
-    def dataDisplay(self, df: Any, title: str):
+    def dataDisplay(self, df: Any, t: str):
         columnLst = list(df.columns.values)
         def make_pretty(styler):
-            styler.set_caption(self.cf['AnalysisUnit']+title)
+            styler.set_caption(self.cf['ADU_or_Speaker']+" "+t)
             styler.set_table_styles(DataProvider.getTableFormat())
             return styler
         df.index += 1
