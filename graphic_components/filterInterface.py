@@ -27,6 +27,7 @@ class FilterInterface:
         'SS rephrase': False,
         'OS rephrase': False,
         'showInOutInterface': True,
+        'showInOutVsLoc': False,
         'inOutLst': DataProvider.getInOutColLst(),
         'palette': DataProvider.getEthosColors(),
         'showStopWordsInterface':False,
@@ -51,7 +52,7 @@ class FilterInterface:
         self.__cf['StopwordsSet'] = self.__stop_words_set
         self.__filterInterface()
 
-    def getConfig(self) -> Tuple[Dict[str, Any]]:
+    def getConfig(self) -> Dict[str, Any]:
         return self.__cf
 
     def __filterInterface(self) -> Tuple[Any, list[str]]:
@@ -121,11 +122,14 @@ class FilterInterface:
     def __inOut(self):
         col_radio1, col_radio2= st.columns(2)
         with col_radio1:
-            phrasesType = st.radio(self.__cf['generalConfig']['InOutType'],
-                            ("Input_Output",
-                                "Locution_Input_Output"),                                                 
-                            key=self.__cf['prefix']+"_inOutType"+str(self.__keyCtr))
-            self.__keyCtr += 1
+            if self.__cf['showInOutVsLoc']:
+                phrasesType = st.radio(self.__cf['generalConfig']['InOutType'],
+                                ("Input_Output",
+                                    "Locution_Input_Output"),                                                 
+                                key=self.__cf['prefix']+"_inOutType"+str(self.__keyCtr))
+                self.__keyCtr += 1
+            else:
+                phrasesType = "Input_Output"
         with col_radio2:
             if phrasesType == "Input_Output":
                 self.__cf['inOutLst'] = st.multiselect("Choose source of data you would like to visualise", 
@@ -164,17 +168,17 @@ class FilterInterface:
         col1, col2 = st.columns(2)
         with col1:
             colType = st.radio(self.__cf['generalConfig'][self.__cf['categoriesInterfaceTitle']],
-                ("iLocutions",
-                    "Locutions"),                                                 
+                ("input & output",
+                    "Locution input & Locution output"),                                                 
                 key=self.__cf['prefix']+"_Rephrase_4-6cat"+str(self.__keyCtr))
         with col2:
-            if colType == "iLocutions":
+            if colType == "input & output":
                 self.__cf['posColumns'] = st.multiselect(self.__cf['generalConfig']['POS_inOut'], 
                                             sorted(DataProvider.getPSPcolumns1()), 
                                             sorted(DataProvider.getPSPcolumns1())[:],
                                             key = self.__cf['prefix']+"_multiInOutPOS"+str(self.__keyCtr))
                 self.__keyCtr += 1
-            elif colType == "Locutions":
+            elif colType == "Locution input & Locution output":
                 self.__cf['posColumns'] = st.multiselect(self.__cf['generalConfig']['POS_inOut'], 
                                             sorted(DataProvider.getPSPcolumns2()), 
                                             sorted(DataProvider.getPSPcolumns2())[:],

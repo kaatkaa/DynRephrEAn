@@ -35,6 +35,7 @@ def style_css(file):
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 #style_css('multi_style.css')
+st.set_page_config(layout="wide")
 
 @st.cache_data
 def load_data(dir_address: str) -> dict[str : pd.DataFrame()]:

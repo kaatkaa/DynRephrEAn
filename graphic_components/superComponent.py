@@ -7,10 +7,15 @@ from typing import Tuple, List, Dict, Any
 
 sys.path.insert(0,"..")
 
-class SuperChartComponent:
+class dataHandlerDisplayInterface:
 
     def dataDisplay(self, data: Any, t: str) -> None:
-        st.write("This is SuperChartComponent of non overlapped method.")
+        st.write("This is SuperChartComponent of overlapped method.")
+
+    def getChartObj(self, data: Any, t: str) -> Any:
+        st.write("This should return chart obj.")
+
+class SuperChartComponent(dataHandlerDisplayInterface):
 
     def __init__(self, dataDic: Dict[str, Any], config: Dict[str, Any]) -> None:
         self.cf = config
@@ -18,10 +23,7 @@ class SuperChartComponent:
             if not key.startswith("whole"):
                 self.dataDisplay(dataDic[key],key)
 
-class SuperTextComponent:
-
-    def dataDisplay(self, data: Any, t: str) -> None:
-        st.write("This is SuperTextComponent of non overlapped method.")
+class SuperTextComponent(dataHandlerDisplayInterface):
 
     def __init__(self, dataDic: Dict[str, Any], config: Dict[str, Any]) -> None:
         self.cf = config

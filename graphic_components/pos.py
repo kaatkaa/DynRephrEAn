@@ -23,7 +23,7 @@ class PoS:
         'showInOutInterface': False,
         'SS rephrase': True,
         'OS rephrase': False,
-        'showStopWordsInterface':True,
+        'showStopWordsInterface':False,
         'showPOSInterface':True
     }
 

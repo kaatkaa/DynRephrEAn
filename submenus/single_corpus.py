@@ -6,11 +6,12 @@ import sys
 sys.path.insert(0,"..")
 from graphic_components.filterInterface import FilterInterface
 from data_manipulation.data_filter import DataFilter
-from data_display.display_single_corpus import WordCloudOfEmotions
+from graphic_components.wordCoud import WordCloudOfRephrase
 from graphic_components.pieChart import Piechart2
 from graphic_components.barChart import Barchart2
 from graphic_components.table import Table2
 from graphic_components.textAnalysis import Cases2
+from graphic_components.ngrams import Ngrams
 from graphic_components.pos import PoS
 from config.config_data_colector import DataProvider
 from submenus.tweaker import st_tweaker
@@ -161,9 +162,42 @@ class SingleCorpusMenu:
                                         key=self.__prefix+"post", label_visibility="hidden"
                                     )
         if module_choice == "n-grams":
-            WordCloudOfEmotions(self.__rephrase_df,analysisType="Cases",unit=ADU_or_Speaker, configDic=self.__anCfg, prefix="CasesA",x="n-gram")
+            __filterWordCloud = {
+                'prefix':'WordCloud_',
+                'ADU_or_Speaker': ADU_or_Speaker,
+                'showPercentageNumber': False,
+                'showCategoriesInterface': True,
+                'SS rephrase': True,
+                'OS rephrase': False,
+                'showInOutInterface': True,
+                'showInOutVsLoc': True,
+                'showStopWordsInterface':True,
+                'showStopwords':False,
+                'useStopwords':True,
+                'showPOSInterface':False
+            }
+            config = FilterInterface(config=__filterWordCloud).getConfig()
+            dataDict = DataFilter(data=self.__rephrase_df,config=config).getDataDict()
+            Ngrams(dataDic=dataDict,config=config)
         elif module_choice == "Wordcloud":
-            WordCloudOfEmotions(self.__rephrase_df,analysisType="Wordcloud",unit=ADU_or_Speaker, configDic=self.__anCfg, prefix="WordCloud")
+            #WordCloudOfEmotions(self.__rephrase_df,analysisType="Wordcloud",unit=ADU_or_Speaker, configDic=self.__anCfg, prefix="WordCloud")
+            __filterWordCloud = {
+                'prefix':'WordCloud_',
+                'ADU_or_Speaker': ADU_or_Speaker,
+                'showPercentageNumber': False,
+                'showCategoriesInterface': True,
+                'SS rephrase': True,
+                'OS rephrase': False,
+                'showInOutInterface': True,
+                'showInOutVsLoc': True,
+                'showStopWordsInterface':True,
+                'showStopwords':False,
+                'useStopwords':True,
+                'showPOSInterface':False
+            }
+            config = FilterInterface(config=__filterWordCloud).getConfig()
+            dataDict = DataFilter(data=self.__rephrase_df,config=config).getDataDict()
+            WordCloudOfRephrase(dataDic=dataDict,config=config)
         elif module_choice == "Distribution":
             #Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg, prefix="PieChart", table=False)
             self.container(s="_sub", units_choice=ADU_or_Speaker)
@@ -181,6 +215,7 @@ class SingleCorpusMenu:
             'SS rephrase': True,
             'OS rephrase': False,
             'showInOutInterface': True,
+            'showInOutVsLoc': True,
             'showStopWordsInterface':True,
             'showStopwords':False,
             'useStopwords':True,

@@ -12,6 +12,7 @@ class DataProvider:
     __dyn_rephr_file = 'config/dyn_rephr_cfg.json'
     __lst_of_dyn_rephr = ['Amelioration', 'Pejorativization', 'Neutralization','No_Change']
     __lst_of_dyn_rephrWS = ['A_strong','A_weak','P_strong','P_weak','Neutralization','No_Change']
+    
     __lst_of_dyn_in_out = ['input','output']
     __lst_of_dyn_LocIn_LocOut = ['locution_input','locution_output']
     __rephPSP_columns = ['inputPSP','outputPSP']

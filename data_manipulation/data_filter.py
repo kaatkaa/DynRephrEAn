@@ -51,7 +51,7 @@ class DataFilter:
 
     def __init__(self, data: Any, config: Dict[str, Any]) -> None:
         self.__cf=DataFilter.__config
-        self.__stop_words_set = config['StopwordsSet']
+        self.__stop_words_set = self.__cf['StopwordsSet']
         if len(data) > 0:
             for cfg in config.items():
                 self.__cf[cfg[0]] = cfg[1]
@@ -93,7 +93,6 @@ class DataFilter:
                     self.__outDict["wholeOS"]=self.__outputData[self.__outputData['speaker_input']!=self.__outputData['speaker_output']]
                     self.__outDict["gruppedOS"] = self.__distributionData(self.__outDict["wholeOS"], self.__cf['categoriesColumn'])
             else:
-                st.write("All here!!")
                 self.__outDict["wholeAll"] = self.__outputData
                 self.__outDict["gruppedAll"] = self.__distributionData(self.__outputData, self.__cf['categoriesColumn']) 
     
@@ -107,18 +106,20 @@ class DataFilter:
             lst1, lst2, lst3 = [l[0] for l in lstOfTuples], [l[1] for l in lstOfTuples], [cnv[l[0]] for l in lstOfTuples]
             return pd.DataFrame.from_dict({col1Name:lst1,col2Name:lst2,"PoS full name":lst3})
         if self.__cf['ADU_or_Speaker'] == 'Speaker-Based Analysis':
-            self.__outDict["wholeSS"]=self.__outputData[self.__outputData['speaker_input']==self.__outputData['speaker_output']]
-            self.__outDict["wholeOS"]=self.__outputData[self.__outputData['speaker_input']!=self.__outputData['speaker_output']]
-            self.__outDict["gruppedSS"] = dfFromDic(
-                "PoS_type",
-                self.__cf['unitPercentNumber'],
-                self.__posData(data=self.__outDict['wholeSS'],inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories'])
-            )
-            self.__outDict["gruppedOS"] = dfFromDic(
-                 "PoS_type",
-                self.__cf['unitPercentNumber'],
-                self.__posData(data=self.__outDict['wholeOS'],inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories'])               
-            )
+            if self.__cf['SS rephrase']:
+                self.__outDict["wholeSS"]=self.__outputData[self.__outputData['speaker_input']==self.__outputData['speaker_output']]
+                self.__outDict["gruppedSS"] = dfFromDic(
+                    "PoS_type",
+                    self.__cf['unitPercentNumber'],
+                    self.__posData(data=self.__outDict['wholeSS'],inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories'])
+                )
+            if self.__cf['OS rephrase']:
+                self.__outDict["wholeOS"]=self.__outputData[self.__outputData['speaker_input']!=self.__outputData['speaker_output']]
+                self.__outDict["gruppedOS"] = dfFromDic(
+                    "PoS_type",
+                    self.__cf['unitPercentNumber'],
+                    self.__posData(data=self.__outDict['wholeOS'],inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories'])               
+                )
         else:
             self.__outDict["wholeAll"] = self.__outputData
             self.__outDict["gruppedAll"] = dfFromDic("PoS_type",self.__cf['unitPercentNumber'],
