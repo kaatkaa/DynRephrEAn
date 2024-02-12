@@ -11,7 +11,7 @@ from config.config_data_colector import DataProvider
 from graphic_components.superComponent import SuperChartComponent
 
 class Barchart2(SuperChartComponent):
-    def dataDisplay(self, data: Any, t: str):
+    def getChartObj(self, data: Any, t: str) -> sns.barplot():
         columnLst = list(data.columns.values)
         z = sns.barplot(data = data, x = columnLst[0], y = columnLst[1], 
             palette = self.cf['palette'])
@@ -24,6 +24,10 @@ class Barchart2(SuperChartComponent):
         z.set_xlabel(columnLst[0],fontsize=20)
         z.set_ylabel(columnLst[1], fontsize=20)
         z.tick_params(labelsize=20)
-        st.pyplot(fig=z.get_figure(), config=DataProvider.getSaveConfig())
-        z.containers.pop()
-        z.cla()
+        return z
+
+    def dataDisplay(self, data: Any, t: str) -> Any:
+        fig = self.getChartObj(data, t)
+        st.pyplot(fig=fig.get_figure(), config=DataProvider.getSaveConfig())
+        fig.containers.pop()
+        fig.cla()

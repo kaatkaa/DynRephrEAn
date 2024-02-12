@@ -11,7 +11,7 @@ from graphic_components.superComponent import SuperChartComponent
 
 class Piechart2(SuperChartComponent):
 
-    def dataDisplay(self, data: Any, t: str):
+    def getChartObj(self, data: Any, t: str) -> px.pie():
         displayer = ""
         namesLst = list(data.columns.values)
         if self.cf['unitPercentNumber'] == "Percentage":
@@ -31,4 +31,8 @@ class Piechart2(SuperChartComponent):
         fig.update_traces(textposition='inside', 
                     text=data[self.cf['unitPercentNumber']].map("#{:,}".format),
                     textinfo=displayer)
+        return fig
+        
+    def dataDisplay(self, data: Any, t: str) -> None:
+        fig = self.getChartObj(data, t)
         st.plotly_chart(fig, config=DataProvider.getSaveConfig())            
