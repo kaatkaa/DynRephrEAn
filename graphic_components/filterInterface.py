@@ -16,6 +16,7 @@ class FilterInterface:
         # imediatePlot - set to True if plotting single corpora charts 
         # - to False if plotting in comparative analysis charts
         'imediatePlot': True,
+        'textInstances': 1,
         'showPercentageNumber': False,
         'unitPercentNumber': 'Percentage',
         'unitsPercentageNumber': ('Percentage','Number'),

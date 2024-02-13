@@ -40,7 +40,7 @@ class _3D_PSP_corpus:
         with col1:
             colName = st.multiselect("Choose input(first phrase)/output(rephrase)", 
                                         default=st.session_state[str(self.__prefix)+"filterLst2"],
-                                        options=DataProvider.getPSPcolumns(),
+                                        options=DataProvider.getPSPcolumns1(),
                                         on_change=get_new_values_list,
                                         kwargs={'key': str(self.__prefix)+"filterLst2"},
                                         key = str(self.__prefix)+"filterLst2")
@@ -99,7 +99,7 @@ class _3D_PSP_corpus:
         if str(self.__prefix + 'filterLst') not in st.session_state:
             st.session_state[self.__prefix + 'filterLst'] = DataProvider.getPSPlstDefault()
         if str(self.__prefix + 'filterLst2') not in st.session_state:
-            st.session_state[self.__prefix + 'filterLst2'] = DataProvider.getPSPcolumns()
+            st.session_state[self.__prefix + 'filterLst2'] = DataProvider.getPSPcolumns1()
         self.__plotData1 = None
         #dictionary containing all possible data with corpora indexed by name
         self.__dataDic = dataDic

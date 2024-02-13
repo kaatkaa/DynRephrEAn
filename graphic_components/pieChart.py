@@ -14,22 +14,22 @@ class Piechart2(SuperChartComponent):
     def getChartObj(self, data: Any, t: str) -> px.pie():
         displayer = ""
         namesLst = list(data.columns.values)
-        if self.cf['unitPercentNumber'] == "Percentage":
+        if self._cf['unitPercentNumber'] == "Percentage":
             displayer = 'percent+label'
-        elif self.cf['unitPercentNumber'] == "Number":
+        elif self._cf['unitPercentNumber'] == "Number":
             displayer = 'text+label'
         if len(namesLst) == 3:
-            fig = px.pie(data, values=self.cf['unitPercentNumber'], names=namesLst[2], color=namesLst[0],
-                        color_discrete_map=self.cf['palette'],
-                        title=self.cf['ADU_or_Speaker']+" "+t
+            fig = px.pie(data, values=self._cf['unitPercentNumber'], names=namesLst[2], color=namesLst[0],
+                        color_discrete_map=self._cf['palette'],
+                        title=self._cf['ADU_or_Speaker']+" "+t
             )
         else:
-            fig = px.pie(data, values=self.cf['unitPercentNumber'], names=namesLst[0], color=namesLst[0],
-                        color_discrete_map=self.cf['palette'],
-                        title=self.cf['ADU_or_Speaker']+" "+t
+            fig = px.pie(data, values=self._cf['unitPercentNumber'], names=namesLst[0], color=namesLst[0],
+                        color_discrete_map=self._cf['palette'],
+                        title=self._cf['ADU_or_Speaker']+" "+t
             )
         fig.update_traces(textposition='inside', 
-                    text=data[self.cf['unitPercentNumber']].map("#{:,}".format),
+                    text=data[self._cf['unitPercentNumber']].map("#{:,}".format),
                     textinfo=displayer)
         return fig
         

@@ -58,8 +58,8 @@ class ComparativeCorporaSimple:
             selected = anCfg['colNameWS']
 
         inOutPOS = st.multiselect("Choose input/output", 
-                                    sorted(DataProvider.getPSPcolumns()), 
-                                    sorted(DataProvider.getPSPcolumns())[:],
+                                    sorted(DataProvider.getPSPcolumns1()), 
+                                    sorted(DataProvider.getPSPcolumns1())[:],
                                     key = prefix+"_multiInOutPOS")
         POS_filter = st.multiselect("Choose parts of speech", 
                                     sorted(DataProvider.getPSPlst()), 

@@ -17,10 +17,10 @@ class Ngrams(SuperTextComponent):
     def dataDisplay(self, data: Any, t: str) -> None:
         lstOfInOut = []
         restLst = []
-        if set(self.cf['inOutLst']) <= set(DataProvider.getInOutColLst()):
+        if set(self._cf['inOutLst']) <= set(DataProvider.getInOutColLst()):
             lstOfInOut = DataProvider.getInOutColLst()
             restLst = DataProvider.getLocInOut()
-        elif set(self.cf['inOutLst']) <= set(DataProvider.getLocInOut()):
+        elif set(self._cf['inOutLst']) <= set(DataProvider.getLocInOut()):
             lstOfInOut = DataProvider.getLocInOut()
             restLst = DataProvider.getInOutColLst()
         else:
@@ -29,7 +29,7 @@ class Ngrams(SuperTextComponent):
             return f"background-color: {DataProvider.getRephraseAndEmptycolors()['Rephrase']};"
         wordLst = []
         if len(data) > 0:  
-            for inOut in self.cf['inOutLst']: 
+            for inOut in self._cf['inOutLst']:
                 for token in map(str,",".join(data[inOut].dropna().to_numpy(na_value="")).split(",")):
                     wordLst.extend(ngrams(token.split(" "), 1))
         if len(wordLst) > 0:
@@ -38,7 +38,7 @@ class Ngrams(SuperTextComponent):
             ngramType = st.slider("Choose n-gram type: (1-4)",1,value=1, max_value=4)
             st.subheader("Pick phrase to analyse: ")
             NgramLst = []
-            for inOut in self.cf['inOutLst']:
+            for inOut in self._cf['inOutLst']:
                 for token in map(str,",".join(data[inOut].dropna().to_numpy(na_value="")).split(",")):
                     NgramLst.extend(ngrams(token.split(" "), ngramType))
             NgramLst = FreqDist(NgramLst)
@@ -48,7 +48,7 @@ class Ngrams(SuperTextComponent):
             regexpStr = re.sub(r"^(.*)\s:\s[0-9]+$", r"\1", word)
             regExpCode = r"\s"+regexpStr+r"\s|^"+regexpStr+r"\s|\s"+regexpStr+r"$|^"+regexpStr+r"$"
             st.subheader("Selected phrase is marked in text below between stars: \*\*"+regexpStr+"\*\*")
-            if lstOfInOut[0] in self.cf['inOutLst'] and lstOfInOut[1] in self.cf['inOutLst']:
+            if lstOfInOut[0] in self._cf['inOutLst'] and lstOfInOut[1] in self._cf['inOutLst']:
                 filteredInputDF = data[data[lstOfInOut[0]].str.contains(regExpCode, case=False, regex=True)]
                 filteredInputDF.reset_index(inplace=True)
                 filterInOutDF = filteredInputDF[filteredInputDF[lstOfInOut[1]].str.contains(regExpCode, case=False, regex=True)]
@@ -56,7 +56,7 @@ class Ngrams(SuperTextComponent):
                 tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
                 tmpDf.index += 1
                 st.table(tmpDf[[*lstOfInOut,*restLst]].style.applymap(backgroung_color,subset=lstOfInOut))
-            elif lstOfInOut[0] in self.cf['inOutLst']:
+            elif lstOfInOut[0] in self._cf['inOutLst']:
                 filteredInputDF = data[data[lstOfInOut[0]].str.contains(regExpCode, case=False, regex=True)]
                 filteredInputDF.reset_index(inplace=True)
                 tmpDf = filteredInputDF[[*lstOfInOut,*restLst]]
@@ -64,7 +64,7 @@ class Ngrams(SuperTextComponent):
                 tmpDf.index += 1
                 st.table(tmpDf.style.applymap(backgroung_color,
                     subset=lstOfInOut[0]))
-            elif lstOfInOut[1] in self.cf['inOutLst']:
+            elif lstOfInOut[1] in self._cf['inOutLst']:
                 filteredOutputDF = data[data[lstOfInOut[1]].str.contains(regExpCode, case=False, regex=True)]
                 filteredOutputDF.reset_index(inplace=True)
                 tmpDf = filteredOutputDF[[*lstOfInOut,*restLst]]

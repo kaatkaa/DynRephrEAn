@@ -14,7 +14,7 @@ class Table2(SuperChartComponent):
     def getChartObj(self, df: Any, t: str):
         columnLst = list(df.columns.values)
         def make_pretty(styler):
-            styler.set_caption(self.cf['ADU_or_Speaker']+" "+t)
+            styler.set_caption(self._cf['ADU_or_Speaker']+" "+t)
             styler.set_table_styles(DataProvider.getTableFormat())
             return styler
         df.index += 1
@@ -26,7 +26,7 @@ class Table2(SuperChartComponent):
     def dataDisplay(self, data: Any, t: str) -> Any:
         tbl = self.getChartObj(data, t)
         st.table(tbl)
-        fn = "PNG/"+self.cf['ADU_or_Speaker']+" "+t+".png"
+        fn = "PNG/"+self._cf['ADU_or_Speaker']+" "+t+".png"
         dfi.export(tbl,filename=fn,dpi=200)
         with open(fn, "rb") as img:
             btn = st.download_button(
