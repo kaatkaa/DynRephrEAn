@@ -65,9 +65,6 @@ class DataFilter:
 
     def getDataDict(self) -> Dict[str, Any]:
         return self.__outDict
-    
-    def getDataframe(self) -> Any:
-        return self.__outputData
         
     def __filterInterface(self) -> Tuple[Any, list[str]]:
             
@@ -97,7 +94,9 @@ class DataFilter:
                     self.__outDict["wholeAll"] = self.__outputData
                     self.__outDict["gruppedAll"] = self.__distributionData(self.__outputData, self.__cf['categoriesColumn']) 
             else:
-                self.__outputData = self.__distributionData(self.__outputData, self.__cf['categoriesColumn'])
+                self.__outDict["wholeAll"] = self.__outputData
+                self.__outDict["gruppedAll"] = self.__distributionData(self.__outputData, self.__cf['categoriesColumn']) 
+                
     def __PoSinterface(self):
         def dfFromDic(col1Name: str, col2Name: str, dict: Dict[str, Any]):
             lstOfTuples = []
@@ -128,9 +127,9 @@ class DataFilter:
                 self.__outDict["gruppedAll"] = dfFromDic("PoS_type",self.__cf['unitPercentNumber'],
                     self.__posData(data=self.__outputData,inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories']))
         else:
-            self.__outputData = dfFromDic("PoS_type",self.__cf['unitPercentNumber'],
-                self.__posData(data=self.__outputData,inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories'])
-            )
+            self.__outDict["wholeAll"] = self.__outputData
+            self.__outDict["gruppedAll"] = dfFromDic("PoS_type",self.__cf['unitPercentNumber'],
+                self.__posData(data=self.__outputData,inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories']))
 
     def __distributionData(self, data, column):
         if self.__cf['unitPercentNumber'] == "Percentage":

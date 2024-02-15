@@ -9,10 +9,10 @@ sys.path.insert(0,"..")
 
 class dataHandlerDisplayInterface:
 
-    def dataDisplay(self, data: Any, t: str) -> None:
+    def dataDisplay(self, dataDic: Any, t: str) -> None:
         st.write("This is SuperChartComponent of methodo that should be verlapped.")
 
-    def getChartObj(self, data: Any, t: str) -> Any:
+    def getChartObj(self, dataDic: Any, t: str) -> Any:
         st.write("This is SuperChartComponent of methodo that should be verlapped.")
 
     def getChartsDic() -> Dict[str, Any]:
@@ -46,9 +46,12 @@ class SuperTextComponent(dataHandlerDisplayInterface):
                 if not key.startswith("grupped"):
                     self.dataDisplay(dataDic[key],key)
         else:
-            for key in dataDic.keys():
-                self.__chartDict[key] = self.getChartObj(dataDic[key],key)
-                self.__textDict[key] = self.getTextObj(dataDic[key],key)
+            for ctr, key in enumerate(dataDic.keys()):
+                self._cf['subChartPosition'] = ctr
+                if self._cf['objectToEnable'] == "Chart":
+                    self.__chartDict[key] = self.getChartObj(dataDic[key],key)
+                elif self._cf['objectToEnable'] == "Text":
+                    self.__textDict[key] = self.getTextObj(dataDic[key],key)
 
     def getTextObj(self, data: Any, t: str) -> Any:
         st.write("This is SuperChartComponent of methodo that should be verlapped.")

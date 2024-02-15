@@ -29,6 +29,8 @@ class FilterInterface:
         'SubTableYscale': 6.5,
         'SubTableFontSize': 24,
         # end of subplot Table configuration
+        # Variable below enables "Chart" or "Text" component in SuperTextComponent superclass
+        'objectToEnable': "Chart",
         'showPercentageNumber': False,
         'unitPercentNumber': 'Percentage',
         'unitsPercentageNumber': ('Percentage','Number'),

@@ -4,25 +4,36 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from typing import Any, Tuple, List
 from wordcloud import WordCloud
+from pandas.plotting import table
 
 from graphic_components.superComponent import SuperTextComponent
 sys.path.insert(0,"..")
 
 class WordCloudOfRephrase(SuperTextComponent):
 
-    def getChartObj(self, data: Any, t: str) -> Any:
-        joined_set = set()
-        for inOut in self._cf['inOutLst']: 
-            emo_set = set(",".join(data[inOut].dropna().to_numpy(na_value="")).split(","))
-            joined_set = joined_set | emo_set
-        lexicon = list(joined_set)
-        wordcloud = WordCloud(background_color="#493E38", colormap='YlOrRd', width=500, height=400,
-                            normalize_plurals=False).generate(" ".join(lexicon))
-        fig, ax = plt.subplots(figsize=(10, 10), facecolor=None)
-        ax.imshow(wordcloud)
-        plt.axis("off")
-        plt.tight_layout(pad=0)
-        return fig
+    def getChartObj(self, df: Any, t: str) -> Any:
+
+        if len(df) > 0:        
+            joined_set = set()
+            for inOut in self._cf['inOutLst']: 
+                emo_set = set(",".join(df[inOut].dropna().to_numpy(na_value="")).split(","))
+                joined_set = joined_set | emo_set
+            lexicon = list(joined_set)
+            wordcloud = WordCloud(background_color="#493E38", colormap='YlOrRd', width=500, height=400,
+                                normalize_plurals=False).generate(" ".join(lexicon))
+            if self._cf['imediatePlot']:
+                fig, ax = plt.subplots(figsize=(10, 10), facecolor=None)
+                ax.imshow(wordcloud)
+                plt.axis("off")
+                plt.tight_layout(pad=0)
+                return fig
+            else:
+                axTmp = self._cf['ax'][self._cf['_8x_dims'][self._cf['subChartPosition']][0],
+                        self._cf['_8x_dims'][self._cf['subChartPosition']][1]]
+                axTmp.title.set_text(t)
+                axTmp.xaxis.set_visible(False)  # hide the x axis
+                axTmp.yaxis.set_visible(False)  # hide the y axis
+                axTmp.imshow(wordcloud)
     
     def getTextObj(self, data: Any, t: str) -> Any:
         text = ""
@@ -30,15 +41,28 @@ class WordCloudOfRephrase(SuperTextComponent):
             text += " ".join(map(str,",".join(data[inOut].dropna().to_numpy(na_value="")).split(",")))
         if text != "":
             wordLst = sorted(WordCloud().process_text(text).items(), key=lambda x:x[1], reverse=True)
-            if not self._cf['imediatePlot']:
+            if self._cf['imediatePlot']:
                 self._cf['textInstances'] = st.slider("Pick top n unigrams: ", 1, value=10, max_value=len(wordLst))
+            else:
+                self._cf['textInstances'] = 20
             index = []
             for i in range(1,self._cf['textInstances']+1):
                 index.append(i)
             unigramsDf = pd.DataFrame(wordLst[:self._cf['textInstances']],columns = ['Top phrase', 'Frequency'],index=pd.Index(index, name='Ranking'))
             unigramsDf.columns.name = unigramsDf.index.name
-            unigramsDf.index += 1
-            return unigramsDf
+            #unigramsDf.index += 1
+            if self._cf['imediatePlot']:
+                return unigramsDf
+            else:
+                axTmp = self._cf['ax'][self._cf['_8x_dims'][self._cf['subChartPosition']][0],
+                        self._cf['_8x_dims'][self._cf['subChartPosition']][1]]
+                axTmp.title.set_text(t)
+                axTmp.xaxis.set_visible(False)  # hide the x axis
+                axTmp.yaxis.set_visible(False)  # hide the y axis
+                ytable = table(ax=axTmp, data=unigramsDf, loc='center')
+                ytable.set_fontsize(self._cf['SubTableFontSize'])
+                ytable.scale(self._cf['SubTableXscale'], self._cf['SubTableYscale'])
+                return None
         else:
             return pd.DataFrame()
     
@@ -48,7 +72,7 @@ class WordCloudOfRephrase(SuperTextComponent):
 
             wordcloudTab, tableTab = st.tabs([":cloud: Wordcloud",":black_square_button: Cases"])
             with wordcloudTab:
-                chart = self.getChartObj(data=data, t=t)
+                chart = self.getChartObj(df=data, t=t)
                 st.pyplot(fig=chart)
             with tableTab:
                 df = self.getTextObj(data, t=t)

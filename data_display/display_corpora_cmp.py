@@ -12,6 +12,7 @@ from typing import Dict, Any
 sys.path.insert(0,"..")
 from graphic_components.barChart import Barchart2
 from graphic_components.table import Table2
+from graphic_components.wordCoud import WordCloudOfRephrase
 from graphic_components.filterInterface import FilterInterface
 from config.config_data_colector import DataProvider
 from data_manipulation.data_manipulator import DataManipulator
@@ -28,19 +29,34 @@ class ComparativeCorporaSimple:
 
         if module == "Distribution" and len(self.__dataDic) > 0:
             self.__cf = FilterInterface(config=self.__cf).getConfig()
+            gruppedDataDic = {}
+            wholeDataDic = {}
             for key in self.__dataDic.keys():
-                self.__dataDic[key] = DataFilter(data=self.__dataDic[key],config=self.__cf).getDataframe()
-            chart, table, wordcloud, cases = st.tabs([":bar_chart: Barchart",":black_square_button: Table",":cloud: WordClouds",":speech_balloon: Cases",])
+                tmpDic = DataFilter(data=self.__dataDic[key],config=self.__cf).getDataDict()
+                if len(tmpDic) > 0:
+                    gruppedDataDic[key] = tmpDic['gruppedAll']
+                    wholeDataDic[key] = tmpDic['wholeAll']
+            chart, table, wordcloud, cases = st.tabs([":bar_chart: Barchart",":black_square_button: Table",":cloud: WordClouds",":speech_balloon: Top20Words",])
             with chart:
-                self.__chartDisplay(data_dic=self.__dataDic)
+                self.__Display(data_dic=gruppedDataDic, classType=Barchart2)
                 self.prefixCtr +=1
             with table:
-                self.__drawTable(data_dic=self.__dataDic)
+                self.__cf['SubTableXscale'] = .9
+                self.__cf['SubTableYscale'] = 6.5
+                self.__cf['SubTableFontSize'] = 24
+                self.__Display(data_dic=gruppedDataDic, classType=Table2)
                 self.prefixCtr += 1
             with wordcloud:
-                st.write("To be implemented.")
+                self.__cf['objectToEnable'] = "Chart"
+                self.__Display(data_dic=wholeDataDic, classType=WordCloudOfRephrase)
+                self.prefixCtr += 1
             with cases:
-                st.write("to be implemented")
+                self.__cf['objectToEnable'] = "Text"
+                self.__cf['SubTableXscale'] = .9
+                self.__cf['SubTableYscale'] = 2
+                self.__cf['SubTableFontSize'] = 18
+                self.__Display(data_dic=wholeDataDic, classType=WordCloudOfRephrase)
+                self.prefixCtr += 1
         elif module == "Parts of speech":
             chart, table, = st.tabs([":bar_chart: Barchart",":black_square_button: Table"])
             with chart:
@@ -50,47 +66,14 @@ class ComparativeCorporaSimple:
         else:
             st.error("Unknown option for comparative analysis.")
 
-    def tableDisp(self, data_dic: dict[str,pd.DataFrame()]):
-        
+    def __Display(self, data_dic: dict[str,pd.DataFrame()], classType: Any):
         if len(data_dic) > 1:
-            for ctr, pairs in enumerate(data_dic.items()):
-                data = pairs[1]
-                if len(data) > 0:
-                    data = data.loc[data[self.__selected].isin(self.__options)]
-                    data = DataManipulator.getGruppedData(data, self.__selected, col_name="Number")
-                    self.__drawTable(data, pairs[0])    
-        else:
-            st.write("**Add More Data to Compara.**")
-
-
-    def __chartDisplay(self, data_dic: dict[str,pd.DataFrame()]):
-
-        if len(data_dic) > 1:
+            a = classType
             fig, ax = plt.subplots(4, 2, figsize=(10,45), sharex=True)
             fig.subplots_adjust(left=-1, bottom=0.1, right=1.2, top=0.9, wspace=0.2, hspace=0.2)
             sns.set(font_scale=2)
             self.__cf['ax'] = ax
-            [ k for k in Barchart2(dataDic=data_dic,config=self.__cf).getChartsDic().keys()]
-            st.pyplot(fig=fig, config=DataProvider.getSaveConfig())
-            fn = 'comparative_analysis.png'
-            img = io.BytesIO()
-            fig.savefig(img,fig=fig, format='png',height=1080, width=800,bbox_inches="tight")
-            btn = st.download_button(
-                label="Download as image",
-                data=img,
-                file_name=fn,
-                mime="image/png"
-            )
-        else:
-            st.write("**Add More Data to Compara.**")
-
-    def __drawTable(self, data_dic: Any):
-        if len(data_dic) > 1:
-            fig, ax = plt.subplots(4, 2, figsize=(10,45), sharex=True)
-            fig.subplots_adjust(left=-1, bottom=0.1, right=1.2, top=0.9, wspace=0.2, hspace=0.2)
-            sns.set(font_scale=2)
-            self.__cf['ax'] = ax
-            [ k for k in Table2(dataDic=data_dic,config=self.__cf).getChartsDic().keys()]
+            [ k for k in a(dataDic=data_dic,config=self.__cf).getChartsDic().keys()]
             st.pyplot(fig=fig, config=DataProvider.getSaveConfig())
             fn = 'comparative_analysis.png'
             img = io.BytesIO()
