@@ -26,11 +26,25 @@ class ComparativeCorporaSimple:
         self.__cf = config
         module = st.radio("Choose: ", ("Distribution","Parts of speech"),label_visibility='collapsed', key=str(self.prefixCtr)+"CMP_module_")
         self.prefixCtr += 1
+        gruppedDataDic = {}
+        wholeDataDic = {}
 
         if module == "Distribution" and len(self.__dataDic) > 0:
+            self.__cf = {
+                'imediatePlot': False,
+                'showPercentageNumber': True,
+                'unitPercentNumber': 'Percentage',
+                'showCategoriesInterface': True,
+                'categoriesColumn': '',
+                'SS rephrase': False,
+                'OS rephrase': False,
+                'showInOutInterface': True,
+                'showStopWordsInterface':True,
+                'showStopwords':False,
+                'useStopwords':True,
+                'showPOSInterface':False
+            }
             self.__cf = FilterInterface(config=self.__cf).getConfig()
-            gruppedDataDic = {}
-            wholeDataDic = {}
             for key in self.__dataDic.keys():
                 tmpDic = DataFilter(data=self.__dataDic[key],config=self.__cf).getDataDict()
                 if len(tmpDic) > 0:
@@ -58,11 +72,25 @@ class ComparativeCorporaSimple:
                 self.__Display(data_dic=wholeDataDic, classType=WordCloudOfRephrase)
                 self.prefixCtr += 1
         elif module == "Parts of speech":
+            self.__cf['showStopWordsInterface'] = False
+            self.__cf['showInOutInterface'] = False
+            self.__cf['showPOSInterface'] = True
+            self.__cf = FilterInterface(config=self.__cf).getConfig()
+            for key in self.__dataDic.keys():
+                tmpDic = DataFilter(data=self.__dataDic[key],config=self.__cf).getDataDict()
+                if len(tmpDic) > 0:
+                    gruppedDataDic[key] = tmpDic['gruppedAll']
+                    wholeDataDic[key] = tmpDic['wholeAll']
             chart, table, = st.tabs([":bar_chart: Barchart",":black_square_button: Table"])
             with chart:
-                st.write("Charts for PoS are not yet implemented")
+                self.__Display(data_dic=gruppedDataDic, classType=Barchart2)
+                self.prefixCtr +=1
             with table:
-                st.write("Tables for PoS are not yet implemented.")
+                self.__cf['SubTableXscale'] = .9
+                self.__cf['SubTableYscale'] = 2
+                self.__cf['SubTableFontSize'] = 18
+                self.__Display(data_dic=gruppedDataDic, classType=Table2)
+                self.prefixCtr += 1
         else:
             st.error("Unknown option for comparative analysis.")
 

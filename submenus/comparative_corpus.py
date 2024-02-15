@@ -46,14 +46,17 @@ class CmpCorpusMenu:
         self.__dataDic = {}
 
     def display(self, units):
-        # Intialization of tabs
-        compareDifferentCorpora, _3D_distribution, _3D_PoS_distribution = st.tabs([
-            ":bar_chart: Compare different corporas",
-            ":three: D Distribution of merged corpora",
-            ":three: D PoS merged corpora"
-        ])
-
-        with compareDifferentCorpora:
+        st.markdown("""
+            <style>
+            .stRadio [role=radiogroup]{
+                display: flex;
+                justify-content: space-between;
+            }
+            </style>
+        """,unsafe_allow_html=True)
+        module = st.radio(horizontal=True, label="Choose: ", options=("Distribution","3D Distribution","3D PoS"),label_visibility='visible')
+        st.divider()
+        if module == "Distribution":
             tabs = st.tabs(tabs=self.__tabLabels)
             for ctr, i in enumerate(tabs):
                 if ctr < (len(tabs)-1):
@@ -71,9 +74,9 @@ class CmpCorpusMenu:
                     with i:
                         st.subheader(self.__tabLabels[ctr])
                         ComparativeCorporaSimple(data_dic=self.__dataDic, config=self.__anCf)
-        with _3D_distribution:
+        elif module == "3D Distribution":
             ThreeDCorpusMenu(dataDic=self.__dataDict, prefix="3D_Distribution", anType=self.__anType).draw3D(bothEthosPathos=False)
-        with _3D_PoS_distribution:
+        elif module == "3D PoS":
             _3D_PSP_corpus(dataDic=self.__dataDict, prefix="3D_PoS", anType=self.__anType).draw3D()
 
     def clearTabsSelections(self) -> None:
