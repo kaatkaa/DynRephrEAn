@@ -16,7 +16,19 @@ class FilterInterface:
         # imediatePlot - set to True if plotting single corpora charts 
         # - to False if plotting in comparative analysis charts
         'imediatePlot': True,
+        # For tables wit text, how much lines has to be shown from table
         'textInstances': 1,
+        # Dimentions of comparative analysis chart:
+        '_8x_dims': [[0,0],[0,1],[1,0],[1,1],[2,0],[2,1],[3,0],[3,1]],
+        # The position (0-7) of current chart in subplot for comparative analysis
+        'subChartPosition': 0,
+        # ax of subplot
+        'ax': None,
+        # subplot table customalisation paremeters
+        'SubTableXscale': .9,
+        'SubTableYscale': 6.5,
+        'SubTableFontSize': 24,
+        # end of subplot Table configuration
         'showPercentageNumber': False,
         'unitPercentNumber': 'Percentage',
         'unitsPercentageNumber': ('Percentage','Number'),

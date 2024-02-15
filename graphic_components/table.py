@@ -1,17 +1,17 @@
 import streamlit as st
 import sys
-import io
-import pandas as pd
+import matplotlib.pyplot as plt
 import numpy as np
 import dataframe_image as dfi
 from typing import Tuple, List, Dict, Any
+from pandas.plotting import table
 
 sys.path.insert(0,"..")
 from config.config_data_colector import DataProvider
 from graphic_components.superComponent import SuperChartComponent
 
 class Table2(SuperChartComponent):
-    def getChartObj(self, df: Any, t: str):
+    def getChartObj(self, df: Any, t: str) -> Any:
         columnLst = list(df.columns.values)
         def make_pretty(styler):
             styler.set_caption(self._cf['ADU_or_Speaker']+" "+t)
@@ -21,7 +21,17 @@ class Table2(SuperChartComponent):
         tmpDf = df.copy(deep=True)
         if len(columnLst) == 3:
             tmpDf = tmpDf[[columnLst[2],columnLst[1]]]
-        return make_pretty(tmpDf.style)
+        if self._cf['imediatePlot']:
+            return make_pretty(tmpDf.style)
+        elif len(tmpDf) > 0:
+            axTmp = self._cf['ax'][self._cf['_8x_dims'][self._cf['subChartPosition']][0],
+                    self._cf['_8x_dims'][self._cf['subChartPosition']][1]]
+            axTmp.title.set_text(t)
+            axTmp.xaxis.set_visible(False)  # hide the x axis
+            axTmp.yaxis.set_visible(False)  # hide the y axis
+            ytable = table(ax=axTmp, data=tmpDf, loc='center')
+            ytable.set_fontsize(self._cf['SubTableFontSize'])
+            ytable.scale(self._cf['SubTableXscale'], self._cf['SubTableYscale'])
 
     def dataDisplay(self, data: Any, t: str) -> Any:
         tbl = self.getChartObj(data, t)

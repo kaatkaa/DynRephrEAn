@@ -60,8 +60,8 @@ class DataFilter:
             self.__outDict = dict()
             self.__filterInterface()
         else:
+            self.__outputData = data
             self.__outDict = data
-            self.__outDict = dict()
 
     def getDataDict(self) -> Dict[str, Any]:
         return self.__outDict
@@ -71,31 +71,33 @@ class DataFilter:
         
     def __filterInterface(self) -> Tuple[Any, list[str]]:
             
-        if self.__cf['showCategoriesInterface']:
+        if self.__cf['showCategoriesInterface'] and len(self.__outputData) > 0:
             self.__outputData = self.__outputData.loc[self.__outputData[self.__cf['categoriesColumn']].isin(self.__cf['categoriesLst'])]
         else:
             self.__outputData = self.__d
 
-        if self.__cf['showStopWordsInterface'] and self.__cf['useStopwords']:
+        if self.__cf['showStopWordsInterface'] and self.__cf['useStopwords'] and len(self.__outputData) > 0:
             self.__RemoveStopWordsFromDf(self.__outputData, self.__cf['inOutLst'])
 
-        if self.__cf['showPOSInterface']:
+        if self.__cf['showPOSInterface'] and len(self.__outputData) > 0:
             self.__cf['palette'] = DataProvider.getPoScolors()
             self.__PoSinterface()
         else:
-            self.__cf['palette'] = DataProvider.getEthosColors()
-            if self.__cf['ADU_or_Speaker'] == 'Speaker-Based Analysis':
-                st.write("Same speaker rephrase: "+str(self.__cf['SS rephrase'])+" Other speaker rephrase: "+str(self.__cf['OS rephrase']))
-                if self.__cf['SS rephrase']:
-                    self.__outDict["wholeSS"]=self.__outputData[self.__outputData['speaker_input']==self.__outputData['speaker_output']]
-                    self.__outDict["gruppedSS"] = self.__distributionData(self.__outDict["wholeSS"], self.__cf['categoriesColumn'])
-                if self.__cf['OS rephrase']:
-                    self.__outDict["wholeOS"]=self.__outputData[self.__outputData['speaker_input']!=self.__outputData['speaker_output']]
-                    self.__outDict["gruppedOS"] = self.__distributionData(self.__outDict["wholeOS"], self.__cf['categoriesColumn'])
+            if self.__cf['imediatePlot']:
+                self.__cf['palette'] = DataProvider.getEthosColors()
+                if self.__cf['ADU_or_Speaker'] == 'Speaker-Based Analysis':
+                    st.write("Same speaker rephrase: "+str(self.__cf['SS rephrase'])+" Other speaker rephrase: "+str(self.__cf['OS rephrase']))
+                    if self.__cf['SS rephrase']:
+                        self.__outDict["wholeSS"]=self.__outputData[self.__outputData['speaker_input']==self.__outputData['speaker_output']]
+                        self.__outDict["gruppedSS"] = self.__distributionData(self.__outDict["wholeSS"], self.__cf['categoriesColumn'])
+                    if self.__cf['OS rephrase']:
+                        self.__outDict["wholeOS"]=self.__outputData[self.__outputData['speaker_input']!=self.__outputData['speaker_output']]
+                        self.__outDict["gruppedOS"] = self.__distributionData(self.__outDict["wholeOS"], self.__cf['categoriesColumn'])
+                else:
+                    self.__outDict["wholeAll"] = self.__outputData
+                    self.__outDict["gruppedAll"] = self.__distributionData(self.__outputData, self.__cf['categoriesColumn']) 
             else:
-                self.__outDict["wholeAll"] = self.__outputData
-                self.__outDict["gruppedAll"] = self.__distributionData(self.__outputData, self.__cf['categoriesColumn']) 
-    
+                self.__outputData = self.__distributionData(self.__outputData, self.__cf['categoriesColumn'])
     def __PoSinterface(self):
         def dfFromDic(col1Name: str, col2Name: str, dict: Dict[str, Any]):
             lstOfTuples = []
@@ -105,28 +107,34 @@ class DataFilter:
             cnv = DataProvider.getPoStagsConverter()
             lst1, lst2, lst3 = [l[0] for l in lstOfTuples], [l[1] for l in lstOfTuples], [cnv[l[0]] for l in lstOfTuples]
             return pd.DataFrame.from_dict({col1Name:lst1,col2Name:lst2,"PoS full name":lst3})
-        if self.__cf['ADU_or_Speaker'] == 'Speaker-Based Analysis':
-            if self.__cf['SS rephrase']:
-                self.__outDict["wholeSS"]=self.__outputData[self.__outputData['speaker_input']==self.__outputData['speaker_output']]
-                self.__outDict["gruppedSS"] = dfFromDic(
-                    "PoS_type",
-                    self.__cf['unitPercentNumber'],
-                    self.__posData(data=self.__outDict['wholeSS'],inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories'])
-                )
-            if self.__cf['OS rephrase']:
-                self.__outDict["wholeOS"]=self.__outputData[self.__outputData['speaker_input']!=self.__outputData['speaker_output']]
-                self.__outDict["gruppedOS"] = dfFromDic(
-                    "PoS_type",
-                    self.__cf['unitPercentNumber'],
-                    self.__posData(data=self.__outDict['wholeOS'],inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories'])               
-                )
+        if self.__cf['imediatePlot']:
+            if self.__cf['ADU_or_Speaker'] == 'Speaker-Based Analysis':
+                if self.__cf['SS rephrase']:
+                    self.__outDict["wholeSS"]=self.__outputData[self.__outputData['speaker_input']==self.__outputData['speaker_output']]
+                    self.__outDict["gruppedSS"] = dfFromDic(
+                        "PoS_type",
+                        self.__cf['unitPercentNumber'],
+                        self.__posData(data=self.__outDict['wholeSS'],inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories'])
+                    )
+                if self.__cf['OS rephrase']:
+                    self.__outDict["wholeOS"]=self.__outputData[self.__outputData['speaker_input']!=self.__outputData['speaker_output']]
+                    self.__outDict["gruppedOS"] = dfFromDic(
+                        "PoS_type",
+                        self.__cf['unitPercentNumber'],
+                        self.__posData(data=self.__outDict['wholeOS'],inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories'])               
+                    )
+            else:
+                self.__outDict["wholeAll"] = self.__outputData
+                self.__outDict["gruppedAll"] = dfFromDic("PoS_type",self.__cf['unitPercentNumber'],
+                    self.__posData(data=self.__outputData,inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories']))
         else:
-            self.__outDict["wholeAll"] = self.__outputData
-            self.__outDict["gruppedAll"] = dfFromDic("PoS_type",self.__cf['unitPercentNumber'],
-                self.__posData(data=self.__outDict['wholeAll'],inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories']))
+            self.__outputData = dfFromDic("PoS_type",self.__cf['unitPercentNumber'],
+                self.__posData(data=self.__outputData,inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories'])
+            )
 
     def __distributionData(self, data, column):
         if self.__cf['unitPercentNumber'] == "Percentage":
+            #print("############",data,"Column: ",column)
             return DataManipulator.getGruppedPercentages(d=data, 
                 denominator=len(data),
                 groupBy=column,

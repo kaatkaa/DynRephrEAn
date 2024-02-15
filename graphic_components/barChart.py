@@ -13,22 +13,27 @@ from graphic_components.superComponent import SuperChartComponent
 class Barchart2(SuperChartComponent):
     def getChartObj(self, data: Any, t: str) -> sns.barplot():
         columnLst = list(data.columns.values)
-        if self._cf['imediatePlot']:
-            z = sns.barplot(data = data, x = columnLst[0], y = columnLst[1], 
-                palette = self._cf['palette'])
+        if len(columnLst) > 0:
+            if self._cf['imediatePlot']:
+                z = sns.barplot(data = data, x = columnLst[0], y = columnLst[1], 
+                    palette = self._cf['palette'])
+            else:
+                axTmp = self._cf['ax'][self._cf['_8x_dims'][self._cf['subChartPosition']][0],
+                        self._cf['_8x_dims'][self._cf['subChartPosition']][1]]
+                z = sns.barplot(data = data, x = columnLst[1], y = columnLst[0], 
+                    palette = self._cf['palette'], ax=axTmp)
+            if self._cf['unitPercentNumber'] == "Percentage":
+                z.bar_label(z.containers[0], fmt='%d%%')
+            elif self._cf['unitPercentNumber'] == "Number":
+                z.bar_label(z.containers[0], fmt='#%d')
+            z.grid(b=True, which='major', color='black', linewidth=0.075)
+            z.set(title=self._cf['ADU_or_Speaker']+" "+t)
+            z.set_xlabel(columnLst[0],fontsize=20)
+            z.set_ylabel(columnLst[1], fontsize=20)
+            z.tick_params(labelsize=20)
+            return z
         else:
-            z = sns.barplot(data = data, x = columnLst[1], y = columnLst[0], 
-                palette = self._cf['palette'])
-        if self._cf['unitPercentNumber'] == "Percentage":
-            z.bar_label(z.containers[0], fmt='%d%%')
-        elif self._cf['unitPercentNumber'] == "Number":
-            z.bar_label(z.containers[0], fmt='#%d')
-        z.grid(b=True, which='major', color='black', linewidth=0.075)
-        z.set(title=self._cf['ADU_or_Speaker']+" "+t)
-        z.set_xlabel(columnLst[0],fontsize=20)
-        z.set_ylabel(columnLst[1], fontsize=20)
-        z.tick_params(labelsize=20)
-        return z
+            return None
 
     def dataDisplay(self, data: Any, t: str) -> Any:
         fig = self.getChartObj(data, t)

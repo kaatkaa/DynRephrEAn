@@ -15,12 +15,31 @@ class CmpCorpusMenu:
     def __init__(self, dataDict: pd, anType: str):
         self.__anType = anType
         self.__dataDict = dataDict
-        self.__anCf = DataProvider.getDynRephrESconfig()[anType]
+
+        self.__anCf ={
+            'prefix':'no_prefix_set_',
+            # imediatePlot - set to True if plotting single corpora charts 
+            # - to False if plotting in comparative analysis charts
+            'imediatePlot': False,
+            'showPercentageNumber': True,
+            'unitPercentNumber': 'Percentage',
+            'showCategoriesInterface': True,
+            'categoriesColumn': '',
+            'SS rephrase': False,
+            'OS rephrase': False,
+            'showInOutInterface': True,
+            'showStopWordsInterface':True,
+            'showStopwords':False,
+            'useStopwords':True,
+            'showPOSInterface':False
+        }
+        self.__anCf['generalConfig'] = DataProvider.getDynRephrESconfig()[anType]
+
         #Below are tab labels
         self.__tabLabels: list[str] = ["Data("+str(x)+")" for x in range(1,9,1)]
         #Below is loaded SingleCorpusMenu for each tab
         self.__dataLoaders: list[SingleCorpusMenu] = [SingleCorpusMenu(dataDic=dataDict, prefix=str(ctr)+"0_",anType=anType) for ctr in range(1,9,1)]
-        self.__tabLabels.append("Comparative Analysis"+self.__anCf['anName'])
+        self.__tabLabels.append("Comparative Analysis"+self.__anCf['generalConfig']['anName'])
         # In dictionary below all __dataDic keys are stored for Data(1)-(8)
         self.__keyDic = {}
         # In dictionary below all data_frames will be stored for comparison
@@ -51,7 +70,7 @@ class CmpCorpusMenu:
                 else:
                     with i:
                         st.subheader(self.__tabLabels[ctr])
-                        ComparativeCorporaSimple(self.__dataDic, self.__anCf)
+                        ComparativeCorporaSimple(data_dic=self.__dataDic, config=self.__anCf)
         with _3D_distribution:
             ThreeDCorpusMenu(dataDic=self.__dataDict, prefix="3D_Distribution", anType=self.__anType).draw3D(bothEthosPathos=False)
         with _3D_PoS_distribution:
