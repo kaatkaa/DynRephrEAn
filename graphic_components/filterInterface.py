@@ -46,9 +46,13 @@ class FilterInterface:
         'inOutLst': DataProvider.getInOutColLst(),
         'palette': DataProvider.getEthosColors(),
         'showStopWordsInterface':False,
+        'showStopWordsInterface2':False,
         'showStopwords':False,
+        'showStopwords2': False,
         'useStopwords':False,
+        'useStopwords2':False,
         'StopwordsSet': set(),
+        'StopwordsSet2': set(),
         'showPOSInterface':False,
         'posColumns': DataProvider.getPSPcolumns1(),
         'posCategories': DataProvider.getPSPlst()
@@ -60,11 +64,15 @@ class FilterInterface:
         for cfg in config.items():
             self.__cf[cfg[0]] = cfg[1]
         self.__stop_words_set = set()
+        self.__stop_words_set2 = set()
         for word in DataProvider.getCustomStopWords():
             self.__stop_words_set.add(word)
         for word in list(STOPWORDS):
             self.__stop_words_set.add(word)
+        for word2 in DataProvider.getCustomStopWords2():
+            self.__stop_words_set2.add(word2)
         self.__cf['StopwordsSet'] = self.__stop_words_set
+        self.__cf['StopwordsSet2'] = self.__stop_words_set2
         self.__filterInterface()
 
     def getConfig(self) -> Dict[str, Any]:
@@ -97,6 +105,9 @@ class FilterInterface:
 
         if self.__cf['showStopWordsInterface']:
             self.__stopWords()
+
+        if self.__cf['showStopWordsInterface']:
+            self.__stopWords2()
 
         if self.__cf['showPOSInterface']:
             self.__cf['palette'] = DataProvider.getPoScolors()
@@ -193,6 +204,24 @@ class FilterInterface:
             st.write(self.__stop_words_set)
         self.__cf['useStopwords'] = useStopWords
     
+    def __stopWords2(self):
+        col1, col2 = st.columns([2,2])
+        with col1:
+            useStopWords = st.checkbox(label="Enable second stop_words",
+                                        value=self.__cf['useStopwords2'],
+                                        key=self.__cf['prefix']+"_StopWordsChck"+str(self.__keyCtr),
+                                        )
+            self.__keyCtr += 1
+        with col2:
+            showStopWords = st.checkbox(label="Show second stop_words",
+                                        value=self.__cf['showStopwords2'],
+                                        key=self.__cf['prefix']+"_ShowWordsChck"+str(self.__keyCtr)
+                                        )
+            self.__keyCtr += 1
+        if showStopWords:
+            st.write(self.__stop_words_set2)
+        self.__cf['useStopwords2'] = useStopWords
+
     def __PoSinterface(self):
         col1, col2 = st.columns(2)
         with col1:

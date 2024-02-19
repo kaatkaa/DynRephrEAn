@@ -32,9 +32,14 @@ class DataFilter:
         'inOutLst': DataProvider.getInOutColLst(),
         'palette': DataProvider.getEthosColors(),
         'showStopWordsInterface':False,
+        'showStopWordsInterface2':False,
         'showStopwords':False,
+        'showStopwords2': False,
         'useStopwords':False,
+        'useStopwords2':False,
         'StopwordsSet': set(),
+        'StopwordsSet2': set(),
+        'showPOSInterface':False,
         'showPOSInterface':False,
         'posColumns': DataProvider.getPSPcolumns1(),
         'posCategories': DataProvider.getPSPlst()
@@ -49,9 +54,20 @@ class DataFilter:
                 dataF[column] = dataF[column].str.replace(p2, "", regex=True)
         self.__outputData = dataF
 
+    def __RemoveStopWordsFromDf2(self, dataF: Any, columns: list[str]) -> Any:
+        for stop_phrase in self.__stop_words_set2:
+            p1 = re.compile(r"\s"+stop_phrase+r"\s", flags=re.IGNORECASE)
+            p2 = re.compile(r"^"+stop_phrase+r"\s|\s"+stop_phrase+r"$|^"+stop_phrase+r"$", flags=re.IGNORECASE)
+            for column in columns:
+                dataF[column] = dataF[column].str.replace(p1, " ", regex=True)
+                dataF[column] = dataF[column].str.replace(p2, "", regex=True)
+        self.__outputData = dataF
+
     def __init__(self, data: Any, config: Dict[str, Any]) -> None:
         self.__cf=DataFilter.__config
         self.__stop_words_set = self.__cf['StopwordsSet']
+        self.__stop_words_set2 = self.__cf['StopwordsSet2']
+
         if len(data) > 0:
             for cfg in config.items():
                 self.__cf[cfg[0]] = cfg[1]
@@ -75,6 +91,9 @@ class DataFilter:
 
         if self.__cf['showStopWordsInterface'] and self.__cf['useStopwords'] and len(self.__outputData) > 0:
             self.__RemoveStopWordsFromDf(self.__outputData, self.__cf['inOutLst'])
+
+        if self.__cf['showStopWordsInterface2'] and self.__cf['useStopwords2'] and len(self.__outputData) > 0:
+            self.__RemoveStopWordsFromDf2(self.__outputData, self.__cf['inOutLst'])
 
         if self.__cf['showPOSInterface'] and len(self.__outputData) > 0:
             self.__cf['palette'] = DataProvider.getPoScolors()

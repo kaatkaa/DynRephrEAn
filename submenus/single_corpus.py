@@ -174,6 +174,9 @@ class SingleCorpusMenu:
                 'showStopWordsInterface':True,
                 'showStopwords':False,
                 'useStopwords':True,
+                'showStopWordsInterface2':True,
+                'showStopwords2':False,
+                'useStopwords2':False,
                 'showPOSInterface':False
             }
             config = FilterInterface(config=__filterWordCloud).getConfig()
@@ -219,6 +222,10 @@ class SingleCorpusMenu:
             'showStopWordsInterface':True,
             'showStopwords':False,
             'useStopwords':True,
+            'showStopWordsInterface2':True,
+            'showStopwords2':False,
+            'useStopwords2':False,
+            'showPOSInterface':False,
             'showPOSInterface':False
         }
         config = FilterInterface(config=filterCfg).getConfig()

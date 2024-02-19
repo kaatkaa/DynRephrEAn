@@ -110,6 +110,10 @@ class DataProvider:
             "jim", "webb","mr"
     ]
 
+    __second_stop_words = [
+        "::"
+    ]
+
     @staticmethod
     def getTableFormat():
         return DataProvider.__tableFormat
@@ -191,6 +195,10 @@ class DataProvider:
     @staticmethod
     def getCustomStopWords() -> list[str]:
         return DataProvider.__custom_stop_words
+    
+    @staticmethod
+    def getCustomStopWords2() -> list[str]:
+        return DataProvider.__second_stop_words
     
     @staticmethod
     def getSaveConfig() -> dict[str, any]:
