@@ -164,23 +164,37 @@ class FilterInterface:
             if self.__cf['showInOutVsLoc']:
                 phrasesType = st.radio(self.__cf['generalConfig']['InOutType'],
                                 ("Input_Output",
-                                    "Locution_Input_Output"),                                                 
+                                    "Locution_Input_Output",
+                                    "PoS_Input_Output",
+                                    "LocPoS_Input_Output"),                                                 
                                 key=self.__cf['prefix']+"_inOutType"+str(self.__keyCtr))
                 self.__keyCtr += 1
             else:
                 phrasesType = "Input_Output"
         with col_radio2:
             if phrasesType == "Input_Output":
-                self.__cf['inOutLst'] = st.multiselect("Choose source of data you would like to visualise", 
+                self.__cf['inOutLst'] = st.multiselect("Choose source of Input-Output you would like to visualise", 
                                             DataProvider.getInOutColLst(), 
                                             DataProvider.getInOutColLst()[:],
                                             key = self.__cf['prefix']+"_multi_selInOut"+str(self.__keyCtr))
                 self.__keyCtr += 1
             elif phrasesType == "Locution_Input_Output":
-                self.__cf['inOutLst'] = st.multiselect("Choose source of data you would like to visualise", 
+                self.__cf['inOutLst'] = st.multiselect("Choose source of Locution-Input-Output you would like to visualise", 
                                             DataProvider.getLocInOut(), 
                                             DataProvider.getLocInOut()[:],
                                             key = self.__cf['prefix']+"_multi_selLocInOut"+str(self.__keyCtr))
+                self.__keyCtr += 1
+            elif phrasesType == "PoS_Input_Output":
+                self.__cf['inOutLst'] = st.multiselect("Choose source of PoS-Input-Output you would like to visualise", 
+                                            DataProvider.getPSPcolumns1(), 
+                                            DataProvider.getPSPcolumns1()[:],
+                                            key = self.__cf['prefix']+"_PoS_selInOut"+str(self.__keyCtr))
+                self.__keyCtr += 1
+            elif phrasesType == "LocPoS_Input_Output":
+                self.__cf['inOutLst'] = st.multiselect("Choose source of Locution-PoS-In-Out you would like to visualise",
+                                            DataProvider.getPSPcolumns2(), 
+                                            DataProvider.getPSPcolumns2()[:],
+                                            key = self.__cf['prefix']+"_PoS_selLocInOut"+str(self.__keyCtr))
                 self.__keyCtr += 1
             else:
                 st.error("Unknown option: ",phrasesType," in __inOut method.")
