@@ -3,6 +3,7 @@ import sys
 import pandas as pd
 import numpy as np
 import re
+import ast
 from nltk.util import ngrams
 from nltk import FreqDist
 from typing import Tuple, List, Dict, Any
@@ -17,21 +18,41 @@ class Ngrams(SuperTextComponent):
     def dataDisplay(self, data: Any, t: str) -> None:
         lstOfInOut = []
         restLst = []
+        PoSflag = False
         if set(self._cf['inOutLst']) <= set(DataProvider.getInOutColLst()):
             lstOfInOut = DataProvider.getInOutColLst()
             restLst = DataProvider.getLocInOut()
+            PoSflag = False
         elif set(self._cf['inOutLst']) <= set(DataProvider.getLocInOut()):
             lstOfInOut = DataProvider.getLocInOut()
             restLst = DataProvider.getInOutColLst()
+            PoSflag = False
+        elif set(self._cf['inOutLst']) <= set(DataProvider.getPSPcolumns1()):
+            lstOfInOut = DataProvider.getPSPcolumns1()
+            restLst = DataProvider.getInOutColLst()
+            PoSflag = True
+        elif set(self._cf['inOutLst']) <= set(DataProvider.getPSPcolumns2()):
+            lstOfInOut = DataProvider.getPSPcolumns2()
+            restLst = DataProvider.getLocInOut()
+            PoSflag = True
         else:
             st.warning("Wrong list inOut values in n-gram data display.")
         def backgroung_color(v):
             return f"background-color: {DataProvider.getRephraseAndEmptycolors()['Rephrase']};"
         wordLst = []
-        if len(data) > 0:  
-            for inOut in self._cf['inOutLst']:
-                for token in map(str,",".join(data[inOut].dropna().to_numpy(na_value="")).split(",")):
-                    wordLst.extend(ngrams(token.split(" "), 1))
+        if len(data) > 0:
+            if PoSflag:
+                for inOut in self._cf['inOutLst']:
+                    tmpLst = []
+                    for token in data[inOut].tolist():
+                        token = " ".join(ast.literal_eval(token))
+                        tmpLst.append(token)
+                        wordLst.extend(ngrams(token.split(" "), 1))
+                    data[inOut] = tmpLst
+            else:
+                for inOut in self._cf['inOutLst']:
+                    for token in map(str,",".join(data[inOut].dropna().to_numpy(na_value="")).split(",")):
+                        wordLst.extend(ngrams(token.split(" "), 1))
         if len(wordLst) > 0:
             wordLst = FreqDist(wordLst)
             number = st.slider("Pick top n words/phrases: ", 1, value=10, max_value=len(wordLst))
