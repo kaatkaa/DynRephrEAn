@@ -145,7 +145,7 @@ class SingleCorpusMenu:
     def sidebar(self):
         
         with st.sidebar:
-            st.subheader("Choose Corpora: ")           
+            st.subheader("Choose Corpora: ")
             st.button("Clean selection",key=self.__prefix+"clear_corpo_button",on_click=self.cleanSelections)
             self.__corporaPickerChckBox()
             st.write("****************************")
