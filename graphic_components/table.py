@@ -38,7 +38,7 @@ class Table2(SuperChartComponent):
         tbl = self.getChartObj(data, t)
         st.table(tbl)
         img = io.BytesIO()
-        fn = self._cf['ADU_or_Speaker']+" "+t+".png"
+        fn = "_".join(self._cf['ADU_or_Speaker'])+"_"+t+".png"
         dfi.export(tbl,filename=img,dpi=200)
         btn = st.download_button(
             label="Download as PNG",

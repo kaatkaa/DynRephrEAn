@@ -114,6 +114,40 @@ class DataProvider:
         "::"
     ]
 
+    ___compoundund_words = {
+        "bottled water","car pool","cash flow","cell membrane"
+        ,"cell phone","chat room","child care","Christmas tree"
+        ,"civil right","comic strip","common sense","course work"
+        ,"crossword puzzle","dirt bike","disk drive","disc jockey"
+        ,"dump truck","energy bar","fact sheet","fine art"
+        ,"French fry","grass root","health care","heart attack"
+        ,"heat lightning","help desk","high school","hockey puck"
+        ,"home page","hot dog","ice cream","jigsaw puzzle"
+        ,"jungle gym","junk food","jumping jack","key pal"
+        ,"killer whale","Labor Day","labor union","laser printer"
+        ,"land mine","lance corporal","landing field","landing strip"
+        ,"light bulb","life jacket","life raft","life vest"
+        ,"life belt","life buoy","Little Dipper","little finger"
+        ,"life span","memory stick","new world","oven mitt"
+        ,"paper clip","photo ID","pinch hitter","post office"
+        ,"paddle wheel","passenger pigeon","past tense","past participle"
+        ,"peace pipe","physical education","picture graph","planet kingdom"
+        ,"prime minister","radiant energy","radio wave","real time"
+        ,"report card","respiratory system","rib cage","right angle"
+        ,"right triangle","ring finger","rock dove","rocking chair"
+        ,"rocking horse","role model","roller coaster","Roman Catholic"
+        ,"root beer","real estate","remote control","rock band"
+        ,"role play","safety glasses","salad dressing","school day"
+        ,"school year","search engine","sleeping bag","sports drink"
+        ,"square root","tennis court","theme park","time line"
+        ,"time capsule","tree house","vacuum cleaner","Valentine’s Day"
+        ,"vampire bat","vanilla bean","vending machine","vice president"
+        ,"video camera","videocassette recorder","video game","videotape recorder"
+        ,"virtual reality","vocal chords","voice box","voice mail"
+        ,"waiting room","walking stick","web site","word processing"
+        ,"word wall","work boots"
+    }
+
     @staticmethod
     def getTableFormat():
         return DataProvider.__tableFormat
