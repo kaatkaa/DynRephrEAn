@@ -1,5 +1,6 @@
 import streamlit as st
 import sys
+import io
 import matplotlib.pyplot as plt
 import numpy as np
 import dataframe_image as dfi
@@ -36,12 +37,11 @@ class Table2(SuperChartComponent):
     def dataDisplay(self, data: Any, t: str) -> Any:
         tbl = self.getChartObj(data, t)
         st.table(tbl)
-        fn = "PNG/"+self._cf['ADU_or_Speaker']+" "+t+".png"
-        dfi.export(tbl,filename=fn,dpi=200)
-        with open(fn, "rb") as img:
-            btn = st.download_button(
-                label="Download as PNG",
-                data=img,
-                file_name=fn,
-                mime="image/png"
-            )
+        img = io.BytesIO()
+        fn = self._cf['ADU_or_Speaker']+" "+t+".png"
+        dfi.export(tbl,filename=img,dpi=200)
+        btn = st.download_button(
+            label="Download as PNG",
+            data=img,
+            file_name=fn,
+            mime="image/png")
