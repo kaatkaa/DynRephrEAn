@@ -37,11 +37,11 @@ class Table2(SuperChartComponent):
     def dataDisplay(self, data: Any, t: str) -> Any:
         tbl = self.getChartObj(data, t)
         st.table(tbl)
-        img = io.BytesIO()
-        fn = "_".join(self._cf['ADU_or_Speaker'])+"_"+t+".png"
-        dfi.export(tbl,filename=img,dpi=200)
-        btn = st.download_button(
-            label="Download as PNG",
-            data=img,
-            file_name=fn,
-            mime="image/png")
+        #img = io.BytesIO()
+        #fn = "_".join(self._cf['ADU_or_Speaker'])+"_"+t+".png"
+        #dfi.export(tbl,filename=img,dpi=200)
+        # btn = st.download_button(
+        #     label="Download as PNG",
+        #     data=img,
+        #     file_name=fn,
+        #     mime="image/png")
