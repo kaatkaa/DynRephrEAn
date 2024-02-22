@@ -23,7 +23,7 @@ class Piechart2(SuperChartComponent):
             labelsDic[namesLst[2]] = sorted(data[namesLst[2]].tolist())
             fig = px.pie(data, values=self._cf['unitPercentNumber'], names=namesLst[2], color=namesLst[0],
                         color_discrete_map=self._cf['palette'],
-                        title=self._cf['ADU_or_Speaker'],
+                        title=self._cf['ADU_or_Speaker']+" "+t,
                         category_orders=labelsDic, width=1080
             )
         else:
@@ -31,7 +31,7 @@ class Piechart2(SuperChartComponent):
             labelsDic[namesLst[0]] = sorted(data[namesLst[0]].tolist())
             fig = px.pie(data, values=self._cf['unitPercentNumber'], names=namesLst[0], color=namesLst[0],
                         color_discrete_map=self._cf['palette'],
-                        title=self._cf['ADU_or_Speaker'],
+                        title=self._cf['ADU_or_Speaker']+" "+t,
                         category_orders=labelsDic, width=1080
             )
         fig.update_traces(textposition='inside', 

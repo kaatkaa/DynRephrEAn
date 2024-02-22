@@ -1,5 +1,6 @@
 import streamlit as st
 import sys
+import re
 import pandas as pd
 import seaborn as sns
 import numpy as np
@@ -26,7 +27,8 @@ class SuperChartComponent(dataHandlerDisplayInterface):
         if self._cf['imediatePlot']:
             for key in dataDic.keys():
                 if not key.startswith("whole"):
-                    self.dataDisplay(dataDic[key],key)
+                    title = re.sub("gruppedAll|grupped","",key)
+                    self.dataDisplay(dataDic[key],title)
         else:
             for ctr, key in enumerate(dataDic.keys()):
                 self._cf['subChartPosition'] = ctr
@@ -44,7 +46,8 @@ class SuperTextComponent(dataHandlerDisplayInterface):
         if self._cf['imediatePlot']:
             for key in dataDic.keys():
                 if not key.startswith("grupped"):
-                    self.dataDisplay(dataDic[key],key)
+                    title = re.sub("wholeAll|whole","",key)
+                    self.dataDisplay(dataDic[key],title)
         else:
             for ctr, key in enumerate(dataDic.keys()):
                 self._cf['subChartPosition'] = ctr
