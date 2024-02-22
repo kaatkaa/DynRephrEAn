@@ -27,7 +27,7 @@ class SingleCorpusMenu:
         tmp = DataProvider.getDynRephrESconfig()
         #config file with messages and column names for Ethos and Sentiment
         self.__anCfg = {}
-        self.__anCfg['generalConfig'] = tmp[anType]
+        self.__anCfg = tmp[anType]
 
         self.__rephrase_df = pd.DataFrame()
         self.__rephrase_old = pd.DataFrame()
@@ -164,6 +164,7 @@ class SingleCorpusMenu:
         if module_choice == "n-grams":
             __filterWordCloud = {
                 'prefix':'WordCloud_',
+                'generalConfig': self.__anCfg,
                 'ADU_or_Speaker': ADU_or_Speaker,
                 'showPercentageNumber': False,
                 'showCategoriesInterface': True,
@@ -183,6 +184,7 @@ class SingleCorpusMenu:
             #WordCloudOfEmotions(self.__rephrase_df,analysisType="Wordcloud",unit=ADU_or_Speaker, configDic=self.__anCfg, prefix="WordCloud")
             __filterWordCloud = {
                 'prefix':'WordCloud_',
+                'generalConfig': self.__anCfg,
                 'ADU_or_Speaker': ADU_or_Speaker,
                 'showPercentageNumber': False,
                 'showCategoriesInterface': True,
@@ -202,14 +204,31 @@ class SingleCorpusMenu:
             #Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg, prefix="PieChart", table=False)
             self.container(s="_sub", units_choice=ADU_or_Speaker)
         elif module_choice == "PoS":
-            PoS(df=self.__rephrase_df,cfg=self.__anCfg)
+            __filterPoS = {
+                'prefix':'PoS_',
+                'generalConfig': self.__anCfg,
+                'ADU_or_Speaker': ADU_or_Speaker,
+                'showPercentageNumber': False,
+                'showCategoriesInterface': True,
+                'SS rephrase': True,
+                'OS rephrase': False,
+                'showInOutInterface': True,
+                'showInOutVsLoc': True,
+                'showStopWordsInterface':True,
+                'showStopwords':False,
+                'useStopwords':True,
+                'showPOSInterface':False
+            }
+            PoS(df=self.__rephrase_df,config=__filterPoS)
         else:
             raise NotImplementedError("Unsupported option of Analytical module in single_corpus.py .")
         
     def container(self, s: str="",units_choice: str=""):
         filterCfg = {
             'prefix':'distributions_',
+            'generalConfig': self.__anCfg,
             'ADU_or_Speaker': units_choice,
+            'imediatePlot': True,
             'showPercentageNumber': True,
             'showCategoriesInterface': True,
             'SS rephrase': True,

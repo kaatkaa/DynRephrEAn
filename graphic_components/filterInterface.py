@@ -200,7 +200,7 @@ class FilterInterface:
                                             key = self.__cf['prefix']+"_multiInOutPOS"+str(self.__keyCtr))
                 self.__keyCtr += 1
             else:
-                st.error("Wrong option in __PoSinterface: colType==",colType)                
+                st.error("Wrong option in __PoSinterface: colType==",colType)             
         self.__cf['posCategories'] = st.multiselect(self.__cf['generalConfig']['POS_title'], 
                                     sorted(DataProvider.getPSPlst()), 
                                     sorted(DataProvider.getPSPlstDefault())[:],

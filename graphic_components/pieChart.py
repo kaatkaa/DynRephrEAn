@@ -19,18 +19,25 @@ class Piechart2(SuperChartComponent):
         elif self._cf['unitPercentNumber'] == "Number":
             displayer = 'text+label'
         if len(namesLst) == 3:
+            labelsDic = {}
+            labelsDic[namesLst[2]] = sorted(data[namesLst[2]].tolist())
             fig = px.pie(data, values=self._cf['unitPercentNumber'], names=namesLst[2], color=namesLst[0],
                         color_discrete_map=self._cf['palette'],
-                        title=self._cf['ADU_or_Speaker']+" "+t
+                        title=self._cf['ADU_or_Speaker'],
+                        category_orders=labelsDic, width=1080
             )
         else:
+            labelsDic = {}
+            labelsDic[namesLst[0]] = sorted(data[namesLst[0]].tolist())
             fig = px.pie(data, values=self._cf['unitPercentNumber'], names=namesLst[0], color=namesLst[0],
                         color_discrete_map=self._cf['palette'],
-                        title=self._cf['ADU_or_Speaker']+" "+t
+                        title=self._cf['ADU_or_Speaker'],
+                        category_orders=labelsDic, width=1080
             )
         fig.update_traces(textposition='inside', 
                     text=data[self._cf['unitPercentNumber']].map("#{:,}".format),
                     textinfo=displayer)
+        fig.update_layout(margin=dict(t=30, b=0, l=0, r=0))
         return fig
         
     def dataDisplay(self, data: Any, t: str) -> None:

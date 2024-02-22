@@ -1,6 +1,8 @@
 import streamlit as st
 import sys
 import pandas as pd
+import io
+import re
 import matplotlib.pyplot as plt
 from typing import Any, Tuple, List
 from wordcloud import WordCloud
@@ -22,7 +24,8 @@ class WordCloudOfRephrase(SuperTextComponent):
             wordcloud = WordCloud(background_color="#493E38", colormap='YlOrRd', width=500, height=400,
                                 normalize_plurals=False).generate(" ".join(lexicon))
             if self._cf['imediatePlot']:
-                fig, ax = plt.subplots(figsize=(10, 10), facecolor=None)
+                fig, ax = plt.subplots(figsize=(5, 4), facecolor=None)
+                ax.set_title(t,fontsize=14)
                 ax.imshow(wordcloud)
                 plt.axis("off")
                 plt.tight_layout(pad=0)
@@ -52,6 +55,7 @@ class WordCloudOfRephrase(SuperTextComponent):
             unigramsDf.columns.name = unigramsDf.index.name
             #unigramsDf.index += 1
             if self._cf['imediatePlot']:
+                st.header(t)
                 return unigramsDf
             else:
                 axTmp = self._cf['ax'][self._cf['_8x_dims'][self._cf['subChartPosition']][0],
@@ -68,14 +72,25 @@ class WordCloudOfRephrase(SuperTextComponent):
     
     def dataDisplay(self, data: pd.DataFrame(), t: str) -> None:
         if len(data) > 0 and len(self._cf['inOutLst']) > 0:
-            st.subheader(self._cf['generalConfig']["Wordcloud_display"]+" "+self._cf['ADU_or_Speaker']+" "+t)
-
-            wordcloudTab, tableTab = st.tabs([":cloud: Wordcloud",":black_square_button: Cases"])
+            st.subheader(self._cf['generalConfig']["Wordcloud_display"]+" "+self._cf['ADU_or_Speaker'])
+            wordcloudTab, tableTab = st.tabs([":cloud: Wordcloud",":black_square_button: TopWords"])
             with wordcloudTab:
-                chart = self.getChartObj(df=data, t=t)
-                st.pyplot(fig=chart)
+                t = re.sub("wholeAll|whole","",t)
+                chart = self.getChartObj(df=data, t=self._cf['ADU_or_Speaker']+" "+t)
+                fn = self._cf['prefix']+self._cf['ADU_or_Speaker']+"_"+t
+                buf = io.BytesIO()
+                chart.savefig(buf, format="png")
+                left_co, cent_co,last_co = st.columns(3)
+                with cent_co:
+                    st.image(buf)
+                with left_co:
+                    btn = st.download_button(
+                        label="Download as PNG",
+                        data=buf,
+                        file_name=fn,
+                        mime="image/png")                                
             with tableTab:
-                df = self.getTextObj(data, t=t)
+                df = self.getTextObj(data, t=self._cf['ADU_or_Speaker'])
                 st.dataframe(df, width=800, height=40*self._cf['textInstances'])
         else:
             st.warning("You have to provide corpora for text analysis.")

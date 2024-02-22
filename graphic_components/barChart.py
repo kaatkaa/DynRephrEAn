@@ -1,10 +1,12 @@
 import streamlit as st
+import re
 import sys
 import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from typing import Tuple, List, Dict, Any
+import io
 
 sys.path.insert(0,"..")
 from config.config_data_colector import DataProvider
@@ -15,6 +17,7 @@ class Barchart2(SuperChartComponent):
         columnLst = list(data.columns.values)
         if len(columnLst) > 0:
             if self._cf['imediatePlot']:
+                fig, z = plt.subplots(figsize=(7, 8))
                 z = sns.barplot(data = data, x = columnLst[0], y = columnLst[1], 
                     palette = self._cf['palette'])
             else:
@@ -27,16 +30,31 @@ class Barchart2(SuperChartComponent):
             elif self._cf['unitPercentNumber'] == "Number":
                 z.bar_label(z.containers[0], fmt='#%d')
             z.grid(b=True, which='major', color='black', linewidth=0.075)
-            z.set(title=self._cf['ADU_or_Speaker']+" "+t)
-            z.set_xlabel(columnLst[0],fontsize=20)
-            z.set_ylabel(columnLst[1], fontsize=20)
-            z.tick_params(labelsize=20)
-            return z
+            z.axes.set_title(label=self._cf['ADU_or_Speaker'],fontsize=14)
+            z.set_xlabel(columnLst[0],fontsize=14)
+            z.set_ylabel(columnLst[1], fontsize=14)
+            z.tick_params(labelsize=14)
+            if self._cf['imediatePlot']:
+                return fig
+            else:
+                return z
         else:
             return None
 
     def dataDisplay(self, data: Any, t: str) -> Any:
         fig = self.getChartObj(data, t)
-        st.pyplot(fig=fig.get_figure(), config=DataProvider.getSaveConfig())
-        fig.containers.pop()
-        fig.cla()
+        fn = "BarChart_"+self._cf['ADU_or_Speaker']+"_"+t
+        buf = io.BytesIO()
+        fig.savefig(buf, format="png")
+        left_co, cent_co,last_co = st.columns(3)
+        with cent_co:
+            st.image(buf)
+        with left_co:
+            btn = st.download_button(
+                label="Download as PNG",
+                data=buf,
+                file_name=fn,
+                mime="image/png")
+        #st.pyplot(fig=fig.get_figure(), config=DataProvider.getSaveConfig())
+        #fig.containers.pop()
+        #fig.cla()

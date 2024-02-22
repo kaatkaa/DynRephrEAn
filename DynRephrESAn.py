@@ -14,7 +14,6 @@ import json
 from submenus.single_corpus import SingleCorpusMenu
 from submenus.comparative_corpus import CmpCorpusMenu
 from config.config_data_colector import DataProvider
-
 from PIL import Image
 from collections import Counter
 from wordcloud import WordCloud, STOPWORDS
@@ -36,6 +35,22 @@ def style_css(file):
 
 #style_css('multi_style.css')
 st.set_page_config(layout="wide")
+
+# st.markdown(
+#         f"""
+# <style>
+#     .reportview-container .main{{
+#         max-width: 800px;
+#         min-width: 400px;
+#         padding-top: 2rem;
+#         padding-right: 2rem;
+#         padding-left: 2rem;
+#         padding-bottom: 2rem;
+#     }}
+# </style>
+# """,
+#         unsafe_allow_html=True,
+#     )
 
 @st.cache_data
 def load_data(dir_address: str) -> dict[str : pd.DataFrame()]:

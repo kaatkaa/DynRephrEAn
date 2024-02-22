@@ -40,10 +40,10 @@ class PoS:
             st.subheader(self.__cf['generalConfig']['POS_table'])
             Table2(dataDic=dfDic,config=self.__cf)
 
-    def __init__(self, df: Any, cfg: Dict[str, str or Dict]) -> None:
+    def __init__(self, df: Any, config: Dict[str, str or Dict]) -> None:
         config = PoS.__filterCfg
-        for key in cfg:
-            config[key] = cfg[key]
+        for key in config:
+            config[key] = config[key]
         config = FilterInterface(config=config).getConfig()
         dataDic = DataFilter(df, config=config).getDataDict()
         self.__cf = config
