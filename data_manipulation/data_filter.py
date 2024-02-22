@@ -83,7 +83,7 @@ class DataFilter:
             if self.__cf['imediatePlot']:
                 self.__cf['palette'] = DataProvider.getEthosColors()
                 if self.__cf['ADU_or_Speaker'] == 'Speaker-Based Analysis':
-                    st.write("Same speaker rephrase: "+str(self.__cf['SS rephrase'])+" Other speaker rephrase: "+str(self.__cf['OS rephrase']))
+                    #st.write("Same speaker rephrase: "+str(self.__cf['SS rephrase'])+" Other speaker rephrase: "+str(self.__cf['OS rephrase']))
                     if self.__cf['SS rephrase']:
                         self.__outDict["wholeSS"]=self.__outputData[self.__outputData['speaker_input']==self.__outputData['speaker_output']]
                         self.__outDict["gruppedSS"] = self.__distributionData(self.__outDict["wholeSS"], self.__cf['categoriesColumn'])
