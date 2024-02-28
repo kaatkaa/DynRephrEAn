@@ -5,7 +5,7 @@ import streamlit as st
 class DataProvider:
     __tableFormat = [
         {"selector": "caption","props":[("text-align", "center"),
-            ("font-size", "100%"),
+            ("font-size", "20px"),
             ("color", 'black'),
             ('caption-side','top')]},
         {"selector": "", "props": [("border", "1px solid grey")]},
