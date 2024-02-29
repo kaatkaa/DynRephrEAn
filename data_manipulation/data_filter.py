@@ -37,7 +37,9 @@ class DataFilter:
         'StopwordsSet': set(),
         'showPOSInterface':False,
         'posColumns': DataProvider.getPSPcolumns1(),
-        'posCategories': DataProvider.getPSPlst()
+        'posCategories': DataProvider.getPSPlst(),
+        'showNgramSlider': False,
+        'ngramSliderValue': 2
     }
 
     def __RemoveStopWordsFromDf(self, dataF: Any, columns: list[str]) -> Any:

@@ -62,7 +62,11 @@ class FilterInterface:
         #PoS column names in excel to choose from
         'posColumns': DataProvider.getPSPcolumns1(),
         #PoS categories selected
-        'posCategories': DataProvider.getPSPlst()
+        'posCategories': DataProvider.getPSPlst(),
+        # Shows ngram slider
+        'showNgramSlider': False,
+        # Keeps ngram slider value
+        'ngramSliderValue': 2
     }
 
     def __init__(self, config: Dict[str, Any]) -> None:
@@ -114,6 +118,9 @@ class FilterInterface:
             self.__PoSinterface()
         else:
             self.__cf['palette'] = DataProvider.getEthosColors()
+
+        if self.__cf['showNgramSlider']:
+            self.__NgramSlider()
 
 
     def __units(self):
@@ -218,3 +225,6 @@ class FilterInterface:
                                     sorted(DataProvider.getPSPlstDefault())[:],
                                     key = self.__cf['prefix']+"_multiPOS"+str(self.__keyCtr))
         self.__keyCtr += 1
+
+    def __NgramSlider(self):
+        self.__cf['ngramSliderValue'] = st.slider("Choose n-gram type: (1-4)",1,value=2, max_value=4, key="nType"+self.__cf['prefix'])

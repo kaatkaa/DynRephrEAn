@@ -93,7 +93,8 @@ class ComparativeCorporaSimple:
             'showStopWordsInterface':False,
             'showStopwords':False,
             'useStopwords':False,
-            'showPOSInterface':False
+            'showPOSInterface':False,
+            'showNgramSlider': False
         }
         self.__updateCfg(config=overrideConfig)
         self.__cf = FilterInterface(config=self.__cf).getConfig()
@@ -112,6 +113,7 @@ class ComparativeCorporaSimple:
     def Ngrams(self):
         overrideConfig = {
             'imediatePlot': False,
+            'objectToEnable': "Text",
             'showPercentageNumber': False,
             'showCategoriesInterface': True,
             'ADU_or_Speaker':"",
@@ -121,13 +123,13 @@ class ComparativeCorporaSimple:
             'showStopWordsInterface':True,
             'showStopwords':False,
             'useStopwords':True,
-            'showPOSInterface':False
+            'showPOSInterface':False,
+            'showNgramSlider': True
         }
         self.__updateCfg(config=overrideConfig)
         self.__cf = FilterInterface(config=self.__cf).getConfig()
         gruppedDataDic, wholeDataDic = self.__loadFilteredDataToDic()
         st.header("The most frequent ngrams")
-        self.__cf['objectToEnable'] = "Chart"
         self.__cf['SubTableXscale'] = .9
         self.__cf['SubTableYscale'] = 2
         self.__cf['SubTableFontSize'] = 18
@@ -148,7 +150,8 @@ class ComparativeCorporaSimple:
             'showStopWordsInterface':True,
             'showStopwords':False,
             'useStopwords':True,
-            'showPOSInterface':False
+            'showPOSInterface':False,
+            'showNgramSlider': False
         }
         self.__updateCfg(config=overrideConfig)
         self.__cf = FilterInterface(config=self.__cf).getConfig()
@@ -179,7 +182,8 @@ class ComparativeCorporaSimple:
             'showStopWordsInterface':False,
             'showStopwords':False,
             'useStopwords':False,
-            'showPOSInterface':True
+            'showPOSInterface':True,
+            'showNgramSlider': False
         }
         self.__updateCfg(config=overrideConfig)
         self.__cf = FilterInterface(config=self.__cf).getConfig()
