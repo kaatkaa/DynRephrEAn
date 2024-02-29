@@ -27,7 +27,7 @@ class ComparativeCorporaSimple:
         self.__cf = config
         with st.sidebar:
             st.header("Analytics module")
-            module = st.radio("Choose module: ", ("Distribution","Wordcloud","n-grams","PoS","3D_Distribution","3D_PoS"),
+            module = st.radio("Choose module: ", ("Distribution","Wordcloud","n-grams","PoS"),
                             label_visibility='collapsed', key=str(self.prefixCtr)+"CMP_module_")
             self.prefixCtr += 1
         if module == "Distribution" and len(self.__dataDic) > 0:
@@ -38,21 +38,16 @@ class ComparativeCorporaSimple:
             self.Ngrams()
         elif module == "PoS"and len(self.__dataDic) > 0:
             self.PoS()
-        elif module == "3D_Distribution" and len(self.__dataDic) > 0:
-            pass
-        elif module == "3D_PoS" and len(self.__dataDic) > 0:
-            pass
         else:
             st.error("Unknown option for comparative analysis.")
 
     def __Display(self, data_dic: dict[str,pd.DataFrame()], classType: Any):
         if len(data_dic) > 1:
-            a = classType
             fig, ax = plt.subplots(4, 2, figsize=(10,45), sharex=True)
             fig.subplots_adjust(left=-1, bottom=0.1, right=1.2, top=0.9, wspace=0.2, hspace=0.2)
             sns.set(font_scale=2)
             self.__cf['ax'] = ax
-            [ k for k in a(dataDic=data_dic,config=self.__cf).getChartsDic().keys()]
+            [ k for k in classType(dataDic=data_dic,config=self.__cf).getChartsDic().keys()]
             st.pyplot(fig=fig, config=DataProvider.getSaveConfig())
             fn = 'comparative_analysis.png'
             img = io.BytesIO()

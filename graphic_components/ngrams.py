@@ -58,7 +58,7 @@ class Ngrams(SuperTextComponent):
             wordLst = FreqDist(wordLst)
             if self._cf['imediatePlot']:
                 number = st.slider("Pick top n words/phrases: ", 1, value=10, max_value=len(wordLst), key="Num"+self._cf['prefix']+t)
-                ngramType = st.slider("Choose n-gram type: (1-4)",1,value=2, max_value=4, key="nType"+self._cf['prefix']+t)
+                ngramType = st.slider("Choose n-gram type: (1-4)",1,value=2, max_value=4, key="n-gramType"+self._cf['prefix']+t)
             else:
                 number = 20
                 ngramType = self._cf['ngramSliderValue']
@@ -104,7 +104,7 @@ class Ngrams(SuperTextComponent):
                 ngramsLst, freqLst = [], []
                 [ ngramsLst.append(" ".join(item[0])) for item in common if item[0] != ('',)]
                 [ freqLst.append(item[1]) for item in common if item[0] != ('',)]
-                tmpDict = {'{n}-gram Top 20'.format(n=ngramType):ngramsLst[:20],'frequency':freqLst[:20]}
+                tmpDict = {'{n}-gram Top {rank}'.format(n=ngramType,rank=number):ngramsLst[:number],'frequency':freqLst[:number]}
                 tmpDf = pd.DataFrame(tmpDict)
                 tmpDf.index += 1
                 axTmp = self._cf['ax'][self._cf['_8x_dims'][self._cf['subChartPosition']][0],
