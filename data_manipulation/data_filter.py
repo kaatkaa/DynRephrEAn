@@ -52,6 +52,7 @@ class DataFilter:
     def __init__(self, data: Any, config: Dict[str, Any]) -> None:
         self.__cf=DataFilter.__config
         self.__stop_words_set = self.__cf['StopwordsSet']
+        self.__ngramLst = []
         if len(data) > 0:
             for cfg in config.items():
                 self.__cf[cfg[0]] = cfg[1]
@@ -65,6 +66,9 @@ class DataFilter:
 
     def getDataDict(self) -> Dict[str, Any]:
         return self.__outDict
+    
+    def getNgramLst(self) -> List[Tuple[str, int]]:
+        return self.__ngramLst
         
     def __filterInterface(self) -> Tuple[Any, list[str]]:
             

@@ -11,13 +11,13 @@ sys.path.insert(0,"..")
 class dataHandlerDisplayInterface:
 
     def dataDisplay(self, dataDic: Any, t: str) -> None:
-        st.write("This is SuperChartComponent of methodo that should be verlapped.")
+        st.write("This is SuperChartComponent method that should be overlapped.")
 
     def getChartObj(self, dataDic: Any, t: str) -> Any:
-        st.write("This is SuperChartComponent of methodo that should be verlapped.")
+        st.write("This is SuperChartComponent method that should be overlapped.")
 
     def getChartsDic() -> Dict[str, Any]:
-        st.write("This is SuperChartComponent of methodo that should be verlapped.")
+        st.write("This is SuperChartComponent method that should be overlapped.")
 
 class SuperChartComponent(dataHandlerDisplayInterface):
 
@@ -57,7 +57,7 @@ class SuperTextComponent(dataHandlerDisplayInterface):
                     self.__textDict[key] = self.getTextObj(dataDic[key],key)
 
     def getTextObj(self, data: Any, t: str) -> Any:
-        st.write("This is SuperChartComponent of methodo that should be verlapped.")
+        st.write("This is SuperChartComponent method that should be overlapped.")
 
     def getTextDic(self) -> Dict[str, Any]:
         return self.__textDict

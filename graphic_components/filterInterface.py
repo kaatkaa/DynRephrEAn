@@ -31,26 +31,37 @@ class FilterInterface:
         # end of subplot Table configuration
         # Variable below enables "Chart" or "Text" component in SuperTextComponent superclass
         'objectToEnable': "Chart",
+        #Number or percentage
         'showPercentageNumber': False,
         'unitPercentNumber': 'Percentage',
         'unitsPercentageNumber': ('Percentage','Number'),
+        #categories interface
         'showCategoriesInterface': False,
         'categoriesColumn': '',
         'categoriesLst': DataProvider.getDynRephDimentions(),
         'categoriesInterfaceTitle': 'Wordcloud_filterInterface',
+        # ADU or speaker
         'ADU_or_Speaker': '',
         'SS rephrase': False,
         'OS rephrase': False,
+        # Use Input or Output phrase
         'showInOutInterface': True,
+        # use radiobutton interface to choose between Input output and Locution input and output
         'showInOutVsLoc': False,
+        # List that remembers selected Input output or locution input and output
         'inOutLst': DataProvider.getInOutColLst(),
+        # Color palette for barchar 2 types for Dynamic rephrase and PoS
         'palette': DataProvider.getEthosColors(),
+        # use stopwords interface
         'showStopWordsInterface':False,
         'showStopwords':False,
         'useStopwords':False,
         'StopwordsSet': set(),
+        #Interface of PoS
         'showPOSInterface':False,
+        #PoS column names in excel to choose from
         'posColumns': DataProvider.getPSPcolumns1(),
+        #PoS categories selected
         'posCategories': DataProvider.getPSPlst()
     }
 
@@ -103,6 +114,7 @@ class FilterInterface:
             self.__PoSinterface()
         else:
             self.__cf['palette'] = DataProvider.getEthosColors()
+
 
     def __units(self):
         self.__cf['unitPercentNumber'] = st.radio("Choose units",
@@ -189,7 +201,7 @@ class FilterInterface:
         with col2:
             if colType == "input & output":
                 self.__cf['posColumns'] = st.multiselect(self.__cf['generalConfig']['POS_inOut'], 
-                                            sorted(DataProvider.getPSPcolumns1()), 
+                                            sorted(DataProvider.getPSPcolumns1()),
                                             sorted(DataProvider.getPSPcolumns1())[:],
                                             key = self.__cf['prefix']+"_multiInOutPOS"+str(self.__keyCtr))
                 self.__keyCtr += 1
@@ -201,7 +213,7 @@ class FilterInterface:
                 self.__keyCtr += 1
             else:
                 st.error("Wrong option in __PoSinterface: colType==",colType)             
-        self.__cf['posCategories'] = st.multiselect(self.__cf['generalConfig']['POS_title'], 
+        self.__cf['posCategories'] = st.multiselect(self.__cf['generalConfig']['POS_title'],
                                     sorted(DataProvider.getPSPlst()), 
                                     sorted(DataProvider.getPSPlstDefault())[:],
                                     key = self.__cf['prefix']+"_multiPOS"+str(self.__keyCtr))

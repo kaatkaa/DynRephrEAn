@@ -8,14 +8,15 @@ import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import plotly.express as px
 
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 sys.path.insert(0,"..")
 from graphic_components.barChart import Barchart2
 from graphic_components.table import Table2
 from graphic_components.wordCoud import WordCloudOfRephrase
 from graphic_components.filterInterface import FilterInterface
+from graphic_components.ngrams import Ngrams
 from config.config_data_colector import DataProvider
-from data_manipulation.data_manipulator import DataManipulator
+#from data_manipulation.data_manipulator import DataManipulator
 from data_manipulation.data_filter import DataFilter
 
 class ComparativeCorporaSimple:
@@ -28,73 +29,19 @@ class ComparativeCorporaSimple:
             st.header("Analytics module")
             module = st.radio("Choose module: ", ("Distribution","Wordcloud","n-grams","PoS","3D_Distribution","3D_PoS"),
                             label_visibility='collapsed', key=str(self.prefixCtr)+"CMP_module_")
-        self.prefixCtr += 1
-        gruppedDataDic = {}
-        wholeDataDic = {}
-
+            self.prefixCtr += 1
         if module == "Distribution" and len(self.__dataDic) > 0:
-            self.__cf = {
-                'imediatePlot': False,
-                'showPercentageNumber': True,
-                'unitPercentNumber': 'Percentage',
-                'showCategoriesInterface': True,
-                'categoriesColumn': '',
-                'ADU_or_Speaker':"",
-                'SS rephrase': False,
-                'OS rephrase': False,
-                'showInOutInterface': True,
-                'showStopWordsInterface':True,
-                'showStopwords':False,
-                'useStopwords':True,
-                'showPOSInterface':False
-            }
-            self.__cf = FilterInterface(config=self.__cf).getConfig()
-            for key in self.__dataDic.keys():
-                tmpDic = DataFilter(data=self.__dataDic[key],config=self.__cf).getDataDict()
-                if len(tmpDic) > 0:
-                    gruppedDataDic[key] = tmpDic['gruppedAll']
-                    wholeDataDic[key] = tmpDic['wholeAll']
-            chart, table, wordcloud, cases = st.tabs([":bar_chart: Barchart",":black_square_button: Table"])
-            with chart:
-                self.__Display(data_dic=gruppedDataDic, classType=Barchart2)
-                self.prefixCtr +=1
-            with table:
-                self.__cf['SubTableXscale'] = .9
-                self.__cf['SubTableYscale'] = 6.5
-                self.__cf['SubTableFontSize'] = 24
-                self.__Display(data_dic=gruppedDataDic, classType=Table2)
-                self.prefixCtr += 1
-            with wordcloud:
-                self.__cf['objectToEnable'] = "Chart"
-                self.__Display(data_dic=wholeDataDic, classType=WordCloudOfRephrase)
-                self.prefixCtr += 1
-            with cases:
-                self.__cf['objectToEnable'] = "Text"
-                self.__cf['SubTableXscale'] = .9
-                self.__cf['SubTableYscale'] = 2
-                self.__cf['SubTableFontSize'] = 18
-                self.__Display(data_dic=wholeDataDic, classType=WordCloudOfRephrase)
-                self.prefixCtr += 1
-        elif module == "Parts of speech":
-            self.__cf['showStopWordsInterface'] = False
-            self.__cf['showInOutInterface'] = False
-            self.__cf['showPOSInterface'] = True
-            self.__cf = FilterInterface(config=self.__cf).getConfig()
-            for key in self.__dataDic.keys():
-                tmpDic = DataFilter(data=self.__dataDic[key],config=self.__cf).getDataDict()
-                if len(tmpDic) > 0:
-                    gruppedDataDic[key] = tmpDic['gruppedAll']
-                    wholeDataDic[key] = tmpDic['wholeAll']
-            chart, table, = st.tabs([":bar_chart: Barchart",":black_square_button: Table"])
-            with chart:
-                self.__Display(data_dic=gruppedDataDic, classType=Barchart2)
-                self.prefixCtr +=1
-            with table:
-                self.__cf['SubTableXscale'] = .9
-                self.__cf['SubTableYscale'] = 2
-                self.__cf['SubTableFontSize'] = 18
-                self.__Display(data_dic=gruppedDataDic, classType=Table2)
-                self.prefixCtr += 1
+            self.Distribution()
+        elif module == "Wordcloud" and len(self.__dataDic) > 0:
+            self.WordCloud()
+        elif module == "n-grams" and len(self.__dataDic) > 0:
+            self.Ngrams()
+        elif module == "PoS"and len(self.__dataDic) > 0:
+            self.PoS()
+        elif module == "3D_Distribution" and len(self.__dataDic) > 0:
+            pass
+        elif module == "3D_PoS" and len(self.__dataDic) > 0:
+            pass
         else:
             st.error("Unknown option for comparative analysis.")
 
@@ -119,29 +66,39 @@ class ComparativeCorporaSimple:
         else:
             st.write("**Add More Data to Compara.**")
 
-    def __Distribution(self, data: pd.DataFrame, config: Dict[str, Any]):
-        self.__cf = {
-            'imediatePlot': False,
-            'showPercentageNumber': True,
-            'unitPercentNumber': 'Percentage',
-            'showCategoriesInterface': True,
-            'categoriesColumn': '',
-            'ADU_or_Speaker':"",
-            'SS rephrase': False,
-            'OS rephrase': False,
-            'showInOutInterface': True,
-            'showStopWordsInterface':True,
-            'showStopwords':False,
-            'useStopwords':True,
-            'showPOSInterface':False
-        }
-        self.__cf = FilterInterface(config=self.__cf).getConfig()
+    def __updateCfg(self, config: Dict[str,Any]) -> None:
+        for item in config.items():
+            self.__cf[item[0]] = item[1]
+    
+    def __loadFilteredDataToDic(self) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+        gruppedDataDic = {}
+        wholeDataDic = {}
         for key in self.__dataDic.keys():
             tmpDic = DataFilter(data=self.__dataDic[key],config=self.__cf).getDataDict()
             if len(tmpDic) > 0:
                 gruppedDataDic[key] = tmpDic['gruppedAll']
                 wholeDataDic[key] = tmpDic['wholeAll']
-        chart, table, wordcloud, cases = st.tabs([":bar_chart: Barchart",":black_square_button: Table"])
+        return gruppedDataDic, wholeDataDic
+
+    def Distribution(self):
+        overrideConfig = {
+            'imediatePlot': False,
+            'showPercentageNumber': True,
+            'unitPercentNumber': 'Percentage',
+            'showCategoriesInterface': True,
+            'ADU_or_Speaker':"",
+            'SS rephrase': False,
+            'OS rephrase': False,
+            'showInOutInterface': False,
+            'showStopWordsInterface':False,
+            'showStopwords':False,
+            'useStopwords':False,
+            'showPOSInterface':False
+        }
+        self.__updateCfg(config=overrideConfig)
+        self.__cf = FilterInterface(config=self.__cf).getConfig()
+        gruppedDataDic, wholeDataDic = self.__loadFilteredDataToDic()
+        chart, table = st.tabs([":bar_chart: Barchart",":black_square_button: Table"])
         with chart:
             self.__Display(data_dic=gruppedDataDic, classType=Barchart2)
             self.prefixCtr +=1
@@ -151,6 +108,93 @@ class ComparativeCorporaSimple:
             self.__cf['SubTableFontSize'] = 24
             self.__Display(data_dic=gruppedDataDic, classType=Table2)
             self.prefixCtr += 1
+
+    def Ngrams(self):
+        overrideConfig = {
+            'imediatePlot': False,
+            'showPercentageNumber': False,
+            'showCategoriesInterface': True,
+            'ADU_or_Speaker':"",
+            'SS rephrase': False,
+            'OS rephrase': False,
+            'showInOutInterface': True,
+            'showStopWordsInterface':True,
+            'showStopwords':False,
+            'useStopwords':True,
+            'showPOSInterface':False
+        }
+        self.__updateCfg(config=overrideConfig)
+        self.__cf = FilterInterface(config=self.__cf).getConfig()
+        gruppedDataDic, wholeDataDic = self.__loadFilteredDataToDic()
+        st.header("The most frequent ngrams")
+        self.__cf['objectToEnable'] = "Chart"
+        self.__cf['SubTableXscale'] = .9
+        self.__cf['SubTableYscale'] = 2
+        self.__cf['SubTableFontSize'] = 18
+        self.__Display(data_dic=wholeDataDic, classType=Ngrams)
+        self.prefixCtr += 1
+
+
+    def WordCloud(self):
+        overrideConfig = {
+            'imediatePlot': False,
+            'showPercentageNumber': True,
+            'unitPercentNumber': 'Percentage',
+            'showCategoriesInterface': True,
+            'ADU_or_Speaker':"",
+            'SS rephrase': False,
+            'OS rephrase': False,
+            'showInOutInterface': True,
+            'showStopWordsInterface':True,
+            'showStopwords':False,
+            'useStopwords':True,
+            'showPOSInterface':False
+        }
+        self.__updateCfg(config=overrideConfig)
+        self.__cf = FilterInterface(config=self.__cf).getConfig()
+        gruppedDataDic, wholeDataDic = self.__loadFilteredDataToDic()
+        wordcloud, top20words = st.tabs([":rain_cloud: Wordcloud",":top: Top_20_Words"])
+        with wordcloud:
+            self.__cf['objectToEnable'] = "Chart"
+            self.__Display(data_dic=wholeDataDic, classType=WordCloudOfRephrase)
+            self.prefixCtr += 1
+        with top20words:
+            self.__cf['objectToEnable'] = "Text"
+            self.__cf['SubTableXscale'] = .9
+            self.__cf['SubTableYscale'] = 2
+            self.__cf['SubTableFontSize'] = 18
+            self.__Display(data_dic=wholeDataDic, classType=WordCloudOfRephrase)
+            self.prefixCtr += 1
+
+    def PoS(self):
+        overrideConfig = {
+            'imediatePlot': False,
+            'showPercentageNumber': True,
+            'unitPercentNumber': 'Percentage',
+            'showCategoriesInterface': True,
+            'ADU_or_Speaker':"",
+            'SS rephrase': False,
+            'OS rephrase': False,
+            'showInOutInterface': True,
+            'showStopWordsInterface':False,
+            'showStopwords':False,
+            'useStopwords':False,
+            'showPOSInterface':True
+        }
+        self.__updateCfg(config=overrideConfig)
+        self.__cf = FilterInterface(config=self.__cf).getConfig()
+        gruppedDataDic, wholeDataDic = self.__loadFilteredDataToDic()
+        chart, table, = st.tabs([":bar_chart: Barchart",":black_square_button: Table"])
+        with chart:
+            self.__Display(data_dic=gruppedDataDic, classType=Barchart2)
+            self.prefixCtr +=1
+        with table:
+            self.__cf['SubTableXscale'] = .9
+            self.__cf['SubTableYscale'] = 2
+            self.__cf['SubTableFontSize'] = 18
+            self.__Display(data_dic=gruppedDataDic, classType=Table2)
+            self.prefixCtr += 1
+        self.prefixCtr += 1
 
 # Save to file first or an image file has already existed.
 # fn = 'scatter.png'

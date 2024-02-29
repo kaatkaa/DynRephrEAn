@@ -6,6 +6,7 @@ import re
 from nltk.util import ngrams
 from nltk import FreqDist
 from typing import Tuple, List, Dict, Any
+from pandas.plotting import table
 
 sys.path.insert(0,"..")
 from config.config_data_colector import DataProvider
@@ -15,35 +16,9 @@ from graphic_components.superComponent import SuperTextComponent
 class Ngrams(SuperTextComponent):
     
     def dataDisplay(self, data: Any, t: str) -> None:
-        lstOfInOut = []
-        restLst = []
-        if set(self._cf['inOutLst']) <= set(DataProvider.getInOutColLst()):
-            lstOfInOut = DataProvider.getInOutColLst()
-            restLst = DataProvider.getLocInOut()
-        elif set(self._cf['inOutLst']) <= set(DataProvider.getLocInOut()):
-            lstOfInOut = DataProvider.getLocInOut()
-            restLst = DataProvider.getInOutColLst()
-        else:
-            st.warning("Wrong list inOut values in n-gram data display.")
         def backgroung_color(v):
             return f"background-color: {DataProvider.getRephraseAndEmptycolors()['Rephrase']};"
-        wordLst = []
-        if len(data) > 0:  
-            for inOut in self._cf['inOutLst']:
-                for token in map(str,",".join(data[inOut].dropna().to_numpy(na_value="")).split(",")):
-                    wordLst.extend(ngrams(token.split(" "), 1))
-        if len(wordLst) > 0:
-            wordLst = FreqDist(wordLst)
-            number = st.slider("Pick top n words/phrases: ", 1, value=10, max_value=len(wordLst))
-            ngramType = st.slider("Choose n-gram type: (1-4)",1,value=1, max_value=4)
-            st.subheader("Pick phrase to analyse: ")
-            NgramLst = []
-            for inOut in self._cf['inOutLst']:
-                for token in map(str,",".join(data[inOut].dropna().to_numpy(na_value="")).split(",")):
-                    NgramLst.extend(ngrams(token.split(" "), ngramType))
-            NgramLst = FreqDist(NgramLst)
-            common = NgramLst.most_common(number)
-            w2 = [" ".join(item[0])+" : "+str(item[1]) for item in common if item[0] != ('',)]
+        if self._cf['imediatePlot']:
             word = st.selectbox("Pick "+str(ngramType)+"-gram to analyse: ",w2,index=0,key='Dropdown_'+str(ngramType)+'-gramLst')
             regexpStr = re.sub(r"^(.*)\s:\s[0-9]+$", r"\1", word)
             regExpCode = r"\s"+regexpStr+r"\s|^"+regexpStr+r"\s|\s"+regexpStr+r"$|^"+regexpStr+r"$"
@@ -75,4 +50,33 @@ class Ngrams(SuperTextComponent):
             else:
                 st.error("Wrong input-output options for dataframe")
         else:
-            st.warning("Not enought data to display in text analysis.")
+            tmpLst = w2[:20]
+            tmpDf = pd.DataFrame({'Top {num} {n}-grams'.format(num=number,n=ngramType):tmpLst})
+            axTmp = self._cf['ax'][self._cf['_8x_dims'][self._cf['subChartPosition']][0],
+                    self._cf['_8x_dims'][self._cf['subChartPosition']][1]]
+            axTmp.title.set_text(t)
+            axTmp.xaxis.set_visible(False)  # hide the x axis
+            axTmp.yaxis.set_visible(False)  # hide the y axis
+            ytable = table(ax=axTmp, data=tmpDf, loc='center')
+            ytable.set_fontsize(self._cf['SubTableFontSize'])
+            ytable.scale(self._cf['SubTableXscale'], self._cf['SubTableYscale'])
+    
+    def getTextObj(self, data: Any, t: str) -> Any:
+        wordLst = []
+        if len(data) > 0:  
+            for inOut in self._cf['inOutLst']:
+                for token in map(str,",".join(data[inOut].dropna().to_numpy(na_value="")).split(",")):
+                    wordLst.extend(ngrams(token.split(" "), 1))
+        if len(wordLst) > 0:
+            wordLst = FreqDist(wordLst)
+            number = st.slider("Pick top n words/phrases: ", 1, value=10, max_value=len(wordLst))
+            ngramType = st.slider("Choose n-gram type: (1-4)",1,value=2 max_value=4)
+            st.subheader("Pick phrase to analyse: ")
+            NgramLst = []
+            for inOut in self._cf['inOutLst']:
+                for token in map(str,",".join(data[inOut].dropna().to_numpy(na_value="")).split(",")):
+                    NgramLst.extend(ngrams(token.split(" "), ngramType))
+            NgramLst = FreqDist(NgramLst)
+            common = NgramLst.most_common(number)
+            w2 = [" ".join(item[0])+" : "+str(item[1]) for item in common if item[0] != ('',)]
+
