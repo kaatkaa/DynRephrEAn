@@ -163,7 +163,7 @@ class SingleCorpusMenu:
                                     )
         if module_choice == "n-grams":
             __filterWordCloud = {
-                'prefix':'WordCloud_',
+                'prefix':'Ngrams_',
                 'generalConfig': self.__anCfg,
                 'ADU_or_Speaker': ADU_or_Speaker,
                 'showPercentageNumber': False,
@@ -175,7 +175,8 @@ class SingleCorpusMenu:
                 'showStopWordsInterface':True,
                 'showStopwords':False,
                 'useStopwords':True,
-                'showPOSInterface':False
+                'showPOSInterface':False,
+                'showNgramSlider': False
             }
             config = FilterInterface(config=__filterWordCloud).getConfig()
             dataDict = DataFilter(data=self.__rephrase_df,config=config).getDataDict()
@@ -195,7 +196,8 @@ class SingleCorpusMenu:
                 'showStopWordsInterface':True,
                 'showStopwords':False,
                 'useStopwords':True,
-                'showPOSInterface':False
+                'showPOSInterface':False,
+                'showNgramSlider': False
             }
             config = FilterInterface(config=__filterWordCloud).getConfig()
             dataDict = DataFilter(data=self.__rephrase_df,config=config).getDataDict()
@@ -217,7 +219,8 @@ class SingleCorpusMenu:
                 'showStopWordsInterface':True,
                 'showStopwords':False,
                 'useStopwords':True,
-                'showPOSInterface':False
+                'showPOSInterface':False,
+                'showNgramSlider': False
             }
             PoS(df=self.__rephrase_df,config=__filterPoS)
         else:
@@ -238,7 +241,8 @@ class SingleCorpusMenu:
             'showStopWordsInterface':True,
             'showStopwords':False,
             'useStopwords':True,
-            'showPOSInterface':False
+            'showPOSInterface':False,
+            'showNgramSlider': False
         }
         config = FilterInterface(config=filterCfg).getConfig()
         dataDic = DataFilter(data=self.__rephrase_df,config=config).getDataDict()

@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from typing import Any, Tuple, List
 from wordcloud import WordCloud
 from pandas.plotting import table
+from config.config_data_colector import DataProvider
 
 from graphic_components.superComponent import SuperTextComponent
 sys.path.insert(0,"..")
@@ -39,6 +40,10 @@ class WordCloudOfRephrase(SuperTextComponent):
                 axTmp.imshow(wordcloud)
     
     def getTextObj(self, data: Any, t: str) -> Any:
+        def make_pretty(styler):
+            styler.set_caption(t)
+            styler.set_table_styles(DataProvider.getTableFormat())
+            return styler
         text = ""
         for inOut in self._cf['inOutLst']:
             text += " ".join(map(str,",".join(data[inOut].dropna().to_numpy(na_value="")).split(",")))
@@ -51,12 +56,11 @@ class WordCloudOfRephrase(SuperTextComponent):
             index = []
             for i in range(1,self._cf['textInstances']+1):
                 index.append(i)
-            unigramsDf = pd.DataFrame(wordLst[:self._cf['textInstances']],columns = ['Top phrase', 'Frequency'],index=pd.Index(index, name='Ranking'))
+            unigramsDf = pd.DataFrame(wordLst[:self._cf['textInstances']],columns = ['Top word', 'Frequency'],index=pd.Index(index, name='Ranking'))
             unigramsDf.columns.name = unigramsDf.index.name
             #unigramsDf.index += 1
             if self._cf['imediatePlot']:
-                st.header(t)
-                return unigramsDf
+                return make_pretty(unigramsDf.style)
             else:
                 axTmp = self._cf['ax'][self._cf['_8x_dims'][self._cf['subChartPosition']][0],
                         self._cf['_8x_dims'][self._cf['subChartPosition']][1]]
@@ -72,8 +76,8 @@ class WordCloudOfRephrase(SuperTextComponent):
     
     def dataDisplay(self, data: pd.DataFrame(), t: str) -> None:
         if len(data) > 0 and len(self._cf['inOutLst']) > 0:
-            st.subheader(self._cf['generalConfig']["Wordcloud_display"]+" "+self._cf['ADU_or_Speaker'])
-            wordcloudTab, tableTab = st.tabs([":cloud: Wordcloud",":black_square_button: TopWords"])
+            st.subheader(self._cf['generalConfig']["Wordcloud_display"])
+            wordcloudTab, tableTab = st.tabs([":cloud: Wordcloud",":black_square_button: Table"])
             with wordcloudTab:
                 t = re.sub("wholeAll|whole","",t)
                 chart = self.getChartObj(df=data, t=self._cf['ADU_or_Speaker']+" "+t)
@@ -88,9 +92,11 @@ class WordCloudOfRephrase(SuperTextComponent):
                         label="Download as PNG",
                         data=buf,
                         file_name=fn,
-                        mime="image/png")                                
+                        mime="image/png")                        
             with tableTab:
-                df = self.getTextObj(data, t=self._cf['ADU_or_Speaker'])
-                st.dataframe(df, width=800, height=40*self._cf['textInstances'])
+                left, center, right = st.columns(3)
+                with center:
+                    df = self.getTextObj(data, t=self._cf['ADU_or_Speaker'])
+                    st.table(df)
         else:
             st.warning("You have to provide corpora for text analysis.")

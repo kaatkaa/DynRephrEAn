@@ -8,7 +8,7 @@
         "Wordcloud_editReph_ADU": "Edit ethos transition ADU data for worldcloud",
         "Wordcloud_editReph_sameSp": "Edit ethos rephrase for worldcloud of Same Speaker: ",
         "Wordcloud_editReph_diffSp": "Edit ethos for worldcloud of Other Speakers: ",
-        "Wordcloud_display": "WordCloud: ",
+        "Wordcloud_display": "Top phrases: ",
         "Cases_editReph_ADU": "Edit dynamic ethos for qualitative analysis: ",
         "Cases_editReph_sameSp": "Edit ethos n-grams for SS: ",
         "Cases_editReph_diffSp": "Edit ethos n-grsms for SO ",

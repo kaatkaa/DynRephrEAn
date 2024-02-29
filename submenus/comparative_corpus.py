@@ -54,9 +54,9 @@ class CmpCorpusMenu:
             }
             </style>
         """,unsafe_allow_html=True)
-        module = st.radio(horizontal=True, label="Choose: ", options=("Distribution","3D Distribution","3D PoS"),label_visibility='visible')
+        userMix, _3dMix, _3dPoS = st.tabs([":male-technologist: User selection corpora",":three: D Corporas", ":three: D PoS"])
         st.divider()
-        if module == "Distribution":
+        with userMix:
             tabs = st.tabs(tabs=self.__tabLabels)
             for ctr, i in enumerate(tabs):
                 if ctr < (len(tabs)-1):
@@ -74,10 +74,16 @@ class CmpCorpusMenu:
                     with i:
                         st.subheader(self.__tabLabels[ctr])
                         ComparativeCorporaSimple(data_dic=self.__dataDic, config=self.__anCf)
-        elif module == "3D Distribution":
-            ThreeDCorpusMenu(dataDic=self.__dataDict, prefix="3D_Distribution", anType=self.__anType).draw3D(bothEthosPathos=False)
-        elif module == "3D PoS":
-            _3D_PSP_corpus(dataDic=self.__dataDict, prefix="3D_PoS", anType=self.__anType).draw3D()
+        # with _3dMix:
+        #     with st.form("3D corporas"):
+        #         submit = st.form_submit_button("Show 3D corpora!")
+        #         if submit:
+        #             ThreeDCorpusMenu(dataDic=self.__dataDict, prefix="3D_Distribution", anType=self.__anType).draw3D(bothEthosPathos=False)
+        # with _3dPoS:
+        #     with st.form("3D Parts of Speech"):
+        #         submit = st.form_submit_button("Show 3D Parts of Speech!")
+        #         if submit:
+        #             _3D_PSP_corpus(dataDic=self.__dataDict, prefix="3D_PoS", anType=self.__anType).draw3D()
 
     def clearTabsSelections(self) -> None:
         for tab in self.__dataLoaders:

@@ -20,6 +20,7 @@ class Table2(SuperChartComponent):
             return styler
         df.index += 1
         tmpDf = df.copy(deep=True)
+        tmpDf = tmpDf.sort_values(by=columnLst[1], ascending=False)
         if len(columnLst) == 3:
             tmpDf = tmpDf[[columnLst[2],columnLst[1]]]
         if self._cf['imediatePlot']:

@@ -70,7 +70,7 @@ class Ngrams(SuperTextComponent):
             common = NgramLst.most_common(number)
             if self._cf['imediatePlot']:
                 w2 = [" ".join(item[0])+" : "+str(item[1]) for item in common if item[0] != ('',)]
-                word = st.selectbox("Pick "+str(ngramType)+"-gram to analyse: ",w2,index=0,key='Dropdown_'+str(ngramType)+'-gramLst')
+                word = st.selectbox("Pick "+str(ngramType)+"-gram to analyse: ",w2,index=0,key='Dropdown'+str(ngramType)+'-gram_'+t)
                 regexpStr = re.sub(r"^(.*)\s:\s[0-9]+$", r"\1", word)
                 regExpCode = r"\s"+regexpStr+r"\s|^"+regexpStr+r"\s|\s"+regexpStr+r"$|^"+regexpStr+r"$"
                 st.subheader("Selected phrase is marked in text below between stars: \*\*"+regexpStr+"\*\*")
@@ -104,7 +104,7 @@ class Ngrams(SuperTextComponent):
                 ngramsLst, freqLst = [], []
                 [ ngramsLst.append(" ".join(item[0])) for item in common if item[0] != ('',)]
                 [ freqLst.append(item[1]) for item in common if item[0] != ('',)]
-                tmpDict = {'{n}-gram Top {rank}'.format(n=ngramType,rank=number):ngramsLst[:number],'frequency':freqLst[:number]}
+                tmpDict = {'{n}-gram'.format(n=ngramType,rank=number):ngramsLst[:number],'frequency':freqLst[:number]}
                 tmpDf = pd.DataFrame(tmpDict)
                 tmpDf.index += 1
                 axTmp = self._cf['ax'][self._cf['_8x_dims'][self._cf['subChartPosition']][0],
