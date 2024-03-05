@@ -15,6 +15,7 @@ from graphic_components.ngrams import Ngrams
 from graphic_components.pos import PoS
 from config.config_data_colector import DataProvider
 from submenus.tweaker import st_tweaker
+from st_ant_tree import st_ant_tree
 
 class SingleCorpusMenu:
 
@@ -55,7 +56,7 @@ class SingleCorpusMenu:
         for key in self.__dataDic:
             st.session_state[self.__prefix + key] = False
         st.session_state[self.__prefix + "US2016reddit"] = False
-        st.session_state[self.__prefix + "US2016tv"] = False
+        st.session_state[self.__prefix + "US2016ElectionsTV"] = False
         self.__rephrase_df = pd.DataFrame()
         self.__rephrase_old = self.__rephrase_df.copy(deep=True)
 
@@ -75,7 +76,7 @@ class SingleCorpusMenu:
     def __update_block(self, name: str):
         for key in self.__dataDic:
             if key.find(name) != -1:
-                print("Block:", self.__prefix + name," Updates: ",self.__prefix + key)
+                #print("Block:", self.__prefix + name," Updates: ",self.__prefix + key)
                 st.session_state[self.__prefix + key] = st.session_state[self.__prefix + name]
                 self.__update_corpora_checkbox()
 
@@ -103,15 +104,15 @@ class SingleCorpusMenu:
                     disabled=False,
                     id = "Reddit" + str(ctr)
                 )
-            elif key.find("US2016tv") != -1:
+            elif key.find("US2016ElectionsTV") != -1:
                 if not tv:
                     tv = True
-                    st.checkbox("US2016tv", \
-                        key = self.__prefix + "US2016tv",
-                        help = self.__prefix + "US2016tv",
+                    st.checkbox("US2016ElectionsTV", \
+                        key = self.__prefix + "US2016ElectionsTV",
+                        help = self.__prefix + "US2016ElectionsTV",
                         value = False,
                         on_change=self.__update_block,
-                        kwargs = {"name": "US2016tv"},
+                        kwargs = {"name": "US2016ElectionsTV"},
                         disabled=False
                     )                     
                 st_tweaker.checkbox(key, \
@@ -121,7 +122,7 @@ class SingleCorpusMenu:
                     on_change=self.__update_corpora_checkbox,
                     kwargs = {},
                     disabled=False,
-                    id = "US2016tv" + str(ctr) 
+                    id = "US2016ElectionsTV" + str(ctr) 
                 )                
             else:
                 st.checkbox(key, \
@@ -135,7 +136,7 @@ class SingleCorpusMenu:
         self.__update_corpora_checkbox()
         st.markdown("""
         <style>
-        #Reddit0,#Reddit1,#Reddit2,#US2016tv3,#US2016tv4,#US2016tv5 {
+        #Reddit0,#Reddit1,#Reddit2,#US2016ElectionsTV3,#US2016ElectionsTV4,#US2016ElectionsTV5 {
             margin-left: 50px;
         }
         </style>
@@ -150,17 +151,30 @@ class SingleCorpusMenu:
             self.__corporaPickerChckBox()
             st.write("****************************")
             st.subheader("Analysis Units")
-            ADU_or_Speaker = st.radio("", ("ADU-Based Analysis",
-                                            "Speaker-Based Analysis"
-                                            ), key=self.__prefix+"units")
+            annotationUnits = st.radio("Unit picker",("Text-based","Entity-based"),
+                     key=self.__prefix+"Text-Entity",
+                     index=0)
+            if annotationUnits == "Text-based":
+                ADU_or_Speaker = st_tweaker.radio("Choose: ", ("ADU-Based Analysis",)
+                    , key=self.__prefix+"textUnits", id="TextUnits")
+            elif annotationUnits == "Entity-based":
+                ADU_or_Speaker = st_tweaker.radio("Choose: ", ("Speaker-Based Analysis",)
+                    , key=self.__prefix+"entityUnits", id="EntityUnits")
             self.__anCfg['ADU_or_Speaker'] = ADU_or_Speaker
-            #if units == "ADU-Based Analysis":
             st.write("****************************")
             st.subheader("Statictical module")
             module_choice = st.radio("An. Module", \
                                         ("Distribution","Wordcloud","n-grams","PoS"), \
                                         key=self.__prefix+"post", label_visibility="hidden"
                                     )
+        st.markdown("""
+        <style>
+        #TextUnits #EntityUnits {
+            margin-left: 50px;
+        }
+        </style>
+        """,unsafe_allow_html=True)
+
         if module_choice == "n-grams":
             __filterWordCloud = {
                 'prefix':'Ngrams_',
@@ -229,6 +243,7 @@ class SingleCorpusMenu:
         else:
             raise NotImplementedError("Unsupported option of Analytical module in single_corpus.py .")
         
+
     def container(self, s: str="",units_choice: str=""):
         filterCfg = {
             'prefix':'distributions_',

@@ -113,9 +113,6 @@ with st.sidebar:
                 key="AnType")
     single_corpora_menu = SingleCorporaMenuLoader(dataDic=dataDic, submenu_prefix="0_", anType=rAnalytics)
     cmp_corpora_menu = ComparativeCorporaMenuLoader(dataDic=dataDic, anType=rAnalytics)
-    # threeD_corpora_EthOrSent = ThreeDCorporaMenuLoader(dataDic=dataDic, submenu_prefix="3D_1", anType=rAnalytics)
-    # threeD_corpora_EthAndSent = ThreeDCorporaMenuLoader(dataDic=dataDic, submenu_prefix="3D_2", anType=rAnalytics)
-    # pSP = _3D_PSPCorporaMenuLoader(dataDic=dataDic, submenu_prefix="3D_3", anType=rAnalytics)
     st.title("Contents")
     contents_radio = st.radio("Choose: ", ("Main Page", "Single Corpus Analysis", "Comparative Corpora Analysis"),label_visibility='collapsed')
 
@@ -127,22 +124,15 @@ elif contents_radio == "Comparative Corpora Analysis":
     with st.sidebar:
         st.button("Clear All Tabs",key="tabs_clear",on_click=cmp_corpora_menu.clearTabsSelections)
         st.subheader("Analysis Units")
-        units_choice = st.radio("", ("ADU-Based Analysis",
-                                        "Speaker-Based Analysis"
-                                        ), key="Cmp_units",
-                                        on_change=resetData,
-                                        args=(single_corpora_menu, cmp_corpora_menu))
-    cmp_corpora_menu.display(units_choice)
-# elif contents_radio == "3D Charts":
-#     with st.sidebar:
-#         _3D_Choice = st.radio("Choose 3D diagram", ("Ethos or Sentiment","Ethos and Sentiment", "3D_PartsOfSpeech"))
-#     if _3D_Choice == "Ethos or Sentiment":
-#         threeD_corpora_EthOrSent.draw3D(bothEthosPathos=False)
-#     elif _3D_Choice == "Ethos and Sentiment":
-#         threeD_corpora_EthAndSent.draw3D(bothEthosPathos=True)
-#     elif _3D_Choice == "3D_PartsOfSpeech":
-#         pSP.draw3D()
-#     else:
-#         st.warning("This option of 3D chart: '",_3D_Choice,"' is not implemented.")
+        annotationUnits = st.radio("Unit picker",("Text-based","Entity-based"),
+                    key="CMP_Text-Entity",
+                    index=0)
+        if annotationUnits == "Text-based":
+            ADU_or_Speaker = st.radio("Choose: ", ("ADU-Based Analysis",)
+                , key="CMP_textUnits")
+        elif annotationUnits == "Entity-based":
+            ADU_or_Speaker = st.radio("Choose: ", ("Speaker-Based Analysis",)
+                , key="CMP_entityUnits")
+    cmp_corpora_menu.display(ADU_or_Speaker)
 else:
     st.error("Wrong option of main sidemenu radiobitton.")
