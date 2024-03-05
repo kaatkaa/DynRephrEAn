@@ -13,6 +13,13 @@ class DataProvider:
         {"selector": "th", "props": [("border", "2px solid black")]}
     ]
 
+    __corpus3Ddic = {
+            'Total': {'US2016redditD1','US2016redditR1','US2016redditG1','US2016tvD1','US2016tvR1','US2016tvG1','Hansard','PolarIs1vacc'},
+            'SocialMedia': {'US2016redditD1','US2016redditR1','US2016redditG1','PolarIs1vacc'},
+            'Media': {'US2016tvD1','US2016tvR1','US2016tvG1'},
+            'F2F': {'Hansard'}
+    }
+
     __dyn_rephr_file = 'config/dyn_rephr_cfg.json'
     __lst_of_dyn_rephr = ['Amelioration', 'Pejorativization', 'Neutralization','No_Change']
     __lst_of_dyn_rephrWS = ['A_strong','A_weak','P_strong','P_weak','Neutralization','No_Change']
@@ -186,6 +193,10 @@ class DataProvider:
     @staticmethod
     def getPoStagsConverter():
         return DataProvider.__PoS_Converter
+    
+    @staticmethod
+    def get3DcorpoDic():
+        return DataProvider.__corpus3Ddic
 
     @staticmethod
     def addSpacelines(number=2):

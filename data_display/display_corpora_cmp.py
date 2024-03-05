@@ -26,7 +26,7 @@ class ComparativeCorporaSimple:
         self.__dataDic = data_dic
         self.__cf = config
         with st.sidebar:
-            st.header("Analytics module")
+            st.header("Statistical module")
             module = st.radio("Choose module: ", ("Distribution","Wordcloud","n-grams","PoS"),
                             label_visibility='collapsed', key=str(self.prefixCtr)+"CMP_module_")
             self.prefixCtr += 1
@@ -77,6 +77,7 @@ class ComparativeCorporaSimple:
 
     def Distribution(self):
         overrideConfig = {
+            'prefix':'CmpDistribution',
             'imediatePlot': False,
             'showPercentageNumber': True,
             'unitPercentNumber': 'Percentage',
@@ -107,6 +108,7 @@ class ComparativeCorporaSimple:
 
     def Ngrams(self):
         overrideConfig = {
+            'prefix':'CmpNgrams',
             'imediatePlot': False,
             'objectToEnable': "Text",
             'showPercentageNumber': False,
@@ -134,6 +136,7 @@ class ComparativeCorporaSimple:
 
     def WordCloud(self):
         overrideConfig = {
+            'prefix':'CmpWordcloud',
             'imediatePlot': False,
             'showPercentageNumber': True,
             'unitPercentNumber': 'Percentage',
@@ -166,6 +169,7 @@ class ComparativeCorporaSimple:
 
     def PoS(self):
         overrideConfig = {
+            'prefix':'CmpPoS',
             'imediatePlot': False,
             'showPercentageNumber': True,
             'unitPercentNumber': 'Percentage',

@@ -164,6 +164,7 @@ class SingleCorpusMenu:
         if module_choice == "n-grams":
             __filterWordCloud = {
                 'prefix':'Ngrams_',
+                'imediatePlot': True,
                 'generalConfig': self.__anCfg,
                 'ADU_or_Speaker': ADU_or_Speaker,
                 'showPercentageNumber': False,
@@ -185,6 +186,7 @@ class SingleCorpusMenu:
             #WordCloudOfEmotions(self.__rephrase_df,analysisType="Wordcloud",unit=ADU_or_Speaker, configDic=self.__anCfg, prefix="WordCloud")
             __filterWordCloud = {
                 'prefix':'WordCloud_',
+                'imediatePlot': True,
                 'generalConfig': self.__anCfg,
                 'ADU_or_Speaker': ADU_or_Speaker,
                 'showPercentageNumber': False,
@@ -208,6 +210,7 @@ class SingleCorpusMenu:
         elif module_choice == "PoS":
             __filterPoS = {
                 'prefix':'PoS_',
+                'imediatePlot': True,
                 'generalConfig': self.__anCfg,
                 'ADU_or_Speaker': ADU_or_Speaker,
                 'showPercentageNumber': False,

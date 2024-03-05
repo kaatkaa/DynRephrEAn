@@ -39,6 +39,7 @@ class FilterInterface:
         'showCategoriesInterface': False,
         'categoriesColumn': '',
         'categoriesLst': DataProvider.getDynRephDimentions(),
+        'fixedCatLst': [],
         'categoriesInterfaceTitle': 'Wordcloud_filterInterface',
         # ADU or speaker
         'ADU_or_Speaker': '',
@@ -137,18 +138,22 @@ class FilterInterface:
                 key=self.__cf['prefix']+"_Rephrase_4-6cat"+str(self.__keyCtr))
             self.__keyCtr += 1
         if display_complexity == '4-categories':
+            sortDict = {key: i for i, key in enumerate(DataProvider.getDynRephDimentions())}
             self.__cf['categoriesLst'] = st.multiselect(self.__cf["generalConfig"]["Wordcloud_filterInterface"], 
                                         sorted(DataProvider.getDynRephDimentions()), 
                                         sorted(DataProvider.getDynRephDimentions())[:],
                                         key = self.__cf['prefix']+"_multi_sel"+str(self.__keyCtr))
             self.__keyCtr += 1
+            self.__cf['fixedCatLst'] = sorted(self.__cf['categoriesLst'], key=lambda d: sortDict[d])
             self.__cf['categoriesColumn'] = self.__cf['generalConfig']['colName']
         elif display_complexity == '6-categories':
+            sortDict = {key: i for i, key in enumerate(DataProvider.getDynRephDimentionsWS())}
             self.__cf['categoriesLst'] = st.multiselect(self.__cf['generalConfig']["Wordcloud_filterInterface"], 
                                         sorted(DataProvider.getDynRephDimentionsWS()), 
                                         sorted(DataProvider.getDynRephDimentionsWS())[:],
                                         key = self.__cf['prefix']+"_multi_selWS"+str(self.__keyCtr))
             self.__keyCtr += 1
+            self.__cf['fixedCatLst'] = sorted(self.__cf['categoriesLst'], key=lambda d: sortDict[d])
             self.__cf['categoriesColumn'] = self.__cf['generalConfig']['colNameWS']
         else:
             st.error("Oprion not implemented in __filterInterface, class: WordCloudOfEmotions")

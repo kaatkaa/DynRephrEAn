@@ -2,25 +2,30 @@ import streamlit as st
 import pandas as pd
 
 import sys
+
+from typing import Dict, Any
 from submenus.single_corpus import SingleCorpusMenu
 from config.config_data_colector import DataProvider
 from data_display.display_corpora_cmp import ComparativeCorporaSimple
 sys.path.insert(0,"..")
 from config.config_data_colector import DataProvider
-from submenus.three_d_corpus import ThreeDCorpusMenu
+from graphic_components._3D_EthosPathos import _3D_EthosPathos
+from graphic_components.filterInterface import FilterInterface
 from submenus._3D_PSP_corpus import _3D_PSP_corpus
 
 class CmpCorpusMenu:
 
     def __init__(self, dataDict: pd, anType: str):
         self.__anType = anType
+        self.__ADUorSpeaker = ''
         self.__dataDict = dataDict
 
-        self.__anCf ={
+        self.__anCf = {
             'prefix':'no_prefix_set_',
             # imediatePlot - set to True if plotting single corpora charts 
             # - to False if plotting in comparative analysis charts
             'imediatePlot': False,
+            'anType': anType,
             'showPercentageNumber': True,
             'unitPercentNumber': 'Percentage',
             'showCategoriesInterface': True,
@@ -45,6 +50,10 @@ class CmpCorpusMenu:
         # In dictionary below all data_frames will be stored for comparison
         self.__dataDic = {}
 
+    def __updateCfg(self, config: Dict[str, Any]):
+        for item in config.items():
+            self.__anCf[item[0]] = item[1]
+
     def display(self, units):
         st.markdown("""
             <style>
@@ -54,6 +63,7 @@ class CmpCorpusMenu:
             }
             </style>
         """,unsafe_allow_html=True)
+        self.__ADUorSpeaker = units
         userMix, _3dMix, _3dPoS = st.tabs([":male-technologist: User selection corpora",":three: D Corporas", ":three: D PoS"])
         st.divider()
         with userMix:
@@ -74,16 +84,28 @@ class CmpCorpusMenu:
                     with i:
                         st.subheader(self.__tabLabels[ctr])
                         ComparativeCorporaSimple(data_dic=self.__dataDic, config=self.__anCf)
-        # with _3dMix:
-        #     with st.form("3D corporas"):
-        #         submit = st.form_submit_button("Show 3D corpora!")
-        #         if submit:
-        #             ThreeDCorpusMenu(dataDic=self.__dataDict, prefix="3D_Distribution", anType=self.__anType).draw3D(bothEthosPathos=False)
+        with _3dMix:
+            cfg = {
+                'prefix': "3D_EthosPathos",
+                'imediatePlot': True,
+                'objectToEnable': "Chart",
+                'showPercentageNumber': True,
+                'showCategoriesInterface': True,
+                'ADU_or_Speaker': units,
+                'SS rephrase': True,
+                'OS rephrase': False,
+                'showInOutInterface': False,
+                'showStopWordsInterface':False,
+                'showStopwords':False,
+                'useStopwords':False,
+                'showPOSInterface':False,
+                'showNgramSlider': False
+            }
+            self.__updateCfg(config=cfg)
+            self.__anCf = FilterInterface(config=self.__anCf).getConfig()
+            _3D_EthosPathos(dataDic=self.__dataDict,config=self.__anCf).plot3D()
         # with _3dPoS:
-        #     with st.form("3D Parts of Speech"):
-        #         submit = st.form_submit_button("Show 3D Parts of Speech!")
-        #         if submit:
-        #             _3D_PSP_corpus(dataDic=self.__dataDict, prefix="3D_PoS", anType=self.__anType).draw3D()
+        #     _3D_PSP_corpus(dataDic=self.__dataDict, prefix="3D_PoS", anType=self.__anType).draw3D()
 
     def clearTabsSelections(self) -> None:
         for tab in self.__dataLoaders:
