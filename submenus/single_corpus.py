@@ -156,7 +156,7 @@ class SingleCorpusMenu:
             self.__anCfg['ADU_or_Speaker'] = ADU_or_Speaker
             #if units == "ADU-Based Analysis":
             st.write("****************************")
-            st.subheader("Analitics module")
+            st.subheader("Statictical module")
             module_choice = st.radio("An. Module", \
                                         ("Distribution","Wordcloud","n-grams","PoS"), \
                                         key=self.__prefix+"post", label_visibility="hidden"

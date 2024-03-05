@@ -18,7 +18,7 @@ from graphic_components.filterInterface import FilterInterface
 from data_manipulation.data_filter import DataFilter
 from data_display.display_data_in_3d import ThreeD_Charts
 
-class _3D_EthosPathos:
+class _3D_PoS:
 
     def __prepareData(self, allCorpora_dataDic: Any) -> Dict[str, pd.DataFrame]:
         initialCorporaDic = dict()
@@ -32,8 +32,8 @@ class _3D_EthosPathos:
         return initialCorporaDic
     
     def __fillEmptyMatrixFields(self, matrix: Dict[str, Any]) -> Dict[str, Dict[str, int]]:
-        sortDict = {key: i for i, key in enumerate(self.__cfg['fixedCatLst'])}
-        for item in self.__cfg['categoriesLst']:
+        sortDict = {key: i for i, key in enumerate(DataProvider.getPSPlst())}
+        for item in self.__cfg['posCategories']:
             if item not in matrix:
                 matrix[item] = {'Frequency': 0}
         return dict(sorted(matrix.items(), key=lambda d: sortDict[d[0]]))
@@ -51,7 +51,7 @@ class _3D_EthosPathos:
                         tmpDf = filteredItem[1]
                         columnLst = list(tmpDf.columns.values)
                         tmpDf.rename(columns = {columnLst[1]:'Frequency'}, inplace = True)
-                        tmpDf = tmpDf.set_index(config['categoriesColumn'])
+                        tmpDf = tmpDf.set_index('PoS_type')
                         tmpDict = self.__fillEmptyMatrixFields(matrix=tmpDf.to_dict('index'))
                         self.__allSpeakersDic[title] = self.__allSpeakersDic.get(title, {})
                         if item[0] not in self.__allSpeakersDic[title]:
@@ -61,7 +61,7 @@ class _3D_EthosPathos:
 
     def plot3D(self):    
         for speaker in self.__allSpeakersDic.items():
-            with st.form("Form "+str(speaker[0])+": "):
+            with st.form("Form "+str(speaker[0])+": "+self.__cfg['prefix']):
                 if st.form_submit_button("Show 3D "+self.__cfg['generalConfig']['anName']+" "+str(speaker[0])):
                     # st.write(matrix)
                     ThreeD_Charts.CorporaVsDynRephrasePlot(matrix=speaker[1],
