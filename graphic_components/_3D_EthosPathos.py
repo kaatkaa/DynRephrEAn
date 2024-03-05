@@ -60,9 +60,9 @@ class _3D_EthosPathos:
                             st.error("Item already in 3D dictionary!")
 
     def plot3D(self):    
-        for speaker in self.__allSpeakersDic.items():
-            with st.form("Form "+str(speaker[0])+": "):
-                if st.form_submit_button("Show 3D "+self.__cfg['generalConfig']['anName']+" "+str(speaker[0])):
+        with st.form("Form: "+self.__cfg['prefix']):
+            if st.form_submit_button("Show 3D "+self.__cfg['generalConfig']['anName']):
+                for speaker in self.__allSpeakersDic.items():
                     # st.write(matrix)
                     ThreeD_Charts.CorporaVsDynRephrasePlot(matrix=speaker[1],
                         threshold=[0,0],
