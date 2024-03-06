@@ -164,7 +164,7 @@ class FilterInterface:
             if self.__cf['showInOutVsLoc']:
                 phrasesType = st.radio(self.__cf['generalConfig']['InOutType'],
                                 ("Input_Output",
-                                    "Locution_Input_Output"),                                                 
+                                    ),                                                 
                                 key=self.__cf['prefix']+"_inOutType"+str(self.__keyCtr))
                 self.__keyCtr += 1
             else:
@@ -208,7 +208,7 @@ class FilterInterface:
         with col1:
             colType = st.radio(self.__cf['generalConfig'][self.__cf['categoriesInterfaceTitle']],
                 ("input & output",
-                    "Locution input & Locution output"),                                                 
+                    ),                                                 
                 key=self.__cf['prefix']+"_Rephrase_4-6cat"+str(self.__keyCtr))
         with col2:
             if colType == "input & output":
