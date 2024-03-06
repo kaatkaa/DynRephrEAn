@@ -44,8 +44,8 @@ class Barchart2(SuperChartComponent):
         fig = self.getChartObj(data, t)
         fn = "BarChart_"+self._cf['ADU_or_Speaker']+"_"+t
         buf = io.BytesIO()
-        fig.savefig(buf, format="png")
-        left_co, cent_co,last_co = st.columns(3)
+        fig.savefig(buf, format="png", dpi=300)
+        left_co, cent_co, right_co = st.columns([1,2,1])
         with cent_co:
             st.image(buf)
         with left_co:

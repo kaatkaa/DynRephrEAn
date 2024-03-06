@@ -66,10 +66,20 @@ def MainPage():
     st.title("Dynamics of Rephrase Analytics")
     DataProvider.addSpacelines(2)
 
-    st.write("#### DynRephAn")
+    st.write("DynRephAn_v01")
     with st.expander("Read abstract"):
         DataProvider.addSpacelines(1)
-        st.write("Some more information...")
+        st.write("""
+            Dynamics of Rephrase Analytics is the other foundational tool in Rhetoric Analytics, 
+            as it allows us to analyse the transformations of the use of rhetorical devices as a result of rephrasing information, 
+            i.e. to analyse them as they change when speakers rephrase what they say. 
+            The special role of DynRephAn consists in treating an argument relation of rephrase as a process of how a debate is evolving, 
+            how rhetorical devices are changed and manipulated by speakers. 
+            This means that we are able to inspect not only results of rhetorical or linguistic use of language, 
+            e.g., by comparing the frequencies of using logos vs ethos, 
+            but we are also able to trace how speakers were strategically influencing the character of the discussion, 
+            e.g., by shifting from using pure logos to using logos loaded with ethos."""
+        )
 
     with st.container():
         DataProvider.addSpacelines(3)
@@ -128,10 +138,10 @@ elif contents_radio == "Comparative Corpora Analysis":
                     key="CMP_Text-Entity",
                     index=0)
         if annotationUnits == "Text-based":
-            ADU_or_Speaker = st.radio("Choose: ", ("ADU-Based Analysis",)
+            ADU_or_Speaker = st.radio("Next choose: ", ("ADU-Based Analysis",)
                 , key="CMP_textUnits")
         elif annotationUnits == "Entity-based":
-            ADU_or_Speaker = st.radio("Choose: ", ("Speaker-Based Analysis",)
+            ADU_or_Speaker = st.radio("Next choose: ", ("Speaker-Based Analysis",)
                 , key="CMP_entityUnits")
     cmp_corpora_menu.display(ADU_or_Speaker)
 else:
