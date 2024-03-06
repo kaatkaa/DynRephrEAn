@@ -55,8 +55,8 @@ class SingleCorpusMenu:
     def cleanSelections(self):
         for key in self.__dataDic:
             st.session_state[self.__prefix + key] = False
-        st.session_state[self.__prefix + "US2016reddit"] = False
-        st.session_state[self.__prefix + "US2016ElectionsTV"] = False
+        st.session_state[self.__prefix + "ElectionsSM"] = False
+        st.session_state[self.__prefix + "ElectionsTV"] = False
         self.__rephrase_df = pd.DataFrame()
         self.__rephrase_old = self.__rephrase_df.copy(deep=True)
 
@@ -84,15 +84,15 @@ class SingleCorpusMenu:
         tv = False
         reddit = False
         for ctr, key in enumerate(self.__dataDic):
-            if key.find("US2016reddit") != -1:
+            if key.find("ElectionsSM") != -1:
                 if not reddit:
                     reddit = True
-                    st.checkbox("US2016reddit", \
-                        key = self.__prefix + "US2016reddit",
-                        help = self.__prefix + "US2016reddit",
+                    st.checkbox("ElectionsSM", \
+                        key = self.__prefix + "ElectionsSM",
+                        help = self.__prefix + "ElectionsSM",
                         value = False,
                         on_change=self.__update_block,
-                        kwargs = {"name": "US2016reddit"},
+                        kwargs = {"name": "ElectionsSM"},
                         disabled=False
                     )           
                 st_tweaker.checkbox(key, \
@@ -104,15 +104,15 @@ class SingleCorpusMenu:
                     disabled=False,
                     id = "Reddit" + str(ctr)
                 )
-            elif key.find("US2016ElectionsTV") != -1:
+            elif key.find("ElectionsTV") != -1:
                 if not tv:
                     tv = True
-                    st.checkbox("US2016ElectionsTV", \
-                        key = self.__prefix + "US2016ElectionsTV",
-                        help = self.__prefix + "US2016ElectionsTV",
+                    st.checkbox("ElectionsTV", \
+                        key = self.__prefix + "ElectionsTV",
+                        help = self.__prefix + "ElectionsTV",
                         value = False,
                         on_change=self.__update_block,
-                        kwargs = {"name": "US2016ElectionsTV"},
+                        kwargs = {"name": "ElectionsTV"},
                         disabled=False
                     )                     
                 st_tweaker.checkbox(key, \
@@ -122,7 +122,7 @@ class SingleCorpusMenu:
                     on_change=self.__update_corpora_checkbox,
                     kwargs = {},
                     disabled=False,
-                    id = "US2016ElectionsTV" + str(ctr) 
+                    id = "ElectionsTV" + str(ctr) 
                 )                
             else:
                 st.checkbox(key, \
@@ -136,7 +136,7 @@ class SingleCorpusMenu:
         self.__update_corpora_checkbox()
         st.markdown("""
         <style>
-        #Reddit0,#Reddit1,#Reddit2,#US2016ElectionsTV3,#US2016ElectionsTV4,#US2016ElectionsTV5 {
+        #Reddit0,#Reddit1,#Reddit2,#ElectionsTV3,#ElectionsTV4,#ElectionsTV5 {
             margin-left: 50px;
         }
         </style>
@@ -155,10 +155,10 @@ class SingleCorpusMenu:
                      key=self.__prefix+"Text-Entity",
                      index=0)
             if annotationUnits == "Text-based":
-                ADU_or_Speaker = st_tweaker.radio("Choose: ", ("ADU-Based Analysis",)
+                ADU_or_Speaker = st_tweaker.radio("Next choose: ", ("ADU-Based Analysis",)
                     , key=self.__prefix+"textUnits", id="TextUnits")
             elif annotationUnits == "Entity-based":
-                ADU_or_Speaker = st_tweaker.radio("Choose: ", ("Speaker-Based Analysis",)
+                ADU_or_Speaker = st_tweaker.radio("Next choose: ", ("Speaker-Based Analysis",)
                     , key=self.__prefix+"entityUnits", id="EntityUnits")
             self.__anCfg['ADU_or_Speaker'] = ADU_or_Speaker
             st.write("****************************")
