@@ -83,11 +83,10 @@ class WordCloudOfRephrase(SuperTextComponent):
                 chart = self.getChartObj(df=data, t=self._cf['ADU_or_Speaker']+" "+t)
                 fn = self._cf['prefix']+self._cf['ADU_or_Speaker']+"_"+t
                 buf = io.BytesIO()
-                chart.savefig(buf, format="png")
-                left_co, cent_co,last_co = st.columns(3)
+                chart.savefig(buf, format="png",dpi=300)
+                ext, cent_co = st.columns(2,gap="medium")
                 with cent_co:
                     st.image(buf)
-                with left_co:
                     btn = st.download_button(
                         label="Download as PNG",
                         data=buf,
