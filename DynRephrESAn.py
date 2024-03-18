@@ -4,19 +4,11 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import plotly.express as px
-import plotly
-import plotly.graph_objects as go
-import wordcloud
-import os
-import json
 
 from submenus.single_corpus import SingleCorpusMenu
 from submenus.comparative_corpus import CmpCorpusMenu
 from config.config_data_colector import DataProvider
 from PIL import Image
-from collections import Counter
-from wordcloud import WordCloud, STOPWORDS
 import streamlit.components.v1 as components
 
 pd.set_option("max_colwidth", 300)
@@ -65,7 +57,6 @@ def load_data(dir_address: str) -> dict[str : pd.DataFrame()]:
 def MainPage():
     st.title("Dynamics of Rephrase Analytics")
     DataProvider.addSpacelines(2)
-
     st.write("DynRephAn_v01")
     with st.expander("Read abstract"):
         DataProvider.addSpacelines(1)

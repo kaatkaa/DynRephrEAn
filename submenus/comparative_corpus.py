@@ -119,7 +119,8 @@ class CmpCorpusMenu:
                             'showStopwords':False,
                             'useStopwords':False,
                             'showPOSInterface':True,
-                            'showNgramSlider': False
+                            'showNgramSlider': False,
+                            'showStopPoSInterface':False
             }
             self.__updateCfg(config=cfg)
             self.__anCf = FilterInterface(config=self.__anCf).getConfig()

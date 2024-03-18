@@ -16,8 +16,11 @@ from graphic_components.pos import PoS
 from config.config_data_colector import DataProvider
 from submenus.tweaker import st_tweaker
 from st_ant_tree import st_ant_tree
+from streamlit_modal import Modal
 
 class SingleCorpusMenu:
+
+    __debug = False
 
     def __init__(self, dataDic: dict[str : pd.DataFrame()], prefix: str="0_", anType: str="DynRephAn for Sentiment") -> None:
         #dictionary containing all possible data with corpora indexed by name
@@ -174,7 +177,11 @@ class SingleCorpusMenu:
         }
         </style>
         """,unsafe_allow_html=True)
-
+        config = {}
+        if SingleCorpusMenu.__debug:
+            open_modal = False
+            open_modal = st.button(key="N-grams_debug..", label='N-grams_debug')
+            modal = Modal(key="N-gram_debug", title="showPOSInterface check")
         if module_choice == "n-grams":
             __filterWordCloud = {
                 'prefix':'Ngrams_',
@@ -236,12 +243,18 @@ class SingleCorpusMenu:
                 'showStopWordsInterface':True,
                 'showStopwords':False,
                 'useStopwords':True,
-                'showPOSInterface':False,
-                'showNgramSlider': False
+                'showPOSInterface':True,
+                'showNgramSlider': False,
+                'showStopPoSInterface':False
             }
             PoS(df=self.__rephrase_df,config=__filterPoS)
         else:
             raise NotImplementedError("Unsupported option of Analytical module in single_corpus.py .")
+        
+        if SingleCorpusMenu.__debug and open_modal:
+            with modal.container():
+                st.markdown("config['showPoSInterface'] = "+str(config['showPoSInterface']))
+                open_modal = st.button(key="config_debug", label='Close debug info.')
         
 
     def container(self, s: str="",units_choice: str=""):

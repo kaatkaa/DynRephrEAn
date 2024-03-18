@@ -2,6 +2,7 @@ import streamlit as st
 import sys
 from typing import Tuple, List, Dict, Any
 from wordcloud import STOPWORDS
+from streamlit_modal import Modal
 
 
 sys.path.insert(0,"..")
@@ -9,6 +10,8 @@ from config.config_data_colector import DataProvider
 from data_manipulation.data_manipulator import DataManipulator
 
 class FilterInterface:
+
+    __debug = False
 
     __config: Dict[str, Any]={
         'generalConfig':DataProvider.getDynRephrESconfig()['DynRephAn for Sentiment'],
@@ -58,6 +61,8 @@ class FilterInterface:
         'showStopwords':False,
         'useStopwords':False,
         'StopwordsSet': set(),
+        'showStopPoSInterface':False,
+        'stopPoSSet': set (),
         #Interface of PoS
         'showPOSInterface':False,
         #PoS column names in excel to choose from
@@ -120,9 +125,22 @@ class FilterInterface:
         else:
             self.__cf['palette'] = DataProvider.getEthosColors()
 
+        if self.__cf['showStopPoSInterface']:
+            self.__stopPoS()
+
         if self.__cf['showNgramSlider']:
             self.__NgramSlider()
 
+    def __updateConfig(self, dict: Dict[str,Any]):
+        for item in dict.items():
+            self.__cf[item[0]] = item[1]
+
+    def __stopPoS(self):
+        tmp = st.multiselect("Choose PoS to ommit:",
+                                DataProvider.getPSPlst(),
+                                [], key=self.__cf['prefix']+"multiPoSStop"+str(self.__keyCtr))
+        self.__cf['stopPoSSet'] = set(tmp)
+        self.__keyCtr += 1
 
     def __units(self):
         self.__cf['unitPercentNumber'] = st.radio("Choose units",
@@ -172,25 +190,55 @@ class FilterInterface:
             else:
                 phrasesType = "Input_Output"
         with col_radio2:
+            cf = {}
+            if FilterInterface.__debug:
+                open_modal = False
+                open_modal = st.button(key="modal_button_int..", label='button')
+                modal = Modal(key="Interface_modal", title="showPOSInterface enabled.")
             if phrasesType == "Input_Output":
+                cf = {
+                    'showStopWordsInterface': True,
+                    'showStopPoSInterface': False              
+                }
+                self.__updateConfig(cf)
                 self.__cf['inOutLst'] = st.multiselect("Choose source of Input-Output you would like to visualise", 
                                             DataProvider.getInOutColLst(), 
                                             DataProvider.getInOutColLst()[:],
                                             key = self.__cf['prefix']+"_multi_selInOut"+str(self.__keyCtr))
                 self.__keyCtr += 1
             elif phrasesType == "Locution_Input_Output":
+                cf = {
+                    'showStopWordsInterface':True,
+                    'showStopPoSInterface': False    
+                }
+                self.__updateConfig(cf)
                 self.__cf['inOutLst'] = st.multiselect("Choose source of Locution-Input-Output you would like to visualise", 
                                             DataProvider.getLocInOut(), 
                                             DataProvider.getLocInOut()[:],
                                             key = self.__cf['prefix']+"_multi_selLocInOut"+str(self.__keyCtr))
                 self.__keyCtr += 1
             elif phrasesType == "PoS_Input_Output":
+                cf = {
+                    'showStopWordsInterface':False,
+                    'showStopwords':False,
+                    'useStopwords':False,
+                    'showStopPoSInterface': True            
+                }
+                self.__updateConfig(cf)
                 self.__cf['inOutLst'] = st.multiselect("Choose source of PoS-Input-Output you would like to visualise", 
                                             DataProvider.getPSPcolumns1(), 
                                             DataProvider.getPSPcolumns1()[:],
                                             key = self.__cf['prefix']+"_PoS_selInOut"+str(self.__keyCtr))
+                
                 self.__keyCtr += 1
             elif phrasesType == "LocPoS_Input_Output":
+                cf = {
+                    'showStopWordsInterface':False,
+                    'showStopwords':False,
+                    'useStopwords':False,
+                    'showStopPoSInterface': True             
+                }
+                self.__updateConfig(cf)
                 self.__cf['inOutLst'] = st.multiselect("Choose source of Locution-PoS-In-Out you would like to visualise",
                                             DataProvider.getPSPcolumns2(), 
                                             DataProvider.getPSPcolumns2()[:],
@@ -198,6 +246,10 @@ class FilterInterface:
                 self.__keyCtr += 1
             else:
                 st.error("Unknown option: ",phrasesType," in __inOut method.")
+            if FilterInterface.__debug and open_modal:
+                with modal.container():
+                    st.markdown("self.__cf['showPoSInterface'] = "+str(self.__cf['showPoSInterface']))
+                    open_modal = st.button(key="modal_close_interface", label='Close modal interface')
 
     def __stopWords(self):
         col1, col2 = st.columns([2,2])

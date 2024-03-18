@@ -46,7 +46,7 @@ class Ngrams(SuperTextComponent):
                 for inOut in self._cf['inOutLst']:
                     tmpLst = []
                     for token in data[inOut].tolist():
-                        token = " ".join(ast.literal_eval(token))
+                        token = " ".join(token)
                         tmpLst.append(token)
                         wordLst.extend(ngrams(token.split(" "), 1))
                     data[inOut] = tmpLst

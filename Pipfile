@@ -16,6 +16,7 @@ openpyxl = "*"
 nltk = "*"
 dataframe-image = "*"
 st-ant-tree = "*"
+streamlit-modal = "*"
 
 [dev-packages]
 pylint = "*"

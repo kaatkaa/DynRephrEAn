@@ -2,8 +2,10 @@ import streamlit as st
 import sys
 import pandas as pd
 import re
+import ast
 from operator import itemgetter
-from typing import Tuple, List, Dict, Any
+from typing import Tuple, List, Dict, Any, Set
+from streamlit_modal import Modal
 
 
 sys.path.insert(0,"..")
@@ -11,6 +13,8 @@ from config.config_data_colector import DataProvider
 from data_manipulation.data_manipulator import DataManipulator
 
 class DataFilter:
+
+    __debug = False
 
     __config: Dict[str, Any]={
         'generalConfig':DataProvider.getDynRephrESconfig()['DynRephAn for Sentiment'],
@@ -34,6 +38,8 @@ class DataFilter:
         'showStopWordsInterface':False,
         'showStopwords':False,
         'useStopwords':False,
+        'stopPoSSet': set (),
+        'usePoSSet': False,
         'StopwordsSet': set(),
         'showPOSInterface':False,
         'posColumns': DataProvider.getPSPcolumns1(),
@@ -42,20 +48,41 @@ class DataFilter:
         'ngramSliderValue': 2
     }
 
-    def __RemoveStopWordsFromDf(self, dataF: Any, columns: list[str]) -> Any:
-        for stop_phrase in self.__stop_words_set:
-            p1 = re.compile(r"\s"+stop_phrase+r"\s", flags=re.IGNORECASE)
-            p2 = re.compile(r"^"+stop_phrase+r"\s|\s"+stop_phrase+r"$|^"+stop_phrase+r"$", flags=re.IGNORECASE)
+    def __RemoveStopWordsFromDf(self, dataF: Any, columns: List[str], stopwords_set: Set[str]) -> None:
+        for stop_phrase in stopwords_set:
+            p1 = re.compile(r"\s+"+stop_phrase+r"\s+", flags=re.I|re.S)
+            p2 = re.compile(r"^"+stop_phrase+r"\s+|\s+"+stop_phrase+r"$|^"+stop_phrase+r"$", flags=re.I|re.S)
             for column in columns:
                 dataF[column] = dataF[column].str.replace(p1, " ", regex=True)
                 dataF[column] = dataF[column].str.replace(p2, "", regex=True)
+        self.__outputData = dataF
+
+    def __RemoveStopPoSFromDf(self, dataF: Any, columns: List[str], stopPoS_set: Set[str]) -> None:
+        for column in columns:
+            modColumn = []
+            for line in dataF[column].tolist():
+                line = ast.literal_eval(line)
+                modLine = []
+                for pos in line:
+                    if pos not in stopPoS_set:
+                        modLine.append(pos)
+                modColumn.append(modLine)
+            dataF[column] = modColumn
         self.__outputData = dataF
 
     def __init__(self, data: Any, config: Dict[str, Any]) -> None:
         self.__cf=DataFilter.__config
         self.__stop_words_set = self.__cf['StopwordsSet']
         self.__ngramLst = []
+        if DataFilter.__debug:
+            open_modal = False
+            open_modal = st.button(key="debug config button", label='debuf_fData')
+            modal = Modal(key="Debugger_fData", title="Check config selected settings")
         if len(data) > 0:
+            if DataFilter.__debug and open_modal:
+                with modal.container():
+                    st.markdown("config['showPOSInterface'] = "+str(config['showPOSInterface']))
+                    open_modal = st.button(key="modal_debug_closer", label='Close debug info')
             for cfg in config.items():
                 self.__cf[cfg[0]] = cfg[1]
             self.__d = data
@@ -80,7 +107,19 @@ class DataFilter:
             self.__outputData = self.__d
 
         if self.__cf['showStopWordsInterface'] and self.__cf['useStopwords'] and len(self.__outputData) > 0:
-            self.__RemoveStopWordsFromDf(self.__outputData, self.__cf['inOutLst'])
+            self.__RemoveStopWordsFromDf(self.__outputData, self.__cf['inOutLst'], self.__stop_words_set)
+
+        if self.__cf['showStopPoSInterface']:
+            self.__RemoveStopPoSFromDf(self.__outputData, self.__cf['inOutLst'], self.__cf['stopPoSSet'])
+
+        if DataFilter.__debug:
+            open_modal = False
+            open_modal = st.button(key="modal_button", label='button')
+            modal = Modal(key="Modal_test", title="showPOSInterface enabled.")
+            if open_modal:
+                with modal.container():
+                    st.markdown("self.__cf['showPOSInterface'] = "+str(self.__cf['showPOSInterface']))
+                    open_modal = st.button(key="modal_close_button", label='Close modal')
 
         if self.__cf['showPOSInterface'] and len(self.__outputData) > 0:
             self.__cf['palette'] = DataProvider.getPoScolors()
