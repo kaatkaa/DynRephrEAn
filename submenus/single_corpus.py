@@ -69,7 +69,7 @@ class SingleCorpusMenu:
             if st.session_state[self.__prefix + key]:
                 dfLst.append(self.__dataDic[key])
         if len(dfLst) > 1:
-            self.__rephrase_df = pd.concat(dfLst)          
+            self.__rephrase_df = pd.concat(dfLst,ignore_index=True)          
         elif len(dfLst) == 1:
             self.__rephrase_df = dfLst[0]
         else:

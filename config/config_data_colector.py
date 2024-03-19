@@ -33,6 +33,10 @@ class DataProvider:
                      ,'P_strong':'#BD0000','P_weak':'#FF5656','Neutralization':'#2EBDFF','No_Change': '#414040'}
     __color_ethos = {'Amelioration':'#3FEE0F','A_strong':'#28B900','A_weak':'#7CFF57','Pejorativization':'#FF0000'
                      ,'P_strong':'#BD0000','P_weak':'#FF5656','Neutralization':'#2EBDFF','No_Change': '#414040'}
+    
+    __color_universal = {'Amelioration':'#3FEE0F','A_strong':'#28B900','A_weak':'#7CFF57','Pejorativization':'#FF0000'
+                     ,'P_strong':'#BD0000','P_weak':'#FF5656','Neutralization':'#2EBDFF','No_Change': '#A4A4A4'}   
+
     __color_rephr = {'C': '#7FB3D5','D': '#76D7C4',
             'I':'#02FF70', 'O': '#F4D03F','P':'#C56EE7'}
     __color_rephr_empty = {'Rephrase': '#E9B711','No rephrase': '#706351'}
@@ -161,6 +165,10 @@ class DataProvider:
             with open(DataProvider.__dyn_rephr_file) as json_file:
                 DataProvider.__config_dic = json.load(json_file)
         return DataProvider.__config_dic
+
+    @staticmethod
+    def getUniversalColors():
+        return DataProvider.__color_universal
 
     @staticmethod
     def getDynRephDimentions():
