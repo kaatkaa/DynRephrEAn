@@ -136,7 +136,7 @@ class FilterInterface:
             self.__cf[item[0]] = item[1]
 
     def __stopPoS(self):
-        tmp = st.multiselect("Choose PoS to ommit:",
+        tmp = st.multiselect("Choose PoS to exclude:",
                                 DataProvider.getPSPlst(),
                                 [], key=self.__cf['prefix']+"multiPoSStop"+str(self.__keyCtr))
         self.__cf['stopPoSSet'] = set(tmp)
