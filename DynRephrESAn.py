@@ -57,7 +57,7 @@ def load_data(dir_address: str) -> dict[str : pd.DataFrame()]:
 def MainPage():
     st.title("Dynamics of Rephrase Analytics")
     DataProvider.addSpacelines(2)
-    st.write("DynRephAn_v01")
+    st.write("DynRephAn_Extended_2")
     with st.expander("Read abstract"):
         DataProvider.addSpacelines(1)
         st.write("""
