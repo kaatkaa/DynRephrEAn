@@ -24,4 +24,5 @@ class Cases2(SuperTextComponent):
 
     def dataDisplay(self, df: Any, title: str):
         stylesed = self.getTextObj(df,title)
-        st.dataframe(stylesed, height=800, column_config={self._cf['categoriesColumn']: None})
+        #st.dataframe(stylesed, height=800, column_config={self._cf['categoriesColumn']: None})
+        st.dataframe(stylesed, height=800)
