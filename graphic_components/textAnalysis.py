@@ -20,7 +20,7 @@ class Cases2(SuperTextComponent):
         # colorLst = ['background-color: '+str(colorsDict[v]) for v in data[self._cf['categoriesColumn']]]
         data.index += 1
         lst = [self._cf['categoriesColumn']] + self._cf['inOutLst']
-        return make_pretty(data[lst].style)
+        return make_pretty(data[lst].sort_values(by=self._cf['categoriesColumn']).style)
 
     def dataDisplay(self, df: Any, title: str):
         stylesed = self.getTextObj(df,title)
