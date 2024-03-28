@@ -127,17 +127,17 @@ class DataFilter:
         else:
             if self.__cf['imediatePlot']:
                 self.__cf['palette'] = DataProvider.getEthosColors()
-                if self.__cf['ADU_or_Speaker'] == 'Speaker-Based Analysis':
+                if self.__cf['ADU_or_Speaker'] == 'Text-Based Analysis':
                     #st.write("Same speaker rephrase: "+str(self.__cf['SS rephrase'])+" Other speaker rephrase: "+str(self.__cf['OS rephrase']))
+                    if self.__cf['SS + OS rephrase']:
+                        self.__outDict["whole SS + OS"] = self.__outputData
+                        self.__outDict["grupped SS + OS"] = self.__distributionData(self.__outputData, self.__cf['categoriesColumn']) 
                     if self.__cf['SS rephrase']:
                         self.__outDict["wholeSS"]=self.__outputData[self.__outputData['speaker_input']==self.__outputData['speaker_output']]
                         self.__outDict["gruppedSS"] = self.__distributionData(self.__outDict["wholeSS"], self.__cf['categoriesColumn'])
                     if self.__cf['OS rephrase']:
                         self.__outDict["wholeOS"]=self.__outputData[self.__outputData['speaker_input']!=self.__outputData['speaker_output']]
                         self.__outDict["gruppedOS"] = self.__distributionData(self.__outDict["wholeOS"], self.__cf['categoriesColumn'])
-                else:
-                    self.__outDict["wholeAll"] = self.__outputData
-                    self.__outDict["gruppedAll"] = self.__distributionData(self.__outputData, self.__cf['categoriesColumn']) 
             else:
                 self.__outDict["wholeAll"] = self.__outputData
                 self.__outDict["gruppedAll"] = self.__distributionData(self.__outputData, self.__cf['categoriesColumn']) 
