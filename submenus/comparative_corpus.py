@@ -64,7 +64,7 @@ class CmpCorpusMenu:
             </style>
         """,unsafe_allow_html=True)
         self.__ADUorSpeaker = units
-        userMix, _3dMix, _3dPoS = st.tabs([":male-technologist: User selection corpora",":three: D Corporas", ":three: D PoS"])
+        userMix, _3dMix = st.tabs([":male-technologist: User selection corpora",":three: D Corporas"])
         st.divider()
         with userMix:
             tabs = st.tabs(tabs=self.__tabLabels)
@@ -104,26 +104,26 @@ class CmpCorpusMenu:
             self.__updateCfg(config=cfg)
             self.__anCf = FilterInterface(config=self.__anCf).getConfig()
             _3D_EthosPathos(dataDic=self.__dataDict,config=self.__anCf).plot3D()
-        with _3dPoS:
-            cfg = {
-                            'prefix': "3D_PoS",
-                            'imediatePlot': True,
-                            'objectToEnable': "Chart",
-                            'showPercentageNumber': True,
-                            'showCategoriesInterface': True,
-                            'ADU_or_Speaker': units,
-                            'SS rephrase': True,
-                            'OS rephrase': False,
-                            'showInOutInterface': False,
-                            'showStopWordsInterface':False,
-                            'showStopwords':False,
-                            'useStopwords':False,
-                            'showPOSInterface':True,
-                            'showNgramSlider': False
-            }
-            self.__updateCfg(config=cfg)
-            self.__anCf = FilterInterface(config=self.__anCf).getConfig()
-            _3D_PoS(dataDic=self.__dataDict,config=self.__anCf).plot3D()
+        # with _3dPoS:
+        #     cfg = {
+        #                     'prefix': "3D_PoS",
+        #                     'imediatePlot': True,
+        #                     'objectToEnable': "Chart",
+        #                     'showPercentageNumber': True,
+        #                     'showCategoriesInterface': True,
+        #                     'ADU_or_Speaker': units,
+        #                     'SS rephrase': True,
+        #                     'OS rephrase': False,
+        #                     'showInOutInterface': False,
+        #                     'showStopWordsInterface':False,
+        #                     'showStopwords':False,
+        #                     'useStopwords':False,
+        #                     'showPOSInterface':True,
+        #                     'showNgramSlider': False
+        #     }
+        #     self.__updateCfg(config=cfg)
+        #     self.__anCf = FilterInterface(config=self.__anCf).getConfig()
+        #     _3D_PoS(dataDic=self.__dataDict,config=self.__anCf).plot3D()
 
     def clearTabsSelections(self) -> None:
         for tab in self.__dataLoaders:

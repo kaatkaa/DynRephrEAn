@@ -27,7 +27,7 @@ class ComparativeCorporaSimple:
         self.__cf = config
         with st.sidebar:
             st.header("Statistical module")
-            module = st.radio("Choose module: ", ("Distribution","Wordcloud","n-grams","PoS"),
+            module = st.radio("Choose module: ", ("Distribution","Wordcloud"),
                             label_visibility='collapsed', key=str(self.prefixCtr)+"CMP_module_")
             self.prefixCtr += 1
         if module == "Distribution" and len(self.__dataDic) > 0:
