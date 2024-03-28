@@ -134,15 +134,10 @@ elif contents_radio == "Comparative Corpora Analysis":
     with st.sidebar:
         st.button("Clear All Tabs",key="tabs_clear",on_click=cmp_corpora_menu.clearTabsSelections)
         st.subheader("Analysis Units")
-        annotationUnits = st.radio("Unit picker",("Text-based","Entity-based"),
+        ADU_or_Speaker = st.radio("Unit picker",("Text-based Analysis",),
                     key="CMP_Text-Entity",
-                    index=0)
-        if annotationUnits == "Text-based":
-            ADU_or_Speaker = st.radio("Next choose: ", ("ADU-Based Analysis",)
-                , key="CMP_textUnits")
-        elif annotationUnits == "Entity-based":
-            ADU_or_Speaker = st.radio("Next choose: ", ("Speaker-Based Analysis",)
-                , key="CMP_entityUnits")
+                    index=0,
+                    label_visibility='hidden')
     cmp_corpora_menu.display(ADU_or_Speaker)
 else:
     st.error("Wrong option of main sidemenu radiobitton.")

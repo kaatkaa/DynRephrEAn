@@ -151,15 +151,10 @@ class SingleCorpusMenu:
             self.__corporaPickerChckBox()
             st.write("****************************")
             st.subheader("Analysis Units")
-            annotationUnits = st.radio("Unit picker",("Text-based","Entity-based"),
-                     key=self.__prefix+"Text-Entity",
-                     index=0)
-            if annotationUnits == "Text-based":
-                ADU_or_Speaker = st_tweaker.radio("Next choose: ", ("ADU-Based Analysis",)
-                    , key=self.__prefix+"textUnits", id="TextUnits")
-            elif annotationUnits == "Entity-based":
-                ADU_or_Speaker = st_tweaker.radio("Next choose: ", ("Speaker-Based Analysis",)
-                    , key=self.__prefix+"entityUnits", id="EntityUnits")
+            ADU_or_Speaker = st.radio("Unit picker",("Text-Based Analysis",),
+                     key=self.__prefix+"Text-Based",
+                     index=0,
+                     label_visibility='hidden')
             self.__anCfg['ADU_or_Speaker'] = ADU_or_Speaker
             st.write("****************************")
             st.subheader("Statictical module")
@@ -183,6 +178,7 @@ class SingleCorpusMenu:
                 'ADU_or_Speaker': ADU_or_Speaker,
                 'showPercentageNumber': False,
                 'showCategoriesInterface': True,
+                'SS + OS rephrase': True,
                 'SS rephrase': True,
                 'OS rephrase': False,
                 'showInOutInterface': True,
@@ -205,6 +201,7 @@ class SingleCorpusMenu:
                 'ADU_or_Speaker': ADU_or_Speaker,
                 'showPercentageNumber': False,
                 'showCategoriesInterface': True,
+                'SS + OS rephrase': True,
                 'SS rephrase': True,
                 'OS rephrase': False,
                 'showInOutInterface': True,
@@ -229,6 +226,7 @@ class SingleCorpusMenu:
                 'ADU_or_Speaker': ADU_or_Speaker,
                 'showPercentageNumber': False,
                 'showCategoriesInterface': True,
+                'SS + OS rephrase': True,
                 'SS rephrase': True,
                 'OS rephrase': False,
                 'showInOutInterface': True,
@@ -252,6 +250,7 @@ class SingleCorpusMenu:
             'imediatePlot': True,
             'showPercentageNumber': True,
             'showCategoriesInterface': True,
+            'SS + OS rephrase': True,
             'SS rephrase': True,
             'OS rephrase': False,
             'showInOutInterface': True,
@@ -284,13 +283,11 @@ class SingleCorpusMenu:
     def getCriteria(self) -> str:
         if len(self.__dataDic) > 0:
             newLst = []
-            if st.session_state[self.__prefix + 'speakerOrAdu'] == "ADU-Based Analysis":
-                newLst = ['ADU based']
-            elif st.session_state[self.__prefix + 'speakerOrAdu'] == "Speaker-Based Analysis":
-                if self.__prefix + 'speakerType' in st.session_state:
-                    newLst = ['Speaker '+st.session_state[self.__prefix + 'speakerType']]
-                else:
-                    newLst = ['error']
+            # if st.session_state[self.__prefix + 'speakerOrAdu'] == "Text-Based Analysis":
+            if self.__prefix + 'speakerType' in st.session_state:
+                newLst = ['Speaker '+st.session_state[self.__prefix + 'speakerType']]
+            else:
+                newLst = ['error']
             ctr = 1
             for key in self.__dataDic:
                 if st.session_state[self.__prefix + key]:
@@ -309,24 +306,20 @@ class SingleCorpusMenu:
         st.subheader("Choose Corpora: ")
         self.__corporaPickerChckBox()
         if len(self.__rephrase_old) > 0:
-            if st.session_state[self.__prefix + 'speakerOrAdu'] == "ADU-Based Analysis":
-                st.write("ADU units selected.")
+            speaker = st.radio("Choose Speaker Unit Type: ",
+                ("SS + OS rephrase",
+                "SS rephrase",
+                "OS rephrase"),
+                key=self.__prefix+"Rephrase_Cmp_Speaker")
+            if speaker == "SS + OS rephrase":
                 self.__rephrase_df = self.__rephrase_old.copy(deep=True)
-                st.session_state[self.__prefix + 'speakerType'] = ""
-            elif st.session_state[self.__prefix + 'speakerOrAdu'] == "Speaker-Based Analysis":
-                speaker = st.radio("Choose Speaker Unit Type: ",
-                    ("SS rephrase",
-                    "OS rephrase"),
-                    key=self.__prefix+"Rephrase_Cmp_Speaker")
-                if speaker == "SS rephrase":
-                    self.__rephrase_df = self.__rephrase_old.copy(deep=True)
-                    self.__rephrase_df = self.__rephrase_df.loc[self.__rephrase_df['speaker_input'] == self.__rephrase_df['speaker_output']]
-                elif speaker == "OS rephrase":
-                    self.__rephrase_df = self.__rephrase_old.copy(deep=True)
-                    self.__rephrase_df = self.__rephrase_df.loc[self.__rephrase_df['speaker_input'] != self.__rephrase_df['speaker_output']]
-                st.session_state[self.__prefix + 'speakerType'] = speaker
-        else:
-            st.write("Choose corpora above.")
+            elif speaker == "SS rephrase":
+                self.__rephrase_df = self.__rephrase_old.copy(deep=True)
+                self.__rephrase_df = self.__rephrase_df.loc[self.__rephrase_df['speaker_input'] == self.__rephrase_df['speaker_output']]
+            elif speaker == "OS rephrase":
+                self.__rephrase_df = self.__rephrase_old.copy(deep=True)
+                self.__rephrase_df = self.__rephrase_df.loc[self.__rephrase_df['speaker_input'] != self.__rephrase_df['speaker_output']]
+            st.session_state[self.__prefix + 'speakerType'] = speaker
 
     #Returns data for diagrams
     def getDF(self) -> pd.DataFrame():
