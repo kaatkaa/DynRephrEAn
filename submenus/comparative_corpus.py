@@ -11,7 +11,8 @@ sys.path.insert(0,"..")
 from config.config_data_colector import DataProvider
 from graphic_components._3D_EthosPathos import _3D_EthosPathos
 from graphic_components.filterInterface import FilterInterface
-from graphic_components._3D_PoS import _3D_PoS
+from data_manipulation.data_filter import DataFilter
+# from graphic_components._3D_PoS import _3D_PoS
 
 class CmpCorpusMenu:
 
@@ -89,6 +90,7 @@ class CmpCorpusMenu:
             cfg = {
                 'prefix': "3D_EthosPathos",
                 'imediatePlot': True,
+                'anType': self.__anType,
                 'objectToEnable': "Chart",
                 'showPercentageNumber': True,
                 'showCategoriesInterface': True,

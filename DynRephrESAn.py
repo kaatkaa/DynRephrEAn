@@ -134,7 +134,7 @@ elif contents_radio == "Comparative Corpora Analysis":
     with st.sidebar:
         st.button("Clear All Tabs",key="tabs_clear",on_click=cmp_corpora_menu.clearTabsSelections)
         st.subheader("Analysis Units")
-        ADU_or_Speaker = st.radio("Unit picker",("Text-based Analysis",),
+        ADU_or_Speaker = st.radio("Unit picker",("Text-Based Analysis",),
                     key="CMP_Text-Entity",
                     index=0,
                     label_visibility='hidden')

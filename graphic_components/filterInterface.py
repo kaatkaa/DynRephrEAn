@@ -98,7 +98,7 @@ class FilterInterface:
         if self.__cf['showCategoriesInterface']:
             self.__categories(col_radio2)
 
-        if self.__cf['ADU_or_Speaker'] == 'Text-Based Analysis':
+        if self.__cf['ADU_or_Speaker'] == 'Text-Based Analysis':   
             with col_chckbox1:
                 self.__cf['SS + OS rephrase'] = st.checkbox("SS + OS rephrase",
                     value=self.__cf['SS + OS rephrase'],

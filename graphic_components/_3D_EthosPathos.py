@@ -61,9 +61,9 @@ class _3D_EthosPathos:
 
     def plot3D(self):    
         with st.form("Form: "+self.__cfg['prefix']):
+            st.write("Form: "+self.__cfg['prefix'])
             if st.form_submit_button("Show 3D "+self.__cfg['generalConfig']['anName']):
                 for speaker in self.__allSpeakersDic.items():
-                    # st.write(matrix)
                     ThreeD_Charts.CorporaVsDynRephrasePlot(matrix=speaker[1],
                         threshold=[0,0],
                         title=self.__cfg['generalConfig']['anName']+" "+str(speaker[0]))
