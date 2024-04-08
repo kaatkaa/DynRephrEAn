@@ -152,7 +152,14 @@ class DataFilter:
             lst1, lst2, lst3 = [l[0] for l in lstOfTuples], [l[1] for l in lstOfTuples], [cnv[l[0]] for l in lstOfTuples]
             return pd.DataFrame.from_dict({col1Name:lst1,col2Name:lst2,"PoS full name":lst3})
         if self.__cf['imediatePlot']:
-            if self.__cf['ADU_or_Speaker'] == 'Speaker-Based Analysis':
+            if self.__cf['ADU_or_Speaker'] == 'Text-Based Analysis':
+                if self.__cf['SS + OS rephrase']:
+                    self.__outDict["whole SS + OS"]=self.__outputData
+                    self.__outDict["grupped SS + OS"] = dfFromDic(
+                        "PoS_type",
+                        self.__cf['unitPercentNumber'],
+                        self.__posData(data=self.__outDict['whole SS + OS'],inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories'])
+                    )
                 if self.__cf['SS rephrase']:
                     self.__outDict["wholeSS"]=self.__outputData[self.__outputData['speaker_input']==self.__outputData['speaker_output']]
                     self.__outDict["gruppedSS"] = dfFromDic(
