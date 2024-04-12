@@ -17,29 +17,37 @@ from graphic_components.superComponent import SuperTextComponent
 class Ngrams(SuperTextComponent):
         
     def getTextObj(self, data: Any, t: str) -> Any:
+        colorsDict = DataProvider.getUniversalColors()
+        cat = [self._cf['categoriesColumn']]
+        def color(row, columns, colorFlagHashes):
+            formattingLst = []
+            for column in columns:
+                if column in colorFlagHashes:
+                    formattingLst.append('background-color: '+DataProvider.getRephraseAndEmptycolors()['Rephrase'])
+                else: 
+                    formattingLst.append('background-color: '+colorsDict[row[cat[0]]])
+            return formattingLst
         lstOfInOut = []
         restLst = []
         PoSflag = False
         if set(self._cf['inOutLst']) <= set(DataProvider.getInOutColLst()):
-            lstOfInOut = DataProvider.getInOutColLst()
+            lstOfInOut = [*cat, *DataProvider.getInOutColLst()]
             restLst = DataProvider.getLocInOut()
             PoSflag = False
         elif set(self._cf['inOutLst']) <= set(DataProvider.getLocInOut()):
-            lstOfInOut = DataProvider.getLocInOut()
+            lstOfInOut = [*cat, *DataProvider.getLocInOut()]
             restLst = DataProvider.getInOutColLst()
             PoSflag = False
         elif set(self._cf['inOutLst']) <= set(DataProvider.getPSPcolumns1()):
-            lstOfInOut = DataProvider.getPSPcolumns1()
+            lstOfInOut = [*cat, *DataProvider.getPSPcolumns1()]
             restLst = DataProvider.getInOutColLst()
             PoSflag = True
         elif set(self._cf['inOutLst']) <= set(DataProvider.getPSPcolumns2()):
-            lstOfInOut = DataProvider.getPSPcolumns2()
+            lstOfInOut = [*cat, *DataProvider.getPSPcolumns2()]
             restLst = DataProvider.getLocInOut()
             PoSflag = True
         else:
             st.warning("Wrong list inOut values in n-gram data display.")
-        def backgroung_color(v):
-            return f"background-color: {DataProvider.getRephraseAndEmptycolors()['Rephrase']};"
         wordLst = []
         if len(data) > 0:
             if PoSflag:
@@ -74,30 +82,44 @@ class Ngrams(SuperTextComponent):
                 regexpStr = re.sub(r"^(.*)\s:\s[0-9]+$", r"\1", word)
                 regExpCode = r"\s"+regexpStr+r"\s|^"+regexpStr+r"\s|\s"+regexpStr+r"$|^"+regexpStr+r"$"
                 st.subheader("Selected phrase is marked in text below between stars: \*\*"+regexpStr+"\*\*")
-                if lstOfInOut[0] in self._cf['inOutLst'] and lstOfInOut[1] in self._cf['inOutLst']:
-                    filteredInputDF = data[data[lstOfInOut[0]].str.contains(regExpCode, case=False, regex=True)]
+                if lstOfInOut[1] in self._cf['inOutLst'] and lstOfInOut[2] in self._cf['inOutLst']:
+                    filteredInputDF = data[data[lstOfInOut[1]].str.contains(regExpCode, case=False, regex=True)]
                     filteredInputDF.reset_index(inplace=True)
-                    filterInOutDF = filteredInputDF[filteredInputDF[lstOfInOut[1]].str.contains(regExpCode, case=False, regex=True)]
+                    filterInOutDF = filteredInputDF[filteredInputDF[lstOfInOut[2]].str.contains(regExpCode, case=False, regex=True)]
                     tmpDf = filterInOutDF[[*lstOfInOut,*restLst]]
                     tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
+                    tmpDf = tmpDf.sort_values(by=cat[0])
+                    tmpDf = tmpDf.reset_index(drop=True)
                     tmpDf.index += 1
-                    return tmpDf[[*lstOfInOut,*restLst]].style.applymap(backgroung_color,subset=lstOfInOut)
-                elif lstOfInOut[0] in self._cf['inOutLst']:
-                    filteredInputDF = data[data[lstOfInOut[0]].str.contains(regExpCode, case=False, regex=True)]
+                    lstOfInOut.remove(cat[0])
+                    columns = [*cat,*lstOfInOut,*restLst]
+                    return tmpDf[columns].style.apply(color, axis=1, columns=columns, colorFlagHashes=set(lstOfInOut))
+                elif lstOfInOut[1] in self._cf['inOutLst']:
+                    x = lstOfInOut[2]
+                    filteredInputDF = data[data[lstOfInOut[1]].str.contains(regExpCode, case=False, regex=True)]
                     filteredInputDF.reset_index(inplace=True)
                     tmpDf = filteredInputDF[[*lstOfInOut,*restLst]]
                     tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
+                    tmpDf = tmpDf.sort_values(by=cat[0])
+                    tmpDf = tmpDf.reset_index(drop=True)
                     tmpDf.index += 1
-                    return tmpDf.style.applymap(backgroung_color,
-                        subset=lstOfInOut[0])
-                elif lstOfInOut[1] in self._cf['inOutLst']:
-                    filteredOutputDF = data[data[lstOfInOut[1]].str.contains(regExpCode, case=False, regex=True)]
+                    lstOfInOut.remove(cat[0])
+                    columns = [*cat,*lstOfInOut,*restLst]
+                    lstOfInOut.remove(x)
+                    return tmpDf[columns].style.apply(color, axis=1, columns=columns, colorFlagHashes=set(lstOfInOut))
+                elif lstOfInOut[2] in self._cf['inOutLst']:
+                    x = lstOfInOut[1]
+                    filteredOutputDF = data[data[lstOfInOut[2]].str.contains(regExpCode, case=False, regex=True)]
                     filteredOutputDF.reset_index(inplace=True)
                     tmpDf = filteredOutputDF[[*lstOfInOut,*restLst]]
                     tmpDf = tmpDf.replace("(?i)"+regExpCode," **"+regexpStr+"** ", regex=True)
+                    tmpDf = tmpDf.sort_values(by=cat[0])
+                    tmpDf = tmpDf.reset_index(drop=True)
                     tmpDf.index += 1
-                    return tmpDf.style.applymap(backgroung_color,
-                        subset=lstOfInOut[1])
+                    lstOfInOut.remove(cat[0])
+                    columns = [*cat,*lstOfInOut,*restLst]
+                    lstOfInOut.remove(x)
+                    return tmpDf[columns].style.apply(color, axis=1, columns=columns, colorFlagHashes=set(lstOfInOut))
                 else:
                     st.error("Wrong input-output options for dataframe")
             else:

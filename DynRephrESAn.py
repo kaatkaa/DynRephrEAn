@@ -1,15 +1,12 @@
 # imports
 import streamlit as st
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 from submenus.single_corpus import SingleCorpusMenu
 from submenus.comparative_corpus import CmpCorpusMenu
 from config.config_data_colector import DataProvider
-from PIL import Image
-import streamlit.components.v1 as components
 
 pd.set_option("max_colwidth", 300)
 sns.set_theme(style="whitegrid")
