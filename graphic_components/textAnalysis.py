@@ -9,13 +9,20 @@ from graphic_components.superComponent import SuperTextComponent
 class Cases2(SuperTextComponent):
 
     def getTextObj(self, data: Any, t: str) -> Any:
+        colorsDict = DataProvider.getUniversalColors()
+        def color(row):
+            return ['background-color: '+colorsDict[row[self._cf['categoriesColumn']]]] * len(row)
         def make_pretty(styler):
             styler.set_caption(self._cf['ADU_or_Speaker']+" "+t)
             styler.set_table_styles(DataProvider.getTableFormat())
+            styler.apply(color, axis=1)
             return styler
+        # colorLst = ['background-color: '+str(colorsDict[v]) for v in data[self._cf['categoriesColumn']]]
         data.index += 1
-        return make_pretty(data[self._cf['inOutLst']].style)
+        lst = [self._cf['categoriesColumn']] + self._cf['inOutLst']
+        return make_pretty(data[lst].sort_values(by=self._cf['categoriesColumn']).style)
 
     def dataDisplay(self, df: Any, title: str):
         stylesed = self.getTextObj(df,title)
+        #st.dataframe(stylesed, height=800)
         st.table(stylesed)
