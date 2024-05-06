@@ -77,11 +77,11 @@ def MainPage():
 
     st.write('<style>div.row-widget.stRadio > div{flex-direction:column;font-size=18px;}</style>', unsafe_allow_html=True)
 
-@st.cache_resource
+#@st.cache_resource
 def SingleCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()], submenu_prefix: str, anType: str) -> SingleCorpusMenu:
     return SingleCorpusMenu(dataDic = dataDic, prefix = submenu_prefix, anType=anType)
 
-@st.cache_resource
+#@st.cache_resource
 def ComparativeCorporaMenuLoader(dataDic: dict[str:pd.DataFrame()], anType: str) -> CmpCorpusMenu:
     return CmpCorpusMenu(dataDict=dataDic, anType=anType)
 
