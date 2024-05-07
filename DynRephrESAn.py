@@ -41,7 +41,7 @@ st.set_page_config(layout="wide")
 #         unsafe_allow_html=True,
 #     )
 
-@st.cache_data
+@st.cache_resource
 def load_data(dir_address: str) -> dict[str : pd.DataFrame()]:
     tmpDic = pd.read_excel(dir_address, sheet_name=None)
     # for corpoName in DataProvider.getCorporaSkipLst():
