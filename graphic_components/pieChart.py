@@ -37,7 +37,23 @@ class Piechart2(SuperChartComponent):
         fig.update_traces(textposition='inside', 
                     text=data[self._cf['unitPercentNumber']].map("#{:,}".format),
                     textinfo=displayer)
-        fig.update_layout(margin=dict(t=30, b=0, l=0, r=0))
+        fig.update_layout(margin=dict(t=55, b=0, l=0, r=0),
+            font=dict(
+                family="Arial",
+                size=45,  # Set the font size here
+                color="black"
+            ),
+            legend = dict(
+                font = dict( family="Arial",
+                size = 30
+                )
+            ),
+            title = dict(
+                font = dict( family="Arial",
+                size = 35
+                )
+            )
+        )
         return fig
         
     def dataDisplay(self, data: Any, t: str) -> None:
