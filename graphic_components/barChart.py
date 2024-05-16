@@ -12,6 +12,10 @@ from config.config_data_colector import DataProvider
 from graphic_components.superComponent import SuperChartComponent
 
 class Barchart2(SuperChartComponent):
+
+    def noteClass(self):
+        pass
+
     def getChartObj(self, data: Any, t: str) -> sns.barplot():
         columnLst = list(data.columns.values)
         if len(columnLst) > 0:

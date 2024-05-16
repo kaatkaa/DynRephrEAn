@@ -15,6 +15,9 @@ from data_manipulation.data_manipulator import DataManipulator
 from graphic_components.superComponent import SuperTextComponent
 
 class Ngrams(SuperTextComponent):
+
+    def noteClass(self):
+        pass
         
     def getTextObj(self, data: Any, t: str) -> Any:
         colorsDict = DataProvider.getUniversalColors()

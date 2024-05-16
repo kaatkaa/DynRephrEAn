@@ -14,6 +14,9 @@ sys.path.insert(0,"..")
 
 class WordCloudOfRephrase(SuperTextComponent):
 
+    def noteClass(self):
+        pass
+
     def getChartObj(self, df: Any, t: str) -> Any:
 
         if len(df) > 0:        

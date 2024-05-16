@@ -12,6 +12,10 @@ from config.config_data_colector import DataProvider
 from graphic_components.superComponent import SuperChartComponent
 
 class Table2(SuperChartComponent):
+
+    def noteClass(self):
+        pass
+
     def getChartObj(self, df: Any, t: str) -> Any:
         columnLst = list(df.columns.values)
         def make_pretty(styler):

@@ -84,7 +84,9 @@ class CmpCorpusMenu:
                 else:
                     with i:
                         st.subheader(self.__tabLabels[ctr])
-                        ComparativeCorporaSimple(data_dic=self.__dataDic, config=self.__anCf)
+                        self.__display = ComparativeCorporaSimple(data_dic=self.__dataDic, config=self.__anCf)
+        self.__display.noteClass()
+                        
         with _3dMix:
             cfg = {
                 'prefix': "3D_EthosPathos",

@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import plotly.express as px
 
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, TypeVar
 sys.path.insert(0,"..")
 from graphic_components.barChart import Barchart2
 from graphic_components.table import Table2
@@ -16,10 +16,13 @@ from graphic_components.wordCoud import WordCloudOfRephrase
 from graphic_components.filterInterface import FilterInterface
 from graphic_components.ngrams import Ngrams
 from config.config_data_colector import DataProvider
-#from data_manipulation.data_manipulator import DataManipulator
 from data_manipulation.data_filter import DataFilter
 
+
 class ComparativeCorporaSimple:
+
+    def noteClass(self):
+        pass
 
     def __init__(self, data_dic: dict[str,pd.DataFrame()], config: Dict[str,Any]):
         self.prefixCtr = 1
@@ -41,13 +44,13 @@ class ComparativeCorporaSimple:
         else:
             st.error("Unknown option for comparative analysis.")
 
-    def __Display(self, data_dic: dict[str,pd.DataFrame()], classType: Any):
+    def __Display(self, data_dic: dict[str,pd.DataFrame()], classType: Any) -> Any:
         if len(data_dic) > 1:
             fig, ax = plt.subplots(4, 2, figsize=(10,45), sharex=True)
             fig.subplots_adjust(left=-1, bottom=0.1, right=1.2, top=0.9, wspace=0.2, hspace=0.2)
             sns.set(font_scale=2)
             self.__cf['ax'] = ax
-            [ k for k in classType(dataDic=data_dic,config=self.__cf).getChartsDic().keys()]
+            x = [ k for k in classType(dataDic=data_dic,config=self.__cf).getChartsDic().keys()]
             st.pyplot(fig=fig, config=DataProvider.getSaveConfig())
             fn = 'comparative_analysis.png'
             img = io.BytesIO()
@@ -58,8 +61,10 @@ class ComparativeCorporaSimple:
                 file_name=fn,
                 mime="image/png"
             )
+            return x
         else:
             st.write("**Add More Data to Compara.**")
+            return None
 
     def __updateCfg(self, config: Dict[str,Any]) -> None:
         for item in config.items():
@@ -97,13 +102,13 @@ class ComparativeCorporaSimple:
         gruppedDataDic, wholeDataDic = self.__loadFilteredDataToDic()
         chart, table = st.tabs([":bar_chart: Barchart",":black_square_button: Table"])
         with chart:
-            self.__Display(data_dic=gruppedDataDic, classType=Barchart2)
+            self.__classNote0 = self.__Display(data_dic=gruppedDataDic, classType=Barchart2)
             self.prefixCtr +=1
         with table:
             self.__cf['SubTableXscale'] = .9
             self.__cf['SubTableYscale'] = 6.5
             self.__cf['SubTableFontSize'] = 24
-            self.__Display(data_dic=gruppedDataDic, classType=Table2)
+            self.__classNote1 = self.__Display(data_dic=gruppedDataDic, classType=Table2)
             self.prefixCtr += 1
 
     def Ngrams(self):
@@ -130,9 +135,8 @@ class ComparativeCorporaSimple:
         self.__cf['SubTableXscale'] = .9
         self.__cf['SubTableYscale'] = 2
         self.__cf['SubTableFontSize'] = 18
-        self.__Display(data_dic=wholeDataDic, classType=Ngrams)
+        self.__classNote0 = self.__Display(data_dic=wholeDataDic, classType=Ngrams)
         self.prefixCtr += 1
-
 
     def WordCloud(self):
         overrideConfig = {
@@ -157,14 +161,14 @@ class ComparativeCorporaSimple:
         wordcloud, top20words = st.tabs([":rain_cloud: Wordcloud",":top: Top_20_Words"])
         with wordcloud:
             self.__cf['objectToEnable'] = "Chart"
-            self.__Display(data_dic=wholeDataDic, classType=WordCloudOfRephrase)
+            self.__classNote0 = self.__Display(data_dic=wholeDataDic, classType=WordCloudOfRephrase)
             self.prefixCtr += 1
         with top20words:
             self.__cf['objectToEnable'] = "Text"
             self.__cf['SubTableXscale'] = .9
             self.__cf['SubTableYscale'] = 2
             self.__cf['SubTableFontSize'] = 18
-            self.__Display(data_dic=wholeDataDic, classType=WordCloudOfRephrase)
+            self.__classNote1 = self.__Display(data_dic=wholeDataDic, classType=WordCloudOfRephrase)
             self.prefixCtr += 1
 
     def PoS(self):
@@ -189,7 +193,7 @@ class ComparativeCorporaSimple:
         gruppedDataDic, wholeDataDic = self.__loadFilteredDataToDic()
         chart, table, = st.tabs([":bar_chart: Barchart",":black_square_button: Table"])
         with chart:
-            self.__Display(data_dic=gruppedDataDic, classType=Barchart2)
+            self.__classNote0 = self.__Display(data_dic=gruppedDataDic, classType=Barchart2)
             self.prefixCtr +=1
         with table:
             self.__cf['SubTableXscale'] = .9
@@ -198,6 +202,7 @@ class ComparativeCorporaSimple:
             self.__Display(data_dic=gruppedDataDic, classType=Table2)
             self.prefixCtr += 1
         self.prefixCtr += 1
+
 
 # Save to file first or an image file has already existed.
 # fn = 'scatter.png'
