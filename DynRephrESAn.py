@@ -8,10 +8,13 @@ from submenus.single_corpus import SingleCorpusMenu
 from submenus.comparative_corpus import CmpCorpusMenu
 from config.config_data_colector import DataProvider
 
+from dataclasses import dataclass
+
 pd.set_option("max_colwidth", 300)
 sns.set_theme(style="whitegrid")
 plt.style.use("seaborn-talk")
 
+@dataclass(frozen=True)
 class DynRephAnMainInterface:
     # ******************* An config id + cfg **************************************
 
@@ -80,8 +83,6 @@ class DynRephAnMainInterface:
         'posColumns': DataProvider.getInOutColLst()[2],
         #PoS categories selected
         'posCategories': DataProvider.getPSPlst(),
-        #choose between n-grams and PoS n-grams
-        'n-gramType': 'n-gram',
         # Shows ngram slider
         'showNgramSlider': False,
         # Keeps ngram slider value
