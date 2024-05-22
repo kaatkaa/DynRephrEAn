@@ -96,7 +96,6 @@ def __style_css(self, file):
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 @st.cache_resource
-@staticmethod
 def __load_data(dir_address: str) -> dict[str : pd.DataFrame()]:
     tmpDic = pd.read_excel(dir_address, sheet_name=None)
     # for corpoName in DataProvider.getCorporaSkipLst():
