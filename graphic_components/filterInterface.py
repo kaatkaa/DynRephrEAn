@@ -36,7 +36,7 @@ class FilterInterface:
         'objectToEnable': "Chart",
         #Number or percentage
         'showPercentageNumber': False,
-        'unitPercentNumber': 'Percentage',
+        # 'unitPercentNumber': 'Percentage',
         'unitsPercentageNumber': ('Percentage','Number'),
         #categories interface
         'showCategoriesInterface': False,
@@ -52,7 +52,7 @@ class FilterInterface:
         # Use Input or Output phrase
         'showInOutInterface': True,
         # use radiobutton interface to choose between Input output and Locution input and output
-        'showInOutVsLoc': False,
+        # 'showInOutVsLoc': False,
         # List that remembers selected Input output or locution input and output
         'inOutLst': DataProvider.getInOutColLst(),
         # Color palette for barchar 2 types for Dynamic rephrase and PoS
@@ -66,8 +66,8 @@ class FilterInterface:
         'stopPoSSet': set (),
         #Interface of PoS
         'showPOSInterface':False,
-        #PoS column names in excel to choose from
-        'posColumns': DataProvider.getPSPcolumns1(),
+        # #PoS column names in excel to choose from
+        # 'posColumns': DataProvider.getPSPcolumns1(),
         #PoS categories selected
         'posCategories': DataProvider.getPSPlst(),
         # Shows ngram slider
@@ -148,52 +148,61 @@ class FilterInterface:
         self.__keyCtr += 1
 
     def __units(self):
+        def update_unit_radio(x):
+            self.__cf['unitPercentNumberIndex'] = int(not bool(x))
         self.__cf['unitPercentNumber'] = st.radio("Choose units",
-            self.__cf['unitsPercentageNumber'],                                                
+            self.__cf['unitsPercentageNumber'],
+            index=self.__cf['unitPercentNumberIndex'],
+            on_change=update_unit_radio,
+            args=(self.__cf['unitPercentNumberIndex'],),                                          
             key=self.__cf['prefix']+"_Units"+str(self.__keyCtr))
         self.__keyCtr += 1
-        
+
     def __categories(self, col) -> str:
         with col:
             display_complexity = st.radio(self.__cf['generalConfig'][self.__cf['categoriesInterfaceTitle']],
                 ("4-categories",
-                    "6-categories"),                                                 
+                    "6-categories"),
+                index=self.__cf['categoryIndex'],                                              
                 key=self.__cf['prefix']+"_Rephrase_4-6cat"+str(self.__keyCtr))
             self.__keyCtr += 1
         if display_complexity == '4-categories':
-            sortDict = {key: i for i, key in enumerate(DataProvider.getDynRephDimentions())}
-            self.__cf['categoriesLst'] = st.multiselect(self.__cf["generalConfig"]["Wordcloud_filterInterface"], 
+            self.__cf['categoryIndex'] = 0
+            # sortDict = {key: i for i, key in enumerate(DataProvider.getDynRephDimentions())}
+            self.__cf['categoriesLst'] = st.multiselect(self.__cf["generalConfig"]["Wordcloud_filterInterface"],
                                         sorted(DataProvider.getDynRephDimentions()), 
-                                        sorted(DataProvider.getDynRephDimentions())[:],
+                                        self.__cf['categoriesLst'],
                                         key = self.__cf['prefix']+"_multi_sel"+str(self.__keyCtr))
             self.__keyCtr += 1
-            self.__cf['fixedCatLst'] = sorted(self.__cf['categoriesLst'], key=lambda d: sortDict[d])
+            # self.__cf['categoriesLst'] = sorted(self.__cf['categoriesLst'], key=lambda d: sortDict[d])
             self.__cf['categoriesColumn'] = self.__cf['generalConfig']['colName']
         elif display_complexity == '6-categories':
-            sortDict = {key: i for i, key in enumerate(DataProvider.getDynRephDimentionsWS())}
-            self.__cf['categoriesLst'] = st.multiselect(self.__cf['generalConfig']["Wordcloud_filterInterface"], 
+            self.__cf['categoryIndex'] = 1
+            # sortDict = {key: i for i, key in enumerate(DataProvider.getDynRephDimentionsWS())}
+            self.__cf['categoriesLstWS'] = st.multiselect(self.__cf['generalConfig']["Wordcloud_filterInterface"], 
                                         sorted(DataProvider.getDynRephDimentionsWS()), 
-                                        sorted(DataProvider.getDynRephDimentionsWS())[:],
+                                        self.__cf['categoriesLstWS'],
                                         key = self.__cf['prefix']+"_multi_selWS"+str(self.__keyCtr))
             self.__keyCtr += 1
-            self.__cf['fixedCatLst'] = sorted(self.__cf['categoriesLst'], key=lambda d: sortDict[d])
+            # self.__cf['categoriesLstWS'] = sorted(self.__cf['categoriesLstWS'], key=lambda d: sortDict[d])
             self.__cf['categoriesColumn'] = self.__cf['generalConfig']['colNameWS']
         else:
             st.error("Oprion not implemented in __filterInterface, class: WordCloudOfEmotions")
 
     def __inOut(self):
-        col_radio1, col_radio2= st.columns(2)
+        col_radio1, col_radio2 = st.columns(2)
+        if self.__cf['showPOSInterface'] or self.__cf['n-gramType'] == "n-gram_PoS":
+            radioChoise =  ("PoS_Input_Output", "LocPoS_Input_Output")
+        elif self.__cf['prefix'] == "Ngrams_" or self.__cf['prefix'] == "WordCloud_":
+            radioChoise = ("Input_Output", "Locution_Input_Output")
+        else:
+            radioChoise = ("Input_Output", "Locution_Input_Output", "PoS_Input_Output", "LocPoS_Input_Output")         
         with col_radio1:
-            if self.__cf['showInOutVsLoc']:
-                phrasesType = st.radio(self.__cf['generalConfig']['InOutType'],
-                                ("Input_Output",
-                                    "Locution_Input_Output",
-                                    "PoS_Input_Output",
-                                    "LocPoS_Input_Output"),                                                 
-                                key=self.__cf['prefix']+"_inOutType"+str(self.__keyCtr))
-                self.__keyCtr += 1
-            else:
-                phrasesType = "Input_Output"
+            phrasesType = st.radio(self.__cf['generalConfig']['InOutType'],
+                            radioChoise,
+                            index=self.__cf['InOutTypeIndex'],                                               
+                            key=self.__cf['prefix']+"_inOutType"+str(self.__keyCtr))
+            self.__keyCtr += 1
         with col_radio2:
             cf = {}
             if FilterInterface.__debug:
@@ -201,54 +210,59 @@ class FilterInterface:
                 open_modal = st.button(key="modal_button_int..", label='button')
                 modal = Modal(key="Interface_modal", title="showPOSInterface enabled.")
             if phrasesType == "Input_Output":
-                cf = {
-                    'showStopWordsInterface': True,
-                    'showStopPoSInterface': False              
-                }
+                # cf = {
+                #     'showStopWordsInterface': True,
+                #     'showStopPoSInterface': False              
+                # }
                 self.__updateConfig(cf)
                 self.__cf['inOutLst'] = st.multiselect("Choose source of Input-Output you would like to visualise", 
-                                            DataProvider.getInOutColLst(), 
-                                            DataProvider.getInOutColLst()[:],
+                                            DataProvider.getInOutColLst()[0],
+                                            self.__cf['inOutLstSub'], 
                                             key = self.__cf['prefix']+"_multi_selInOut"+str(self.__keyCtr))
                 self.__keyCtr += 1
             elif phrasesType == "Locution_Input_Output":
-                cf = {
-                    'showStopWordsInterface':True,
-                    'showStopPoSInterface': False    
-                }
-                self.__updateConfig(cf)
+                # cf = {
+                #     'showStopWordsInterface':True,
+                #     'showStopPoSInterface': False    
+                # }
+                # self.__updateConfig(cf)
                 self.__cf['inOutLst'] = st.multiselect("Choose source of Locution-Input-Output you would like to visualise", 
-                                            DataProvider.getLocInOut(), 
-                                            DataProvider.getLocInOut()[:],
+                                            DataProvider.getInOutColLst()[1],
+                                            self.__cf['inOutLstSub_loc'], 
                                             key = self.__cf['prefix']+"_multi_selLocInOut"+str(self.__keyCtr))
                 self.__keyCtr += 1
+                self.__cf['inOutLstSub_loc'] = self.__cf['inOutLst']
             elif phrasesType == "PoS_Input_Output":
-                cf = {
-                    'showStopWordsInterface':False,
-                    'showStopwords':False,
-                    'useStopwords':False,
-                    'showStopPoSInterface': True            
-                }
-                self.__updateConfig(cf)
-                self.__cf['inOutLst'] = st.multiselect("Choose source of PoS-Input-Output you would like to visualise", 
-                                            DataProvider.getPSPcolumns1(), 
-                                            DataProvider.getPSPcolumns1()[:],
+                # cf = {
+                #     'showStopWordsInterface':False,
+                #     'showStopwords':False,
+                #     'useStopwords':False,
+                #     'showStopPoSInterface': True            
+                # }
+                # self.__updateConfig(cf)
+                self.__cf['posColumns'] = st.multiselect("Choose source of PoS-Input-Output you would like to visualise", 
+                                            DataProvider.getInOutColLst()[2], 
+                                            self.__cf['inOutLstSub_PoS'],
                                             key = self.__cf['prefix']+"_PoS_selInOut"+str(self.__keyCtr))
                 
                 self.__keyCtr += 1
+                self.__cf['inOutLst'] = self.__cf['posColumns']
+                self.__cf['inOutLstSub_PoS'] = self.__cf['posColumns']
             elif phrasesType == "LocPoS_Input_Output":
-                cf = {
-                    'showStopWordsInterface':False,
-                    'showStopwords':False,
-                    'useStopwords':False,
-                    'showStopPoSInterface': True             
-                }
-                self.__updateConfig(cf)
-                self.__cf['inOutLst'] = st.multiselect("Choose source of Locution-PoS-In-Out you would like to visualise",
-                                            DataProvider.getPSPcolumns2(), 
-                                            DataProvider.getPSPcolumns2()[:],
+                # cf = {
+                #     'showStopWordsInterface':False,
+                #     'showStopwords':False,
+                #     'useStopwords':False,
+                #     'showStopPoSInterface': True
+                # }
+                # self.__updateConfig(cf)
+                self.__cf['posColumns'] = st.multiselect("Choose source of Locution-PoS-In-Out you would like to visualise",
+                                            DataProvider.getInOutColLst()[3], 
+                                            self.__cf['inOutLstSub_LPoS'],
                                             key = self.__cf['prefix']+"_PoS_selLocInOut"+str(self.__keyCtr))
                 self.__keyCtr += 1
+                self.__cf['inOutLstSub_LPoS'] = self.__cf['posColumns']
+                self.__cf['inOutLst'] = self.__cf['posColumns']
             else:
                 st.error("Unknown option: ",phrasesType," in __inOut method.")
             if FilterInterface.__debug and open_modal:
@@ -275,27 +289,27 @@ class FilterInterface:
         self.__cf['useStopwords'] = useStopWords
     
     def __PoSinterface(self):
-        col1, col2 = st.columns(2)
-        with col1:
-            colType = st.radio(self.__cf['generalConfig'][self.__cf['categoriesInterfaceTitle']],
-                ("input & output",
-                    "Locution input & Locution output"),                                                 
-                key=self.__cf['prefix']+"_Rephrase_4-6cat"+str(self.__keyCtr))
-        with col2:
-            if colType == "input & output":
-                self.__cf['posColumns'] = st.multiselect(self.__cf['generalConfig']['POS_inOut'], 
-                                            sorted(DataProvider.getPSPcolumns1()),
-                                            sorted(DataProvider.getPSPcolumns1())[:],
-                                            key = self.__cf['prefix']+"_multiInOutPOS"+str(self.__keyCtr))
-                self.__keyCtr += 1
-            elif colType == "Locution input & Locution output":
-                self.__cf['posColumns'] = st.multiselect(self.__cf['generalConfig']['POS_inOut'], 
-                                            sorted(DataProvider.getPSPcolumns2()), 
-                                            sorted(DataProvider.getPSPcolumns2())[:],
-                                            key = self.__cf['prefix']+"_multiInOutPOS"+str(self.__keyCtr))
-                self.__keyCtr += 1
-            else:
-                st.error("Wrong option in __PoSinterface: colType==",colType)             
+        # col1, col2 = st.columns(2)
+        # with col1:
+        #     colType = st.radio(self.__cf['generalConfig'][self.__cf['categoriesInterfaceTitle']],
+        #         ("input & output",
+        #             "Locution input & Locution output"),                                                 
+        #         key=self.__cf['prefix']+"_Rephrase_4-6cat"+str(self.__keyCtr))
+        # with col2:
+        #     if colType == "input & output":
+        #         self.__cf['posColumns'] = st.multiselect(self.__cf['generalConfig']['POS_inOut'], 
+        #                                     sorted(DataProvider.getInOutColLst()[2]),
+        #                                     sorted(self.__cf['posColumns']),
+        #                                     key = self.__cf['prefix']+"_multiInOutPOS"+str(self.__keyCtr))
+        #         self.__keyCtr += 1
+        #     elif colType == "Locution input & Locution output":
+        #         self.__cf['posColumns'] = st.multiselect(self.__cf['generalConfig']['POS_inOut'], 
+        #                                     sorted(DataProvider.getInOutColLst()[3]), 
+        #                                     sorted(self.__cf['posColumns']),
+        #                                     key = self.__cf['prefix']+"_multiInOutPOS"+str(self.__keyCtr))
+        #         self.__keyCtr += 1
+        #     else:
+        #         st.error("Wrong option in __PoSinterface: colType==",colType)             
         self.__cf['posCategories'] = st.multiselect(self.__cf['generalConfig']['POS_title'],
                                     sorted(DataProvider.getPSPlst()), 
                                     sorted(DataProvider.getPSPlstDefault())[:],

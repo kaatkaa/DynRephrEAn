@@ -15,37 +15,14 @@ from graphic_components._3D_PoS import _3D_PoS
 
 class CmpCorpusMenu:
 
-    def __init__(self, dataDict: pd, anType: str):
-        self.__anType = anType
-        self.__ADUorSpeaker = ''
+    def __init__(self, dataDict: pd):
         self.__dataDict = dataDict
-
-        self.__anCf = {
-            'prefix':'no_prefix_set_',
-            # imediatePlot - set to True if plotting single corpora charts 
-            # - to False if plotting in comparative analysis charts
-            'imediatePlot': False,
-            'anType': anType,
-            'showPercentageNumber': True,
-            'unitPercentNumber': 'Percentage',
-            'showCategoriesInterface': True,
-            'categoriesColumn': '',
-            'SS + OS rephrase': False,
-            'SS rephrase': False,
-            'OS rephrase': False,
-            'showInOutInterface': True,
-            'showStopWordsInterface':True,
-            'showStopwords':False,
-            'useStopwords':True,
-            'showPOSInterface':False
-        }
-        self.__anCf['generalConfig'] = DataProvider.getDynRephrESconfig()[anType]
 
         #Below are tab labels
         self.__tabLabels: list[str] = ["Data("+str(x)+")" for x in range(1,9,1)]
         #Below is loaded SingleCorpusMenu for each tab
-        self.__dataLoaders: list[SingleCorpusMenu] = [SingleCorpusMenu(dataDic=dataDict, prefix=str(ctr)+"0_",anType=anType) for ctr in range(1,9,1)]
-        self.__tabLabels.append("Comparative Analysis"+self.__anCf['generalConfig']['anName'])
+        self.__dataLoaders: list[SingleCorpusMenu] = [SingleCorpusMenu(dataDic=dataDict, prefix=str(ctr)+"0_") for ctr in range(1,9,1)]
+        self.__tabLabels.append("Comparative Analysis"+st.session_state[st.session_state['cfgId']]['generalConfig']['anName'])
         # In dictionary below all __dataDic keys are stored for Data(1)-(8)
         self.__keyDic = {}
         # In dictionary below all data_frames will be stored for comparison

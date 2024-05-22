@@ -13,6 +13,81 @@ sns.set_theme(style="whitegrid")
 plt.style.use("seaborn-talk")
 
 class DynRephAnMainInterface:
+    # ******************* An config id + cfg **************************************
+
+    __AnConfigId = "DynRephAnCfgId"
+    __AnConfig = {
+        'prefix':'no_prefix_set_',
+        # imediatePlot - set to True if plotting single corpora charts 
+        # - to False if plotting in comparative analysis charts
+        'imediatePlot': True,
+        # For tables wit text, how much lines has to be shown from table
+        'textInstances': 1,
+        # Dimentions of comparative analysis chart:
+        '_8x_dims': [[0,0],[0,1],[1,0],[1,1],[2,0],[2,1],[3,0],[3,1]],
+        # The position (0-7) of current chart in subplot for comparative analysis
+        'subChartPosition': 0,
+        # ax of subplot
+        'ax': None,
+        # subplot table customalisation paremeters
+        'SubTableXscale': .9,
+        'SubTableYscale': 6.5,
+        'SubTableFontSize': 24,
+        # end of subplot Table configuration
+        # Variable below enables "Chart" or "Text" component in SuperTextComponent superclass
+        'objectToEnable': "Chart",
+        #Number or percentage
+        'showPercentageNumber': False,
+        'unitPercentNumberIndex': 0,
+        'unitPercentNumber': 'Percentage',
+        'unitsPercentageNumber': ('Percentage','Number'),
+        #categories interface
+        'showCategoriesInterface': False,
+        'categoryIndex': 0,
+        'categoriesColumn': '',
+        'categoriesLst': DataProvider.getDynRephDimentions(),
+        'categoriesLstWS': DataProvider.getDynRephDimentionsWS(),
+        # 'fixedCatLst': [],
+        'categoriesInterfaceTitle': 'Wordcloud_filterInterface',
+        # ADU or speaker
+        'ADU_or_Speaker': '',
+        'SS rephrase': False,
+        'OS rephrase': False,
+        'SS + OS rephrase': True,
+        # Use Input or Output phrase
+        'showInOutInterface': True,
+        'InOutTypeIndex': 0,
+        # use radiobutton interface to choose between Input output and Locution input and output
+        # 'showInOutVsLoc': False,
+        # List that remembers selected Input output or locution input and output
+        'inOutLstSub': DataProvider.getInOutColLst()[0],
+        'inOutLstSub_loc': DataProvider.getInOutColLst()[1],
+        'inOutLstSub_PoS': DataProvider.getInOutColLst()[2],
+        'inOutLstSub_LPoS': DataProvider.getInOutColLst()[3],
+        'inOutLst': DataProvider.getInOutColLst()[0],
+        # Color palette for barchar 2 types for Dynamic rephrase and PoS
+        'palette': DataProvider.getEthosColors(),
+        # use stopwords interface
+        'showStopWordsInterface':False,
+        'showStopwords':False,
+        'useStopwords':False,
+        'StopwordsSet': set(),
+        'showStopPoSInterface':False,
+        'stopPoSSet': set (),
+        #Interface of PoS
+        'showPOSInterface':False,
+        #PoS column names in excel to choose from
+        'posColumns': DataProvider.getInOutColLst()[2],
+        #PoS categories selected
+        'posCategories': DataProvider.getPSPlst(),
+        #choose between n-grams and PoS n-grams
+        'n-gramType': 'n-gram',
+        # Shows ngram slider
+        'showNgramSlider': False,
+        # Keeps ngram slider value
+        'ngramSliderValue': 2
+    }
+
     # ******************* path to file **************************************
 
     __rephrase_xlsx = r"./data_xlsx/DynRephrSEAn.xlsx"
@@ -60,28 +135,32 @@ class DynRephAnMainInterface:
 
         st.write('<style>div.row-widget.stRadio > div{flex-direction:column;font-size=18px;}</style>', unsafe_allow_html=True)
 
-    def __SingleCorporaMenuLoader(self, dataDic: dict[str:pd.DataFrame()], submenu_prefix: str, anType: str) -> SingleCorpusMenu:
-        return SingleCorpusMenu(dataDic = dataDic, prefix = submenu_prefix, anType=anType)
+    def __SingleCorporaMenuLoader(self, dataDic: dict[str:pd.DataFrame()], submenu_prefix: str) -> SingleCorpusMenu:
+        return SingleCorpusMenu(dataDic = dataDic, prefix = submenu_prefix)
 
-    def __ComparativeCorporaMenuLoader(self, dataDic: dict[str:pd.DataFrame()], anType: str) -> CmpCorpusMenu:
-        return CmpCorpusMenu(dataDict=dataDic, anType=anType)
+    def __ComparativeCorporaMenuLoader(self, dataDic: dict[str:pd.DataFrame()]) -> CmpCorpusMenu:
+        return CmpCorpusMenu(dataDict=dataDic)
 
     # def __resetData(single_corpus: SingleCorpusMenu, comparative_corpora: CmpCorpusMenu) -> None:
     #     single_corpus.cleanSelections()
     #     comparative_corpora.clearTabsSelections()
 
     def __init__(self) -> None:
-        #self.__style_css('multi_style.css')
+        if DynRephAnMainInterface.__AnConfigId not in st.session_state:
+            st.session_state['cfgId'] = DynRephAnMainInterface.__AnConfigId
+            st.session_state[st.session_state['cfgId']] = DynRephAnMainInterface.__AnConfig
         with st.sidebar:
             st.write('<style>div[class="css-1siy2j7 e1fqkh3o3"] > div{background-color: #d2cdcd;}</style>', unsafe_allow_html=True)
             st.write('<style>div.row-widget.stRadio > div{flex-direction:column;}</style>', unsafe_allow_html=True)
             dataDic = DynRephAnMainInterface.__load_data(DynRephAnMainInterface.__rephrase_xlsx)
             st.subheader("Analytics type")
-            rAnalytics = st.radio("", ("DynRephAn for Ethos",
+            anSubtype = st.radio("", ("DynRephAn for Ethos",
                                     "DynRephAn for Sentiment"),
-                        key="AnType")
-            self.__single_corpora_menu = self.__SingleCorporaMenuLoader(dataDic=dataDic, submenu_prefix="0_", anType=rAnalytics)
-            self.__cmp_corpora_menu = self.__ComparativeCorporaMenuLoader(dataDic=dataDic, anType=rAnalytics)
+                        key="AnType", label_visibility='collapsed')
+            st.session_state[st.session_state['cfgId']]['generalConfig'] = DataProvider.getDynRephrESconfig()[anSubtype]
+                
+            self.__single_corpora_menu = self.__SingleCorporaMenuLoader(dataDic=dataDic, submenu_prefix="0_")
+            self.__cmp_corpora_menu = self.__ComparativeCorporaMenuLoader(dataDic=dataDic)
             st.title("Contents")
             contents_radio = st.radio("Choose: ", ("Main Page", "Single Corpus Analysis", "Comparative Corpora Analysis"),label_visibility='collapsed')
 

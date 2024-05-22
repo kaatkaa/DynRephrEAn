@@ -12,7 +12,6 @@ from graphic_components.barChart import Barchart2
 from graphic_components.table import Table2
 from graphic_components.textAnalysis import Cases2
 from graphic_components.ngrams import Ngrams
-from graphic_components.pos import PoS
 from config.config_data_colector import DataProvider
 from submenus.tweaker import st_tweaker
 from st_ant_tree import st_ant_tree
@@ -20,18 +19,13 @@ from streamlit_modal import Modal
 
 class SingleCorpusMenu:
 
-    __debug = False
+    __debug = True
 
-    def __init__(self, dataDic: dict[str : pd.DataFrame()], prefix: str="0_", anType: str="DynRephAn for Sentiment") -> None:
+    def __init__(self, dataDic: dict[str : pd.DataFrame()], prefix: str="0_") -> None:
         #dictionary containing all possible data with corpora indexed by name
         self.__dataDic = dataDic
         #Prefix to distinguish between different data sets
         self.__prefix = prefix
-        #loading config file for ethos and sentiment
-        tmp = DataProvider.getDynRephrESconfig()
-        #config file with messages and column names for Ethos and Sentiment
-        self.__anCfg = {}
-        self.__anCfg = tmp[anType]
 
         self.__rephrase_df = pd.DataFrame()
         self.__rephrase_old = pd.DataFrame()
@@ -158,7 +152,7 @@ class SingleCorpusMenu:
                      key=self.__prefix+"Text-Based",
                      index=0,
                      label_visibility='hidden')
-            self.__anCfg['ADU_or_Speaker'] = ADU_or_Speaker
+            st.session_state[st.session_state['cfgId']]['ADU_or_Speaker'] = ADU_or_Speaker
             st.write("****************************")
             st.subheader("Statictical module")
             module_choice = st.radio("An. Module", \
@@ -173,124 +167,108 @@ class SingleCorpusMenu:
         </style>
         """,unsafe_allow_html=True)
         config = {}
-        if SingleCorpusMenu.__debug:
-            open_modal = False
-            open_modal = st.button(key="N-grams_debug..", label='N-grams_debug')
-            modal = Modal(key="N-gram_debug", title="showPOSInterface check")
+        # if SingleCorpusMenu.__debug:
+        #     open_modal = False
+        #     open_modal = st.button(key="N-grams_debug..", label='N-grams_debug')
+        #     modal = Modal(key="N-gram_debug", title="showPOSInterface check")
         if module_choice == "n-grams":
-            __filterWordCloud = {
+            __n_gramsCfg = {
                 'prefix':'Ngrams_',
                 'imediatePlot': True,
-                'generalConfig': self.__anCfg,
-                'ADU_or_Speaker': ADU_or_Speaker,
                 'showPercentageNumber': False,
                 'showCategoriesInterface': True,
-                'SS + OS rephrase': True,
-                'SS rephrase': True,
-                'OS rephrase': False,
                 'showInOutInterface': True,
                 'showInOutVsLoc': True,
                 'showStopWordsInterface':True,
-                'showStopwords':False,
-                'useStopwords':True,
                 'showPOSInterface':False,
-                'showNgramSlider': False
+                'showNgramSlider': False,
+                'n-gramType': 'n-gram'
             }
-            config = FilterInterface(config=__filterWordCloud).getConfig()
-            dataDict = DataFilter(data=self.__rephrase_df,config=config).getDataDict()
-            Ngrams(dataDic=dataDict,config=config)
+            DataProvider.updateGlobalConfig(config=__n_gramsCfg)
+            st.session_state[st.session_state['cfgId']] = \
+                FilterInterface(config=st.session_state[st.session_state['cfgId']]).getConfig()
+            dataDict = DataFilter(data=self.__rephrase_df,config=st.session_state[st.session_state['cfgId']]).getDataDict()
+            Ngrams(dataDic=dataDict,config=st.session_state[st.session_state['cfgId']])
         elif module_choice == "Wordcloud":
-            #WordCloudOfEmotions(self.__rephrase_df,analysisType="Wordcloud",unit=ADU_or_Speaker, configDic=self.__anCfg, prefix="WordCloud")
-            __filterWordCloud = {
+            __CloudCfg = {
                 'prefix':'WordCloud_',
                 'imediatePlot': True,
-                'generalConfig': self.__anCfg,
-                'ADU_or_Speaker': ADU_or_Speaker,
                 'showPercentageNumber': False,
                 'showCategoriesInterface': True,
-                'SS + OS rephrase': True,
-                'SS rephrase': True,
-                'OS rephrase': False,
                 'showInOutInterface': True,
                 'showInOutVsLoc': True,
                 'showStopWordsInterface':True,
-                'showStopwords':False,
-                'useStopwords':True,
                 'showPOSInterface':False,
-                'showNgramSlider': False
+                'showNgramSlider': False,
+                'n-gramType': ''
             }
-            config = FilterInterface(config=__filterWordCloud).getConfig()
-            dataDict = DataFilter(data=self.__rephrase_df,config=config).getDataDict()
-            WordCloudOfRephrase(dataDic=dataDict,config=config)
+            DataProvider.updateGlobalConfig(config=__CloudCfg)
+            st.session_state[st.session_state['cfgId']] = \
+                FilterInterface(config=st.session_state[st.session_state['cfgId']]).getConfig()
+            dataDict = DataFilter(data=self.__rephrase_df,config=st.session_state[st.session_state['cfgId']]).getDataDict()
+            WordCloudOfRephrase(dataDic=dataDict,config=st.session_state[st.session_state['cfgId']])
         elif module_choice == "Distribution":
-            #Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg, prefix="PieChart", table=False)
-            self.container(s="_sub", units_choice=ADU_or_Speaker)
+            __DistribCfg = {
+                'prefix':'distributions_',
+                'imediatePlot': True,
+                'showPercentageNumber': True,
+                'showCategoriesInterface': True,
+                'showInOutInterface': True,
+                'showInOutVsLoc': True,
+                'showStopWordsInterface':True,
+                'showPOSInterface':False,
+                'showNgramSlider': False,
+                'n-gramType': ''
+            }
+            DataProvider.updateGlobalConfig(config=__DistribCfg)
+            if SingleCorpusMenu.__debug:
+                st.button(key="Session_state..", label='Session_state')
+                modal = Modal(key="session_st", title="showPOSInterface check")
+                if modal.is_open():
+                    with modal.container():
+                        st.write(st.session_state[st.session_state['cfgId']])
+            st.session_state[st.session_state['cfgId']] = \
+                FilterInterface(config=st.session_state[st.session_state['cfgId']]).getConfig()
+            dataDict = DataFilter(data=self.__rephrase_df,config=st.session_state[st.session_state['cfgId']]).getDataDict()
+            pieTab, barTab, tableTab, casesTab = st.tabs([":pizza: PieChart",":bar_chart: BarChart",":black_square_button: Table",":speech_balloon: Cases"])
+            with pieTab:
+                Piechart2(dataDic=dataDict,config=st.session_state[st.session_state['cfgId']])
+            with barTab:
+                Barchart2(dataDic=dataDict, config=st.session_state[st.session_state['cfgId']])
+            with tableTab:
+                Table2(dataDic=dataDict, config=st.session_state[st.session_state['cfgId']])
+            with casesTab:
+                Cases2(dataDic=dataDict, config=st.session_state[st.session_state['cfgId']])
         elif module_choice == "PoS":
-            __filterPoS = {
+            __PoSCfg = {
                 'prefix':'PoS_',
                 'imediatePlot': True,
-                'generalConfig': self.__anCfg,
-                'ADU_or_Speaker': ADU_or_Speaker,
-                'showPercentageNumber': False,
+                'showPercentageNumber': True,
                 'showCategoriesInterface': True,
-                'SS + OS rephrase': True,
-                'SS rephrase': True,
-                'OS rephrase': False,
                 'showInOutInterface': True,
                 'showInOutVsLoc': True,
                 'showStopWordsInterface':True,
-                'showStopwords':False,
-                'useStopwords':True,
                 'showPOSInterface':True,
                 'showNgramSlider': False,
-                'showStopPoSInterface':False
+                'showStopPoSInterface':False,
+                'n-gramType': ''
             }
-            PoS(df=self.__rephrase_df,config=__filterPoS)
+            DataProvider.updateGlobalConfig(config=__PoSCfg)
+            st.session_state[st.session_state['cfgId']] = \
+                FilterInterface(config=st.session_state[st.session_state['cfgId']]).getConfig()
+            dataDict = DataFilter(data=self.__rephrase_df,config=st.session_state[st.session_state['cfgId']]).getDataDict()
+            pieTab, barTab, tableTab = st.tabs([":pizza: PieChart",":bar_chart: BarChart",":black_square_button: Table"])
+            with pieTab:
+                st.subheader(st.session_state[st.session_state['cfgId']]['generalConfig']['POS_piechart'])
+                Piechart2(dataDic=dataDict,config=st.session_state[st.session_state['cfgId']])
+            with barTab:
+                st.subheader(st.session_state[st.session_state['cfgId']]['generalConfig']['POS_barchart'])
+                Barchart2(dataDic=dataDict,config=st.session_state[st.session_state['cfgId']])
+            with tableTab:
+                st.subheader(st.session_state[st.session_state['cfgId']]['generalConfig']['POS_table'])
+                Table2(dataDic=dataDict,config=st.session_state[st.session_state['cfgId']])
         else:
             raise NotImplementedError("Unsupported option of Analytical module in single_corpus.py .")
-        
-        if SingleCorpusMenu.__debug and open_modal:
-            with modal.container():
-                st.markdown("config['showPoSInterface'] = "+str(config['showPoSInterface']))
-                open_modal = st.button(key="config_debug", label='Close debug info.')
-        
-
-    def container(self, s: str="",units_choice: str=""):
-        filterCfg = {
-            'prefix':'distributions_',
-            'generalConfig': self.__anCfg,
-            'ADU_or_Speaker': units_choice,
-            'imediatePlot': True,
-            'showPercentageNumber': True,
-            'showCategoriesInterface': True,
-            'SS + OS rephrase': True,
-            'SS rephrase': True,
-            'OS rephrase': False,
-            'showInOutInterface': True,
-            'showInOutVsLoc': True,
-            'showStopWordsInterface':True,
-            'showStopwords':False,
-            'useStopwords':True,
-            'showPOSInterface':False,
-            'showNgramSlider': False
-        }
-        config = FilterInterface(config=filterCfg).getConfig()
-        dataDic = DataFilter(data=self.__rephrase_df,config=config).getDataDict()
-        pieTab, barTab, tableTab, casesTab = st.tabs([":pizza: PieChart",":bar_chart: BarChart",":black_square_button: Table",":speech_balloon: Cases"])
-        with pieTab:
-            #Distribution of ethos/sentiment dynamics in rephrase
-            #Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg, prefix="PieChart"+s, table=False)
-            Piechart2(dataDic=dataDic,config=config)
-        with barTab:
-            Barchart2(dataDic=dataDic, config=config)
-        with tableTab:
-            #To be formatted
-            #st.header(self.getCriteria())
-            #Piechart(self.__rephrase_df,unit=units_choice, configDic=self.__anCfg,prefix="Table"+s, table=True)
-            Table2(dataDic=dataDic, config=config)
-        with casesTab:
-            #WordCloudOfEmotions(self.__rephrase_df,analysisType="Cases",unit=units_choice, configDic=self.__anCfg, prefix="Cases"+s,x="simple")
-            Cases2(dataDic=dataDic, config=config)
         
     #Returns criteria to which data is selected
     def getCriteria(self) -> str:

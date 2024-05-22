@@ -42,7 +42,7 @@ class DataFilter:
         'usePoSSet': False,
         'StopwordsSet': set(),
         'showPOSInterface':False,
-        'posColumns': DataProvider.getPSPcolumns1(),
+        # 'posColumns': DataProvider.getPSPcolumns1(),
         'posCategories': DataProvider.getPSPlst(),
         'showNgramSlider': False,
         'ngramSliderValue': 2
@@ -102,7 +102,10 @@ class DataFilter:
     def __filterInterface(self) -> Tuple[Any, list[str]]:
             
         if self.__cf['showCategoriesInterface'] and len(self.__outputData) > 0:
-            self.__outputData = self.__outputData.loc[self.__outputData[self.__cf['categoriesColumn']].isin(self.__cf['categoriesLst'])]
+            if self.__cf['categoryIndex'] == 0:
+                self.__outputData = self.__outputData.loc[self.__outputData[self.__cf['categoriesColumn']].isin(self.__cf['categoriesLst'])]
+            elif self.__cf['categoryIndex'] == 1:
+                self.__outputData = self.__outputData.loc[self.__outputData[self.__cf['categoriesColumn']].isin(self.__cf['categoriesLstWS'])]
         else:
             self.__outputData = self.__d
 

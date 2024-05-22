@@ -1,6 +1,7 @@
 import json
 import os
 import streamlit as st
+from typing import Dict, Any
 
 class DataProvider:
     __tableFormat = [
@@ -21,13 +22,11 @@ class DataProvider:
     }
 
     __dyn_rephr_file = 'config/dyn_rephr_cfg.json'
-    __lst_of_dyn_rephr = ['Amelioration', 'Pejorativization', 'Neutralization','No_Change']
-    __lst_of_dyn_rephrWS = ['A_strong','A_weak','P_strong','P_weak','Neutralization','No_Change']
+    __lst_of_dyn_rephr = ['Amelioration', 'Neutralization', 'Pejorativization', 'No_Change']
+    __lst_of_dyn_rephrWS = ['A_strong','A_weak','Neutralization','P_strong','P_weak','No_Change']
     
-    __lst_of_dyn_in_out = ['input','output']
-    __lst_of_dyn_LocIn_LocOut = ['locution_input','locution_output']
-    __rephPSP_columns = ['inputPSP','outputPSP']
-    __rephPSP_columns2 = ['LinputPSP','LoutputPSP']
+    __lst_of_dyn_in_out = [['input','output'], ['locution_input','locution_output'], \
+    ['inputPSP','outputPSP'], ['LinputPSP','LoutputPSP']]
 
     __color_sentiment = {'Amelioration':'#3FEE0F','A_strong':'#28B900','A_weak':'#7CFF57','Pejorativization':'#FF0000'                     
                      ,'P_strong':'#BD0000','P_weak':'#FF5656','Neutralization':'#2EBDFF','No_Change': '#414040'}
@@ -132,18 +131,6 @@ class DataProvider:
     @staticmethod
     def getInOutColLst():
         return DataProvider.__lst_of_dyn_in_out
-    
-    @staticmethod
-    def getLocInOut():
-        return DataProvider.__lst_of_dyn_LocIn_LocOut
-
-    @staticmethod
-    def getPSPcolumns1():
-        return DataProvider.__rephPSP_columns
-    
-    @staticmethod
-    def getPSPcolumns2():
-        return DataProvider.__rephPSP_columns2
 
     @staticmethod
     def getPSPlst():
@@ -218,3 +205,8 @@ class DataProvider:
     @staticmethod
     def getSaveConfig() -> dict[str, any]:
         return DataProvider.__sav_image
+    
+    @staticmethod
+    def updateGlobalConfig(config: Dict[str, Any]) -> None:
+        for cfg in config.items():
+            st.session_state[st.session_state['cfgId']][cfg[0]] = cfg[1]

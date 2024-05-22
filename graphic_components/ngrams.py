@@ -33,22 +33,22 @@ class Ngrams(SuperTextComponent):
         lstOfInOut = []
         restLst = []
         PoSflag = False
-        if set(self._cf['inOutLst']) <= set(DataProvider.getInOutColLst()):
-            lstOfInOut = [*cat, *DataProvider.getInOutColLst()]
-            restLst = DataProvider.getLocInOut()
+        if set(self._cf['inOutLst']) <= set(DataProvider.getInOutColLst()[0]):
+            lstOfInOut = [*cat, *DataProvider.getInOutColLst()[0]]
+            restLst = DataProvider.getInOutColLst()[1]
             PoSflag = False
-        elif set(self._cf['inOutLst']) <= set(DataProvider.getLocInOut()):
-            lstOfInOut = [*cat, *DataProvider.getLocInOut()]
-            restLst = DataProvider.getInOutColLst()
+        elif set(self._cf['inOutLst']) <= set(DataProvider.getInOutColLst()[1]):
+            lstOfInOut = [*cat, *DataProvider.getInOutColLst()[1]]
+            restLst = DataProvider.getInOutColLst()[0]
             PoSflag = False
-        elif set(self._cf['inOutLst']) <= set(DataProvider.getPSPcolumns1()):
-            lstOfInOut = [*cat, *DataProvider.getPSPcolumns1()]
-            restLst = DataProvider.getInOutColLst()
-            PoSflag = True
-        elif set(self._cf['inOutLst']) <= set(DataProvider.getPSPcolumns2()):
-            lstOfInOut = [*cat, *DataProvider.getPSPcolumns2()]
-            restLst = DataProvider.getLocInOut()
-            PoSflag = True
+        # elif set(self._cf['inOutLst']) <= set(DataProvider.getInOutColLst()[2]):
+        #     lstOfInOut = [*cat, *DataProvider.getInOutColLst()[2]]
+        #     restLst = DataProvider.getInOutColLst()[0]
+        #     PoSflag = True
+        # elif set(self._cf['inOutLst']) <= set(DataProvider.getInOutColLst()[3]):
+        #     lstOfInOut = [*cat, *DataProvider.getInOutColLst()[3]]
+        #     restLst = DataProvider.getInOutColLst()[0]
+        #     PoSflag = True
         else:
             st.warning("Wrong list inOut values in n-gram data display.")
         wordLst = []
