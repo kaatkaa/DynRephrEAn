@@ -12,6 +12,7 @@ from graphic_components.barChart import Barchart2
 from graphic_components.table import Table2
 from graphic_components.textAnalysis import Cases2
 from graphic_components.ngrams import Ngrams
+from graphic_components.ngrams_PoS import NgramsPoS
 from config.config_data_colector import DataProvider
 from submenus.tweaker import st_tweaker
 from st_ant_tree import st_ant_tree
@@ -156,7 +157,7 @@ class SingleCorpusMenu:
             st.write("****************************")
             st.subheader("Statictical module")
             module_choice = st.radio("An. Module", \
-                                        ("Distribution","Wordcloud","n-grams","PoS"), \
+                                        ("Distribution","Wordcloud","n-grams","PoS","n-grams_PoS"), \
                                         key=self.__prefix+"post", label_visibility="hidden"
                                     )
         st.markdown("""
@@ -180,15 +181,33 @@ class SingleCorpusMenu:
                 'showInOutInterface': True,
                 'showInOutVsLoc': True,
                 'showStopWordsInterface':True,
+                'showStopPoSInterface': False,
                 'showPOSInterface':False,
                 'showNgramSlider': False,
-                'n-gramType': 'n-gram'
             }
             DataProvider.updateGlobalConfig(config=__n_gramsCfg)
             st.session_state[st.session_state['cfgId']] = \
                 FilterInterface(config=st.session_state[st.session_state['cfgId']]).getConfig()
             dataDict = DataFilter(data=self.__rephrase_df,config=st.session_state[st.session_state['cfgId']]).getDataDict()
             Ngrams(dataDic=dataDict,config=st.session_state[st.session_state['cfgId']])
+        elif module_choice == "n-grams_PoS":
+            __n_gramsPoS_Cfg = {
+                'prefix':'NgramsPoS_',
+                'imediatePlot': True,
+                'showPercentageNumber': False,
+                'showCategoriesInterface': True,
+                'showInOutInterface': True,
+                'showInOutVsLoc': True,
+                'showStopWordsInterface':False,
+                'showPOSInterface':False,
+                'showStopPoSInterface': True,
+                'showNgramSlider': True,
+            }
+            DataProvider.updateGlobalConfig(config=__n_gramsPoS_Cfg)
+            st.session_state[st.session_state['cfgId']] = \
+                FilterInterface(config=st.session_state[st.session_state['cfgId']]).getConfig()
+            dataDict = DataFilter(data=self.__rephrase_df,config=st.session_state[st.session_state['cfgId']]).getDataDict()
+            NgramsPoS(dataDic=dataDict,config=st.session_state[st.session_state['cfgId']])
         elif module_choice == "Wordcloud":
             __CloudCfg = {
                 'prefix':'WordCloud_',
@@ -198,9 +217,9 @@ class SingleCorpusMenu:
                 'showInOutInterface': True,
                 'showInOutVsLoc': True,
                 'showStopWordsInterface':True,
+                'showStopPoSInterface': False,
                 'showPOSInterface':False,
                 'showNgramSlider': False,
-                'n-gramType': ''
             }
             DataProvider.updateGlobalConfig(config=__CloudCfg)
             st.session_state[st.session_state['cfgId']] = \
@@ -216,6 +235,7 @@ class SingleCorpusMenu:
                 'showInOutInterface': True,
                 'showInOutVsLoc': True,
                 'showStopWordsInterface':True,
+                'showStopPoSInterface': False,
                 'showPOSInterface':False,
                 'showNgramSlider': False,
                 'n-gramType': ''
@@ -247,11 +267,11 @@ class SingleCorpusMenu:
                 'showCategoriesInterface': True,
                 'showInOutInterface': True,
                 'showInOutVsLoc': True,
-                'showStopWordsInterface':True,
+                'showStopWordsInterface':False,
+                'showStopPoSInterface': False,
                 'showPOSInterface':True,
                 'showNgramSlider': False,
                 'showStopPoSInterface':False,
-                'n-gramType': ''
             }
             DataProvider.updateGlobalConfig(config=__PoSCfg)
             st.session_state[st.session_state['cfgId']] = \

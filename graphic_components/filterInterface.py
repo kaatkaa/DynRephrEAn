@@ -191,18 +191,20 @@ class FilterInterface:
 
     def __inOut(self):
         col_radio1, col_radio2 = st.columns(2)
-        if self.__cf['showPOSInterface'] or self.__cf['n-gramType'] == "n-gram_PoS":
+        if self.__cf['showPOSInterface'] or self.__cf['prefix'] == "NgramsPoS_":
             radioChoise =  ("PoS_Input_Output", "LocPoS_Input_Output")
         elif self.__cf['prefix'] == "Ngrams_" or self.__cf['prefix'] == "WordCloud_":
             radioChoise = ("Input_Output", "Locution_Input_Output")
         else:
-            radioChoise = ("Input_Output", "Locution_Input_Output", "PoS_Input_Output", "LocPoS_Input_Output")         
+            radioChoise = ("Input_Output", "Locution_Input_Output", "PoS_Input_Output", "LocPoS_Input_Output")  
+
         with col_radio1:
             phrasesType = st.radio(self.__cf['generalConfig']['InOutType'],
                             radioChoise,
                             index=self.__cf['InOutTypeIndex'],                                               
                             key=self.__cf['prefix']+"_inOutType"+str(self.__keyCtr))
             self.__keyCtr += 1
+
         with col_radio2:
             cf = {}
             if FilterInterface.__debug:
