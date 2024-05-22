@@ -201,7 +201,7 @@ class SingleCorpusMenu:
                 'showStopWordsInterface':False,
                 'showPOSInterface':False,
                 'showStopPoSInterface': True,
-                'showNgramSlider': True,
+                'showNgramSlider': False,
             }
             DataProvider.updateGlobalConfig(config=__n_gramsPoS_Cfg)
             st.session_state[st.session_state['cfgId']] = \
