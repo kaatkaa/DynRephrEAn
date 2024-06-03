@@ -53,8 +53,8 @@ class SingleCorpusMenu:
     def cleanSelections(self):
         for key in self.__dataDic:
             st.session_state[self.__prefix + key] = False
-        st.session_state[self.__prefix + "ElectionsSM"] = False
-        st.session_state[self.__prefix + "ElectionsTV"] = False
+        st.session_state[self.__prefix + "US2016Reddit"] = False
+        st.session_state[self.__prefix + "US2016TV"] = False
         self.__rephrase_df = pd.DataFrame()
         self.__rephrase_old = self.__rephrase_df.copy(deep=True)
 
@@ -82,15 +82,15 @@ class SingleCorpusMenu:
         tv = False
         reddit = False
         for ctr, key in enumerate(self.__dataDic):
-            if key.find("ElectionsSM") != -1:
+            if key.find("US2016Reddit") != -1:
                 if not reddit:
                     reddit = True
-                    st.checkbox("ElectionsSM", \
-                        key = self.__prefix + "ElectionsSM",
-                        help = self.__prefix + "ElectionsSM",
+                    st.checkbox("US2016Reddit", \
+                        key = self.__prefix + "US2016Reddit",
+                        help = self.__prefix + "US2016Reddit",
                         value = False,
                         on_change=self.__update_block,
-                        kwargs = {"name": "ElectionsSM"},
+                        kwargs = {"name": "US2016Reddit"},
                         disabled=False
                     )           
                 st_tweaker.checkbox(key, \
@@ -102,15 +102,15 @@ class SingleCorpusMenu:
                     disabled=False,
                     id = "Reddit" + str(ctr)
                 )
-            elif key.find("ElectionsTV") != -1:
+            elif key.find("US2016TV") != -1:
                 if not tv:
                     tv = True
-                    st.checkbox("ElectionsTV", \
-                        key = self.__prefix + "ElectionsTV",
-                        help = self.__prefix + "ElectionsTV",
+                    st.checkbox("US2016TV", \
+                        key = self.__prefix + "US2016TV",
+                        help = self.__prefix + "US2016TV",
                         value = False,
                         on_change=self.__update_block,
-                        kwargs = {"name": "ElectionsTV"},
+                        kwargs = {"name": "US2016TV"},
                         disabled=False
                     )                     
                 st_tweaker.checkbox(key, \
@@ -120,7 +120,7 @@ class SingleCorpusMenu:
                     on_change=self.__update_corpora_checkbox,
                     kwargs = {},
                     disabled=False,
-                    id = "ElectionsTV" + str(ctr) 
+                    id = "US2016TV" + str(ctr) 
                 )                
             else:
                 st.checkbox(key, \
@@ -134,7 +134,7 @@ class SingleCorpusMenu:
         self.__update_corpora_checkbox()
         st.markdown("""
         <style>
-        #Reddit0,#Reddit1,#Reddit2,#ElectionsTV3,#ElectionsTV4,#ElectionsTV5 {
+        #Reddit0,#Reddit1,#Reddit2,#US2016TV3,#US2016TV4,#US2016TV5 {
             margin-left: 50px;
         }
         </style>

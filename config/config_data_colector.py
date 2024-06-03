@@ -15,9 +15,9 @@ class DataProvider:
     ]
 
     __corpus3Ddic = {
-            'Total': {'ElectionsSMD1','ElectionsSMR1','ElectionsSMG1','ElectionsTVD1','ElectionsTVR1','ElectionsTVG1','Hansard','Covid'},
-            'SocialMedia': {'ElectionsSMD1','ElectionsSMR1','ElectionsSMG1','Covid'},
-            'Media': {'ElectionsTVD1','ElectionsTVR1','ElectionsTVG1'},
+            'Total': {'US2016RedditD1','US2016RedditR1','US2016RedditG1','US2016TVD1','US2016TVR1','US2016TVG1','Hansard','PolarIs1','PolarIs4'},
+            'SocialMedia': {'US2016RedditD1','US2016RedditR1','US2016RedditG1','PolarIs1','PolarIs4'},
+            'Media': {'US2016TVD1','US2016TVR1','US2016TVG1'},
             'F2F': {'Hansard'}
     }
 
