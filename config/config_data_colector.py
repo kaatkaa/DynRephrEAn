@@ -26,7 +26,7 @@ class DataProvider:
     __lst_of_dyn_rephrWS = ['A_strong','A_weak','Neutralization','P_strong','P_weak','No_Change']
     
     __lst_of_dyn_in_out = [['input','output'], ['locution_input','locution_output'], \
-    ['inputPSP','outputPSP'], ['LinputPSP','LoutputPSP']]
+    ['input_PoS','output_PoS'], ['locution_input_PoS','locution_output_PoS']]
 
     __color_sentiment = {'Amelioration':'#3FEE0F','A_strong':'#28B900','A_weak':'#7CFF57','Pejorativization':'#FF0000'                     
                      ,'P_strong':'#BD0000','P_weak':'#FF5656','Neutralization':'#2EBDFF','No_Change': '#414040'}
