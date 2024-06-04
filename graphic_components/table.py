@@ -22,9 +22,11 @@ class Table2(SuperChartComponent):
             styler.set_caption(self._cf['ADU_or_Speaker']+" "+t)
             styler.set_table_styles(DataProvider.getTableFormat())
             return styler
-        df.index += 1
+        # df.index += 1
         tmpDf = df.copy(deep=True)
         tmpDf = tmpDf.sort_values(by=columnLst[1], ascending=False)
+        tmpDf.reset_index(drop=True,inplace=True)
+        tmpDf.index += 1
         if len(columnLst) == 3:
             tmpDf = tmpDf[[columnLst[2],columnLst[1]]]
         if self._cf['imediatePlot']:

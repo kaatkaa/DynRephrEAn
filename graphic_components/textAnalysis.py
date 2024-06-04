@@ -18,9 +18,12 @@ class Cases2(SuperTextComponent):
             styler.apply(color, axis=1)
             return styler
         # colorLst = ['background-color: '+str(colorsDict[v]) for v in data[self._cf['categoriesColumn']]]
-        data.index += 1
+        # data.set_index(data.columns[0],inplace=True)
         lst = [self._cf['categoriesColumn']] + self._cf['inOutLst']
-        return make_pretty(data[lst].sort_values(by=self._cf['categoriesColumn']).style)
+        data = data[lst].sort_values(by=self._cf['categoriesColumn'])
+        data.reset_index(drop=True,inplace=True)
+        data.index += 1
+        return make_pretty(data.style)
 
     def dataDisplay(self, df: Any, title: str):
         stylesed = self.getTextObj(df,title)
