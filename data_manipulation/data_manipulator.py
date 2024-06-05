@@ -8,7 +8,7 @@ import spacy
 
 @st.cache_resource
 def download_en_core_web_sm():
-    subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
+    subprocess.run(["python3", "-m", "spacy", "download", "en_core_web_sm"])
 download_en_core_web_sm()
 nlp = spacy.load("en_core_web_sm")
 
