@@ -76,7 +76,8 @@ __AnConfig = {
     #PoS column names in excel to choose from
     'posColumns': DataProvider.getInOutColLst()[2],
     #PoS categories selected
-    'posCategories': DataProvider.getPSPlst(),
+    'posCategories': DataProvider.getPoSlst(),
+    'posTmpCategories': DataProvider.getPoSlstDefault(),
     # Shows ngram slider
     'showNgramSlider': False,
     # Keeps ngram slider value

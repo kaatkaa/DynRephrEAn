@@ -4,17 +4,12 @@ import pandas as pd
 import numpy as np
 import re
 from functools import cmp_to_key
-import plotly.data as pdata
 from typing import Dict, Any, List
 #from data_display.barchart3d import barchart3d
-from pandas.api.types import CategoricalDtype
 from typing import Tuple
 sys.path.insert(0,"..")
 from config.config_data_colector import DataProvider
-from data_manipulation.data_manipulator import DataManipulator
 from data_display.display_data_in_3d import ThreeD_Charts
-from graphic_components.superComponent import SuperChartComponent
-from graphic_components.filterInterface import FilterInterface
 from data_manipulation.data_filter import DataFilter
 from data_display.display_data_in_3d import ThreeD_Charts
 
@@ -32,7 +27,7 @@ class _3D_PoS:
         return initialCorporaDic
     
     def __fillEmptyMatrixFields(self, matrix: Dict[str, Any]) -> Dict[str, Dict[str, int]]:
-        sortDict = {key: i for i, key in enumerate(DataProvider.getPSPlst())}
+        sortDict = {key: i for i, key in enumerate(DataProvider.getPoSlst())}
         for item in self.__cfg['posCategories']:
             if item not in matrix:
                 matrix[item] = {'Frequency': 0}

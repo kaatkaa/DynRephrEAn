@@ -51,12 +51,12 @@ class _3D_PSP_corpus:
                 key=self.__prefix+"PercentNumber")
         dyn_rephrase_options = st.multiselect("Choose part of speech", 
                                     default=st.session_state[str(self.__prefix)+"filterLst"],
-                                    options=sorted(DataProvider.getPSPlst()),
+                                    options=sorted(DataProvider.getPoSlst()),
                                     on_change=get_new_values_list,
                                     kwargs={'key': str(self.__prefix)+"filterLst"},
                                     key = str(self.__prefix)+"filterLst")
         threshold = 7
-        sortDic = prepareSortDict(DataProvider.getPSPlst())
+        sortDic = prepareSortDict(DataProvider.getPoSlst())
         dyn_rephrase_options = sorted(dyn_rephrase_options, key=lambda x: sortDic[x])
         return dyn_rephrase_options, Computation_type, colName, threshold
 
@@ -97,7 +97,7 @@ class _3D_PSP_corpus:
     def __init__(self, dataDic: dict[str : pd.DataFrame()], prefix: str="3D_", anType: str="DynRephAn for Ethos") -> None:
         self.__prefix = prefix
         if str(self.__prefix + 'filterLst') not in st.session_state:
-            st.session_state[self.__prefix + 'filterLst'] = DataProvider.getPSPlstDefault()
+            st.session_state[self.__prefix + 'filterLst'] = DataProvider.getPoSlstDefault()
         if str(self.__prefix + 'filterLst2') not in st.session_state:
             st.session_state[self.__prefix + 'filterLst2'] = DataProvider.getPSPcolumns1()
         self.__plotData1 = None

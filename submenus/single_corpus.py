@@ -10,6 +10,7 @@ from graphic_components.wordCoud import WordCloudOfRephrase
 from graphic_components.pieChart import Piechart2
 from graphic_components.barChart import Barchart2
 from graphic_components.table import Table2
+from graphic_components.false_table import FalseTable
 from graphic_components.textAnalysis import Cases2
 from graphic_components.ngrams import Ngrams
 from graphic_components.ngrams_PoS import NgramsPoS
@@ -64,7 +65,7 @@ class SingleCorpusMenu:
             if st.session_state[self.__prefix + key]:
                 dfLst.append(self.__dataDic[key])
         if len(dfLst) > 1:
-            self.__rephrase_df = pd.concat(dfLst,ignore_index=True)          
+            self.__rephrase_df = pd.concat(dfLst,ignore_index=True)       
         elif len(dfLst) == 1:
             self.__rephrase_df = dfLst[0]
         else:
@@ -157,7 +158,7 @@ class SingleCorpusMenu:
             st.write("****************************")
             st.subheader("Statictical module")
             module_choice = st.radio("An. Module", \
-                                        ("Distribution","Wordcloud","n-grams","PoS","n-grams_PoS"), \
+                                        ("Distribution","n-grams","PoS","n-grams_PoS"), \
                                         key=self.__prefix+"post", label_visibility="hidden"
                                     )
         st.markdown("""
@@ -276,7 +277,9 @@ class SingleCorpusMenu:
             DataProvider.updateGlobalConfig(config=__PoSCfg)
             st.session_state[st.session_state['cfgId']] = \
                 FilterInterface(config=st.session_state[st.session_state['cfgId']]).getConfig()
-            dataDict = DataFilter(data=self.__rephrase_df,config=st.session_state[st.session_state['cfgId']]).getDataDict()
+            df = DataFilter(data=self.__rephrase_df,config=st.session_state[st.session_state['cfgId']])
+            dataDict = df.getDataDict()
+            dictPoS = df.getPoS_Dict()
             pieTab, barTab, tableTab = st.tabs([":pizza: PieChart",":bar_chart: BarChart",":black_square_button: Table"])
             with pieTab:
                 st.subheader(st.session_state[st.session_state['cfgId']]['generalConfig']['POS_piechart'])
@@ -286,7 +289,8 @@ class SingleCorpusMenu:
                 Barchart2(dataDic=dataDict,config=st.session_state[st.session_state['cfgId']])
             with tableTab:
                 st.subheader(st.session_state[st.session_state['cfgId']]['generalConfig']['POS_table'])
-                Table2(dataDic=dataDict,config=st.session_state[st.session_state['cfgId']])
+                #Table2(dataDic=dataDict,config=st.session_state[st.session_state['cfgId']])
+                FalseTable(dataPoS_Dict=dictPoS, config=st.session_state[st.session_state['cfgId']])
         else:
             raise NotImplementedError("Unsupported option of Analytical module in single_corpus.py .")
         

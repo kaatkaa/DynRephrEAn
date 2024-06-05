@@ -43,7 +43,7 @@ class DataFilter:
         'StopwordsSet': set(),
         'showPOSInterface':False,
         # 'posColumns': DataProvider.getPSPcolumns1(),
-        'posCategories': DataProvider.getPSPlst(),
+        'posCategories': DataProvider.getPoSlst(),
         'showNgramSlider': False,
         'ngramSliderValue': 2
     }
@@ -74,6 +74,7 @@ class DataFilter:
         self.__cf=DataFilter.__config
         self.__stop_words_set = self.__cf['StopwordsSet']
         self.__ngramLst = []
+        self.__PoS_Dict = {}
         if DataFilter.__debug:
             open_modal = False
             open_modal = st.button(key="debug config button", label='debuf_fData')
@@ -98,6 +99,9 @@ class DataFilter:
     
     def getNgramLst(self) -> List[Tuple[str, int]]:
         return self.__ngramLst
+    
+    def getPoS_Dict(self) -> Dict[str, Any]:
+        return self.__PoS_Dict
         
     def __filterInterface(self) -> Tuple[Any, list[str]]:
             
@@ -155,36 +159,41 @@ class DataFilter:
             lst1, lst2, lst3 = [l[0] for l in lstOfTuples], [l[1] for l in lstOfTuples], [cnv[l[0]] for l in lstOfTuples]
             return pd.DataFrame.from_dict({col1Name:lst1,col2Name:lst2,"PoS full name":lst3})
         if self.__cf['imediatePlot']:
-            if self.__cf['ADU_or_Speaker'] == 'Text-Based Analysis':
-                if self.__cf['SS + OS rephrase']:
-                    self.__outDict["whole SS + OS"]=self.__outputData
-                    self.__outDict["grupped SS + OS"] = dfFromDic(
-                        "PoS_type",
-                        self.__cf['unitPercentNumber'],
-                        self.__posData(data=self.__outDict['whole SS + OS'],inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories'])
-                    )
-                if self.__cf['SS rephrase']:
-                    self.__outDict["wholeSS"]=self.__outputData[self.__outputData['speaker_input']==self.__outputData['speaker_output']]
-                    self.__outDict["gruppedSS"] = dfFromDic(
-                        "PoS_type",
-                        self.__cf['unitPercentNumber'],
-                        self.__posData(data=self.__outDict['wholeSS'],inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories'])
-                    )
-                if self.__cf['OS rephrase']:
-                    self.__outDict["wholeOS"]=self.__outputData[self.__outputData['speaker_input']!=self.__outputData['speaker_output']]
-                    self.__outDict["gruppedOS"] = dfFromDic(
-                        "PoS_type",
-                        self.__cf['unitPercentNumber'],
-                        self.__posData(data=self.__outDict['wholeOS'],inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories'])               
-                    )
-            else:
-                self.__outDict["wholeAll"] = self.__outputData
-                self.__outDict["gruppedAll"] = dfFromDic("PoS_type",self.__cf['unitPercentNumber'],
-                    self.__posData(data=self.__outputData,inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories']))
+            # if self.__cf['ADU_or_Speaker'] == 'Text-Based Analysis':
+            if self.__cf['SS + OS rephrase']:
+                self.__outDict["whole SS + OS"]=self.__outputData
+                self.__PoS_Dict["SS + OS"] = self.__posData(data=self.__outDict['whole SS + OS'],inOutPOS=self.__cf['inOutLst'],POS_filter=self.__cf['posCategories'])
+                self.__outDict["grupped SS + OS"] = dfFromDic(
+                    "PoS_type",
+                    self.__cf['unitPercentNumber'],
+                    self.__PoS_Dict["SS + OS"][0]
+                )
+            if self.__cf['SS rephrase']:
+                self.__outDict["wholeSS"]=self.__outputData[self.__outputData['speaker_input']==self.__outputData['speaker_output']]
+                self.__PoS_Dict["SS"] = self.__posData(data=self.__outDict['wholeSS'],inOutPOS=self.__cf['inOutLst'],POS_filter=self.__cf['posCategories'])
+                self.__outDict["gruppedSS"] = dfFromDic(
+                    "PoS_type",
+                    self.__cf['unitPercentNumber'],
+                    self.__PoS_Dict["SS"][0]
+                )
+            if self.__cf['OS rephrase']:
+                self.__outDict["wholeOS"]=self.__outputData[self.__outputData['speaker_input']!=self.__outputData['speaker_output']]
+                self.__PoS_Dict["OS"] = self.__posData(data=self.__outDict['wholeOS'],inOutPOS=self.__cf['inOutLst'],POS_filter=self.__cf['posCategories'])
+                self.__outDict["gruppedOS"] = dfFromDic(
+                    "PoS_type",
+                    self.__cf['unitPercentNumber'],
+                    self.__PoS_Dict["OS"][0]               
+                )
+            # else:
+            #     self.__outDict["wholeAll"] = self.__outputData
+            #     self.__outDict["gruppedAll"] = dfFromDic("PoS_type",self.__cf['unitPercentNumber'],
+            #         self.__posData(data=self.__outputData,inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories']))
         else:
             self.__outDict["wholeAll"] = self.__outputData
+            self.__PoS_Dict["CMP"] = self.__posData(data=self.__outDict['wholeAll'],inOutPOS=self.__cf['inOutLst'],POS_filter=self.__cf['posCategories'])
             self.__outDict["gruppedAll"] = dfFromDic("PoS_type",self.__cf['unitPercentNumber'],
-                self.__posData(data=self.__outputData,inOutPOS=self.__cf['posColumns'],POS_filter=self.__cf['posCategories']))
+                self.__PoS_Dict["CMP"][0]
+                )
 
     def __distributionData(self, data, column):
         if self.__cf['unitPercentNumber'] == "Percentage":
@@ -202,12 +211,12 @@ class DataFilter:
 
     def __posData(self, data, inOutPOS, POS_filter):
         if self.__cf['unitPercentNumber'] == "Percentage":
-            return DataManipulator.getTagsPercentageFreq(d=data,
-                colLst=inOutPOS,
-                PSPset=set(POS_filter))
+            return DataManipulator.getSpacyPoSTagsFreq(data,
+                inOutPOS,
+                set(POS_filter),"lemma_",percentage=True)
         elif self.__cf['unitPercentNumber'] == "Number":
-            return DataManipulator.getTagsFreq(d=data,
-                colLst=inOutPOS,
-                PSPset=set(POS_filter))
+            return DataManipulator.getSpacyPoSTagsFreq(data,
+                inOutPOS,
+                set(POS_filter),"lemma_",percentage=False)
         else:
             st.error("Wrong option: "+self.__cf['unitPercentNumber']+" for __posData!")

@@ -13,16 +13,12 @@ from graphic_components.superComponent import SuperChartComponent
 
 class Table2(SuperChartComponent):
 
-    def noteClass(self):
-        pass
-
     def getChartObj(self, df: Any, t: str) -> Any:
         columnLst = list(df.columns.values)
         def make_pretty(styler):
             styler.set_caption(self._cf['ADU_or_Speaker']+" "+t)
             styler.set_table_styles(DataProvider.getTableFormat())
             return styler
-        # df.index += 1
         tmpDf = df.copy(deep=True)
         tmpDf = tmpDf.sort_values(by=columnLst[1], ascending=False)
         tmpDf.reset_index(drop=True,inplace=True)

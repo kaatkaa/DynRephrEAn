@@ -69,7 +69,7 @@ class FilterInterface:
         # #PoS column names in excel to choose from
         # 'posColumns': DataProvider.getPSPcolumns1(),
         #PoS categories selected
-        'posCategories': DataProvider.getPSPlst(),
+        'posCategories': DataProvider.getPoSlst(),
         # Shows ngram slider
         'showNgramSlider': False,
         # Keeps ngram slider value
@@ -142,7 +142,7 @@ class FilterInterface:
 
     def __stopPoS(self):
         tmp = st.multiselect("Choose PoS to exclude:",
-                                DataProvider.getPSPlst(),
+                                DataProvider.getPoSlst(),
                                 [], key=self.__cf['prefix']+"multiPoSStop"+str(self.__keyCtr))
         self.__cf['stopPoSSet'] = set(tmp)
         self.__keyCtr += 1
@@ -191,12 +191,14 @@ class FilterInterface:
 
     def __inOut(self):
         col_radio1, col_radio2 = st.columns(2)
-        if self.__cf['showPOSInterface'] or self.__cf['prefix'] == "NgramsPoS_":
-            radioChoise =  ("PoS_Input_Output", "LocPoS_Input_Output")
-        elif self.__cf['prefix'] == "Ngrams_" or self.__cf['prefix'] == "WordCloud_":
-            radioChoise = ("Input_Output", "Locution_Input_Output")
+        if self.__cf['showPOSInterface']:
+            radioChoise = ("Content", "Locution")
+        elif self.__cf['prefix'] == "NgramsPoS_":
+            radioChoise =  ("PoS_Content", "PoS_Locution")
+        elif self.__cf['prefix'] == "Ngrams_":
+            radioChoise = ("Content", "Locution")
         else:
-            radioChoise = ("Input_Output", "Locution_Input_Output", "PoS_Input_Output", "LocPoS_Input_Output")  
+            radioChoise = ("Content", "Locution", "PoS_Content", "PoS_Locution")  
 
         with col_radio1:
             phrasesType = st.radio(self.__cf['generalConfig']['InOutType'],
@@ -211,7 +213,7 @@ class FilterInterface:
                 open_modal = False
                 open_modal = st.button(key="modal_button_int..", label='button')
                 modal = Modal(key="Interface_modal", title="showPOSInterface enabled.")
-            if phrasesType == "Input_Output":
+            if phrasesType == "Content":
                 # cf = {
                 #     'showStopWordsInterface': True,
                 #     'showStopPoSInterface': False              
@@ -222,7 +224,7 @@ class FilterInterface:
                                             self.__cf['inOutLstSub'], 
                                             key = self.__cf['prefix']+"_multi_selInOut"+str(self.__keyCtr))
                 self.__keyCtr += 1
-            elif phrasesType == "Locution_Input_Output":
+            elif phrasesType == "Locution":
                 # cf = {
                 #     'showStopWordsInterface':True,
                 #     'showStopPoSInterface': False    
@@ -234,7 +236,7 @@ class FilterInterface:
                                             key = self.__cf['prefix']+"_multi_selLocInOut"+str(self.__keyCtr))
                 self.__keyCtr += 1
                 self.__cf['inOutLstSub_loc'] = self.__cf['inOutLst']
-            elif phrasesType == "PoS_Input_Output":
+            elif phrasesType == "PoS_Content":
                 # cf = {
                 #     'showStopWordsInterface':False,
                 #     'showStopwords':False,
@@ -250,7 +252,7 @@ class FilterInterface:
                 self.__keyCtr += 1
                 self.__cf['inOutLst'] = self.__cf['posColumns']
                 self.__cf['inOutLstSub_PoS'] = self.__cf['posColumns']
-            elif phrasesType == "LocPoS_Input_Output":
+            elif phrasesType == "PoS_Locution":
                 # cf = {
                 #     'showStopWordsInterface':False,
                 #     'showStopwords':False,
@@ -313,10 +315,11 @@ class FilterInterface:
         #     else:
         #         st.error("Wrong option in __PoSinterface: colType==",colType)             
         self.__cf['posCategories'] = st.multiselect(self.__cf['generalConfig']['POS_title'],
-                                    sorted(DataProvider.getPSPlst()), 
-                                    sorted(DataProvider.getPSPlstDefault())[:],
+                                    sorted(DataProvider.getPoSlst()),
+                                    sorted(self.__cf['posTmpCategories'])[:],
                                     key = self.__cf['prefix']+"_multiPOS"+str(self.__keyCtr))
         self.__keyCtr += 1
+        self.__cf['posTmpCategories'] = self.__cf['posCategories']
 
     def __NgramSlider(self):
         self.__cf['ngramSliderValue'] = st.slider("Choose n-gram type: (1-4)",1,value=2, max_value=4, key="nType"+self.__cf['prefix'])

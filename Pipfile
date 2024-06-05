@@ -107,6 +107,7 @@ websocket-client = "==1.7.0"
 wrapt = "==1.15.0"
 yarl = "==1.9.4"
 zipp = "==3.18.1"
+spacy = "*"
 
 [dev-packages]
 

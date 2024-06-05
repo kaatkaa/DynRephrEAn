@@ -37,6 +37,15 @@ class SuperChartComponent(dataHandlerDisplayInterface):
     def getChartsDic(self) -> Dict[str, Any]:
         return self.__data
 
+class SuperPoSTextComponent(dataHandlerDisplayInterface):
+
+    def __init__(self, dataPoS_Dict: Dict[str, Any], config: Dict[str, Any]) -> None:
+        self._cf = config
+        if self._cf['imediatePlot']:
+            for key in dataPoS_Dict.keys():
+                if not key.startswith("CMP"):
+                    self.dataDisplay(dataPoS_Dict[key],key)
+    
 class SuperTextComponent(dataHandlerDisplayInterface):
 
     def __init__(self, dataDic: Dict[str, Any], config: Dict[str, Any]) -> None:

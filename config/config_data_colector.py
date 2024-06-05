@@ -133,11 +133,11 @@ class DataProvider:
         return DataProvider.__lst_of_dyn_in_out
 
     @staticmethod
-    def getPSPlst():
+    def getPoSlst():
         return DataProvider.__3d_PSP
 
     @staticmethod
-    def getPSPlstDefault():
+    def getPoSlstDefault():
         return DataProvider.__3D_PSPdefalut
 
     @staticmethod
