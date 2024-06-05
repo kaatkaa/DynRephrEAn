@@ -1,4 +1,5 @@
 # imports
+import subprocess
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -11,6 +12,12 @@ from config.config_data_colector import DataProvider
 pd.set_option("max_colwidth", 300)
 sns.set_theme(style="whitegrid")
 plt.style.use("seaborn-talk")
+
+@st.cache_resource
+def download_en_core_web_sm():
+    subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
+
+download_en_core_web_sm()
 
 __AnConfigId = "DynRephAnCfgId"
 __AnConfig = {
