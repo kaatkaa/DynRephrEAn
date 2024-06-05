@@ -1,10 +1,16 @@
 import pandas as pd
 import numpy as np
 import streamlit as st
+import subprocess
 import ast
 from typing import Dict, Set, List, Tuple
 import spacy
-nlp = spacy.load("en-core-web-sm")
+
+@st.cache_resource
+def download_en_core_web_sm():
+    subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
+download_en_core_web_sm()
+nlp = spacy.load("en_core_web_sm")
 
 class DataManipulator:
 
