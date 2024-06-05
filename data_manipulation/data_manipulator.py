@@ -4,7 +4,7 @@ import streamlit as st
 import ast
 from typing import Dict, Set, List, Tuple
 import spacy
-nlp = spacy.load("en_core_web_sm")
+nlp = spacy.load("en-core-web-sm")
 
 class DataManipulator:
 
