@@ -197,7 +197,6 @@ class DataFilter:
 
     def __distributionData(self, data, column):
         if self.__cf['unitPercentNumber'] == "Percentage":
-            #print("############",data,"Column: ",column)
             return DataManipulator.getGruppedPercentages(d=data, 
                 denominator=len(data),
                 groupBy=column,
@@ -213,10 +212,10 @@ class DataFilter:
         if self.__cf['unitPercentNumber'] == "Percentage":
             return DataManipulator.getSpacyPoSTagsFreq(data,
                 inOutPOS,
-                set(POS_filter),"lemma_",percentage=True)
+                set(POS_filter),self.__cf['posTagType'],percentage=True)
         elif self.__cf['unitPercentNumber'] == "Number":
             return DataManipulator.getSpacyPoSTagsFreq(data,
                 inOutPOS,
-                set(POS_filter),"lemma_",percentage=False)
+                set(POS_filter),self.__cf['posTagType'],percentage=False)
         else:
             st.error("Wrong option: "+self.__cf['unitPercentNumber']+" for __posData!")

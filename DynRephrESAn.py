@@ -74,11 +74,18 @@ __AnConfig = {
     #Interface of PoS
     'showPOSInterface':False,
     #PoS column names in excel to choose from
-    'posColumns': DataProvider.getInOutColLst()[2],
+    # 'posColumns': DataProvider.getInOutColLst()[2],
     #PoS categories selected
     'posCategories': DataProvider.getPoSlst(),
     'posTmpCategories': DataProvider.getPoSlstDefault(),
-    # Shows ngram slider
+    #Select spaCy's tagger for different results
+    'posTagType': '',
+    #Limit the results between 1-100 to score
+    'posLimittingSliderValue': 10,
+    #Choose specipic PoS tag to display results with it
+    'posSpecialContentName': "",
+    'posSpecialContent': {},
+    #Shows ngram slider
     'showNgramSlider': False,
     # Keeps ngram slider value
     'ngramSliderValue': 2

@@ -268,7 +268,7 @@ class SingleCorpusMenu:
                 'showCategoriesInterface': True,
                 'showInOutInterface': True,
                 'showInOutVsLoc': True,
-                'showStopWordsInterface':False,
+                'showStopWordsInterface':True,
                 'showStopPoSInterface': False,
                 'showPOSInterface':True,
                 'showNgramSlider': False,
@@ -288,7 +288,7 @@ class SingleCorpusMenu:
                 st.subheader(st.session_state[st.session_state['cfgId']]['generalConfig']['POS_barchart'])
                 Barchart2(dataDic=dataDict,config=st.session_state[st.session_state['cfgId']])
             with tableTab:
-                st.subheader(st.session_state[st.session_state['cfgId']]['generalConfig']['POS_table'])
+                # st.subheader(st.session_state[st.session_state['cfgId']]['generalConfig']['POS_table'])
                 #Table2(dataDic=dataDict,config=st.session_state[st.session_state['cfgId']])
                 FalseTable(dataPoS_Dict=dictPoS, config=st.session_state[st.session_state['cfgId']])
         else:

@@ -9,41 +9,87 @@ from pandas.plotting import table
 
 sys.path.insert(0,"..")
 from graphic_components.superComponent import SuperPoSTextComponent
+from submenus.tweaker import st_tweaker
 from config.config_data_colector import DataProvider
 
 class FalseTable(SuperPoSTextComponent):
     
     def dataDisplay(self, two: Tuple[Dict[str, int], Dict[str, int or float]], t: str) -> None:
+        advPoSdict = two[1]
+        if 'posSpecialContentName'+t not in st.session_state[st.session_state['cfgId']]:
+            st.session_state[st.session_state['cfgId']]['posSpecialContentName'+t] = st.session_state[st.session_state['cfgId']]['posSpecialContentName']
+            st.session_state[st.session_state['cfgId']]['posSpecialContent'+t] = st.session_state[st.session_state['cfgId']]['posSpecialContent']
+        def updateSpecialTagType(tagName: str):
+            st.session_state[st.session_state['cfgId']]['posSpecialContentName'+t] = tagName
+            st.session_state[st.session_state['cfgId']]['posSpecialContent'+t] = advPoSdict[tagName]
+        if st.session_state[st.session_state['cfgId']]['posSpecialContentName'+t] != '':
+            updateSpecialTagType(st.session_state[st.session_state['cfgId']]['posSpecialContentName'+t])
         posDict = two[0]
-        tagDict = two[1]
-
-        def showAdvTable(key = ''):
-            if key in tagDict:
-                with st.container():
-                    st.table(data=tagDict[key])
+        convDict = DataProvider.getPoStagsConverter()
 
         with st.container():
-            st.header("Analysis: "+t)
-            col1, col2, col3 = st.columns(3)
-            st.markdown("""
-                <style>
-                .font-custom {
-                    font-size:22px !important;
-                }
-                </style>
-                """, unsafe_allow_html=True)
-            with col1:
-                st.subheader("Row number")
-                for n in range(1,len(posDict)+1):
-                    st.markdown('<p class="font-custom">{s}</p>'.format(s=str(n)),unsafe_allow_html=True)
-                    DataProvider.addSpacelines(1)
-            with col2:
-                st.subheader("Tag")
-                for tg in posDict.keys():
-                    st.button(label=tg, on_click=showAdvTable, kwargs={'key':tg})
-                    DataProvider.addSpacelines(1)
-            with col3:
-                st.subheader("Frequency")
-                for tg in posDict.values():
-                    st.markdown('<p class="font-custom">{s}</p>'.format(s=str(tg)),unsafe_allow_html=True)
-                    DataProvider.addSpacelines(1)
+            st.subheader(st.session_state[st.session_state['cfgId']]['ADU_or_Speaker']+" "+t)
+
+        with st.container():
+            colms = st.columns((1, 3, 2, 10))
+            fields = ["№", 'PoS_tag', st.session_state[st.session_state['cfgId']]['unitPercentNumber'], 
+                      str(convDict[st.session_state[st.session_state['cfgId']]['posSpecialContentName'+t]])]
+            for col, field_name in zip(colms, fields):
+                # header
+                col.write(field_name)
+
+            markup = "<style>"
+            for c, idx in enumerate(posDict.items()):
+                if st.session_state[st.session_state['cfgId']]['posSpecialContentName'+t] == idx[0]:
+                    buttonBorder = "border: 2px solid #11FE00;"
+                else:
+                    buttonBorder = "border: 2px dotted #FF7E22;"
+                tmpId = st.session_state[st.session_state['cfgId']]['prefix']+"_Btn_"+t.replace(" ","q").replace("+","i")+"_"+idx[0]
+                key = st.session_state[st.session_state['cfgId']]['prefix']+"_BtnKey_"+t+"_"+idx[0]
+                markup += """
+                    #{myButton} {{
+                        height: 24px;
+                        margin: 0;
+                        {border}
+                    }}
+                """.format(myButton=tmpId, border=buttonBorder)
+                with colms[0]:
+                    st.markdown("<table><tr><th>"+str(c+1)+"</th></tr></table>",unsafe_allow_html=True)
+                with colms[1]:
+                    st_tweaker.button(convDict[idx[0]], 
+                        id=tmpId, 
+                        key=key,
+                        on_click=updateSpecialTagType,
+                        kwargs={'tagName':idx[0]}
+                    )
+                with colms[2]:
+                    st.markdown("<table><tr><th>"+str(idx[1])+"</th></tr></table>",unsafe_allow_html=True)
+
+            if st.session_state[st.session_state['cfgId']]['posSpecialContentName'+t] != '':
+                nameLst, valLst = [], []
+                with colms[3]:
+                    limiter = st.slider("Choos top n "+st.session_state[st.session_state['cfgId']]['posTagType'],
+                        min_value=1, 
+                        value=st.session_state[st.session_state['cfgId']]['posLimittingSliderValue'],
+                        max_value=100,
+                        key=st.session_state[st.session_state['cfgId']]['prefix']+"_Slider_"+t)
+                    for c, item in enumerate(st.session_state[st.session_state['cfgId']]['posSpecialContent'+t].items()):
+                        if c < limiter:
+                            nameLst.append(item[0])
+                            valLst.append(item[1])
+                        else:
+                            break
+                    st.session_state[st.session_state['cfgId']]['posLimittingSliderValue'] = limiter
+                    slownik = {str(st.session_state[st.session_state['cfgId']]['posTagType']):nameLst, 
+                            st.session_state[st.session_state['cfgId']]['unitPercentNumber']:valLst}
+                    df = pd.DataFrame(data=slownik)
+                    df.index += 1
+                    stt = df.style
+                    # stt.set_caption()
+                    stt.set_table_styles(DataProvider.getTableFormat())
+                    st.table(stt)
+
+            st.markdown(
+                markup + "</style>",
+                unsafe_allow_html=True
+            )

@@ -293,33 +293,13 @@ class FilterInterface:
         self.__cf['useStopwords'] = useStopWords
     
     def __PoSinterface(self):
-        # col1, col2 = st.columns(2)
-        # with col1:
-        #     colType = st.radio(self.__cf['generalConfig'][self.__cf['categoriesInterfaceTitle']],
-        #         ("input & output",
-        #             "Locution input & Locution output"),                                                 
-        #         key=self.__cf['prefix']+"_Rephrase_4-6cat"+str(self.__keyCtr))
-        # with col2:
-        #     if colType == "input & output":
-        #         self.__cf['posColumns'] = st.multiselect(self.__cf['generalConfig']['POS_inOut'], 
-        #                                     sorted(DataProvider.getInOutColLst()[2]),
-        #                                     sorted(self.__cf['posColumns']),
-        #                                     key = self.__cf['prefix']+"_multiInOutPOS"+str(self.__keyCtr))
-        #         self.__keyCtr += 1
-        #     elif colType == "Locution input & Locution output":
-        #         self.__cf['posColumns'] = st.multiselect(self.__cf['generalConfig']['POS_inOut'], 
-        #                                     sorted(DataProvider.getInOutColLst()[3]), 
-        #                                     sorted(self.__cf['posColumns']),
-        #                                     key = self.__cf['prefix']+"_multiInOutPOS"+str(self.__keyCtr))
-        #         self.__keyCtr += 1
-        #     else:
-        #         st.error("Wrong option in __PoSinterface: colType==",colType)             
         self.__cf['posCategories'] = st.multiselect(self.__cf['generalConfig']['POS_title'],
                                     sorted(DataProvider.getPoSlst()),
                                     sorted(self.__cf['posTmpCategories'])[:],
                                     key = self.__cf['prefix']+"_multiPOS"+str(self.__keyCtr))
         self.__keyCtr += 1
         self.__cf['posTmpCategories'] = self.__cf['posCategories']
+        self.__cf['posTagType'] = st.selectbox("Choose spaCy's tag type:",options=DataProvider.getSpacyTagTypes(),index=0)
 
     def __NgramSlider(self):
         self.__cf['ngramSliderValue'] = st.slider("Choose n-gram type: (1-4)",1,value=2, max_value=4, key="nType"+self.__cf['prefix'])

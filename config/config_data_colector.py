@@ -1,7 +1,7 @@
 import json
 import os
 import streamlit as st
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 class DataProvider:
     __tableFormat = [
@@ -124,6 +124,8 @@ class DataProvider:
             "jim", "webb","mr"
     ]
 
+    __customSpacyTagTypes = ['text','lemma_','pos_','tag_','dep_','shape_','morph','ent_type_','ent_iob_']
+
     @staticmethod
     def getTableFormat():
         return DataProvider.__tableFormat
@@ -199,7 +201,7 @@ class DataProvider:
             st.write("\n")
     
     @staticmethod
-    def getCustomStopWords() -> list[str]:
+    def getCustomStopWords() -> List[str]:
         return DataProvider.__custom_stop_words
     
     @staticmethod
@@ -210,3 +212,9 @@ class DataProvider:
     def updateGlobalConfig(config: Dict[str, Any]) -> None:
         for cfg in config.items():
             st.session_state[st.session_state['cfgId']][cfg[0]] = cfg[1]
+
+    @staticmethod
+    def getSpacyTagTypes() -> List[str]:
+        return DataProvider.__customSpacyTagTypes
+
+    
