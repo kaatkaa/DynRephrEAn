@@ -42,7 +42,7 @@ class DataManipulator:
                     tmpDic['tag_'] = tag.tag_
                     tmpDic['dep_'] = tag.dep_
                     tmpDic['shape_'] = tag.shape_
-                    tmpDic['morph'] = tag.morph
+                    tmpDic['morph'] = str(tag.morph)
                     tmpDic['ent_type_'] = tag.ent_type_
                     tmpDic['ent_iob_'] = tag.ent_iob_
                     if spacyTagType not in tmpDic:
@@ -63,12 +63,12 @@ class DataManipulator:
             adv_tags[key] = {k: v for k, v in sorted(adv_tags[key].items(), key=lambda item: item[1], reverse=True)}
         ##
         if percentage:
+            for key in adv_tags.keys():
+                for k in adv_tags[key].keys():
+                    adv_tags[key][k] /= tags[key]
+                    adv_tags[key][k] *= 100
             for tag in tags.keys():
                 tags[tag] /=  ctr
                 tags[tag] *= 100
                 tags[tag] = int(round(tags[tag]))
-            for key in adv_tags.keys():
-                for k in adv_tags[key].keys():
-                    adv_tags[key][k] /= ctr
-                    adv_tags[key][k] *= 100
         return (tags, adv_tags, )

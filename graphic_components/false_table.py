@@ -31,8 +31,12 @@ class FalseTable(SuperPoSTextComponent):
             st.subheader(st.session_state[st.session_state['cfgId']]['ADU_or_Speaker']+" "+t)
 
         with st.container():
-            colms = st.columns((1, 3, 2, 10))
-            fields = ["№", 'PoS_tag', st.session_state[st.session_state['cfgId']]['unitPercentNumber'], 
+            colms = st.columns((1, 4, 5, 10))
+            if st.session_state[st.session_state['cfgId']]['unitPercentNumber'] == "Percentage":
+                info = st.session_state[st.session_state['cfgId']]['unitPercentNumber'] + " (" + str(len(posDict)) + " tags is 100%)"
+            else:
+                info = "#"+st.session_state[st.session_state['cfgId']]['unitPercentNumber'] + " (number of occurences)"
+            fields = ["№", 'PoS_tag', info, 
                       str(convDict[st.session_state[st.session_state['cfgId']]['posSpecialContentName'+t]])]
             for col, field_name in zip(colms, fields):
                 # header
@@ -63,20 +67,35 @@ class FalseTable(SuperPoSTextComponent):
                         kwargs={'tagName':idx[0]}
                     )
                 with colms[2]:
-                    st.markdown("<table><tr><th>"+str(idx[1])+"</th></tr></table>",unsafe_allow_html=True)
+                    if st.session_state[st.session_state['cfgId']]['unitPercentNumber'] == "Percentage":
+                        st.markdown("<table><tr><th>"+str(idx[1])+"%"+"</th></tr></table>",unsafe_allow_html=True)
+                    else:
+                        st.markdown("<table><tr><th>"+"#"+str(idx[1])+"</th></tr></table>",unsafe_allow_html=True)
+
 
             if st.session_state[st.session_state['cfgId']]['posSpecialContentName'+t] != '':
                 nameLst, valLst = [], []
+                if st.session_state[st.session_state['cfgId']]['unitPercentNumber'] == "Percentage":
+                    chooseInf = "Choose top n "+st.session_state[st.session_state['cfgId']]['posTagType']+ \
+                        " ("+str(len(st.session_state[st.session_state['cfgId']]['posSpecialContent'+t]))+ \
+                        " tags is 100%)"
+                else:
+                    chooseInf = "Choose top n "+st.session_state[st.session_state['cfgId']]['posTagType']+ \
+                        " ("+str(len(st.session_state[st.session_state['cfgId']]['posSpecialContent'+t]))+ \
+                        " in total)"
                 with colms[3]:
-                    limiter = st.slider("Choos top n "+st.session_state[st.session_state['cfgId']]['posTagType'],
+                    limiter = st.slider(chooseInf,
                         min_value=1, 
                         value=st.session_state[st.session_state['cfgId']]['posLimittingSliderValue'],
-                        max_value=100,
+                        max_value=len(st.session_state[st.session_state['cfgId']]['posSpecialContent'+t]),
                         key=st.session_state[st.session_state['cfgId']]['prefix']+"_Slider_"+t)
                     for c, item in enumerate(st.session_state[st.session_state['cfgId']]['posSpecialContent'+t].items()):
                         if c < limiter:
                             nameLst.append(item[0])
-                            valLst.append(item[1])
+                            if st.session_state[st.session_state['cfgId']]['unitPercentNumber'] == "Percentage":
+                                valLst.append(str(item[1])+"%")
+                            else:
+                                valLst.append("#"+str(item[1]))
                         else:
                             break
                     st.session_state[st.session_state['cfgId']]['posLimittingSliderValue'] = limiter
