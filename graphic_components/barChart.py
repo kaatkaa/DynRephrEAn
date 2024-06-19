@@ -33,7 +33,7 @@ class Barchart2(SuperChartComponent):
             elif self._cf['unitPercentNumber'] == "Number":
                 z.bar_label(z.containers[0], fmt='#%d')
             z.grid(b=True, which='major', color='black', linewidth=0.075)
-            z.axes.set_title(label=self._cf['ADU_or_Speaker']+" "+t,fontsize=14)
+            z.axes.set_title(label=self._cf['ADU_or_Speaker']+" "+t,fontsize=24)
             z.set_xlabel(columnLst[0],fontsize=14)
             z.set_ylabel(columnLst[1], fontsize=14)
             z.tick_params(labelsize=14)
