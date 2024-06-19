@@ -30,7 +30,7 @@ class CmpCorpusMenu:
 
     def __updateCfg(self, config: Dict[str, Any]):
         for item in config.items():
-            self.__anCf[item[0]] = item[1]
+            st.session_state[st.session_state['cfgId']][item[0]] = item[1]
 
     def display(self, units):
         st.markdown("""
@@ -61,7 +61,7 @@ class CmpCorpusMenu:
                 else:
                     with i:
                         st.subheader(self.__tabLabels[ctr])
-                        self.__display = ComparativeCorporaSimple(data_dic=self.__dataDic, config=self.__anCf)
+                        self.__display = ComparativeCorporaSimple(data_dic=self.__dataDic, config=st.session_state[st.session_state['cfgId']])
         self.__display.noteClass()
                         
         with _3dMix:
@@ -83,8 +83,8 @@ class CmpCorpusMenu:
                 'showNgramSlider': False
             }
             self.__updateCfg(config=cfg)
-            self.__anCf = FilterInterface(config=self.__anCf).getConfig()
-            _3D_EthosPathos(dataDic=self.__dataDict,config=self.__anCf).plot3D()
+            cc = FilterInterface(config=st.session_state[st.session_state['cfgId']]).getConfig()
+            _3D_EthosPathos(dataDic=self.__dataDict,config=cc).plot3D()
         with _3dPoS:
             cfg = {
                             'prefix': "3D_PoS",
@@ -104,8 +104,8 @@ class CmpCorpusMenu:
                             'showStopPoSInterface':False
             }
             self.__updateCfg(config=cfg)
-            self.__anCf = FilterInterface(config=self.__anCf).getConfig()
-            _3D_PoS(dataDic=self.__dataDict,config=self.__anCf).plot3D()
+            self.__anCf = FilterInterface(config=st.session_state[st.session_state['cfgId']]).getConfig()
+            _3D_PoS(dataDic=self.__dataDict,config=st.session_state[st.session_state['cfgId']]).plot3D()
 
     def clearTabsSelections(self) -> None:
         for tab in self.__dataLoaders:

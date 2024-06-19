@@ -27,7 +27,7 @@ class _3D_EthosPathos:
         return initialCorporaDic
     
     def __fillEmptyMatrixFields(self, matrix: Dict[str, Any]) -> Dict[str, Dict[str, int]]:
-        sortDict = {key: i for i, key in enumerate(self.__cfg['fixedCatLst'])}
+        sortDict = {key: i for i, key in enumerate(self.__cfg['categoriesLst'])}
         for item in self.__cfg['categoriesLst']:
             if item not in matrix:
                 matrix[item] = {'Frequency': 0}

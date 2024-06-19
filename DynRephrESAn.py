@@ -81,7 +81,7 @@ __AnConfig = {
     #Select spaCy's tagger for different results
     'posTagType': '',
     #Limit the results between 1-100 to score
-    'posLimittingSliderValue': 10,
+    'posLimittingSliderValue': 30,
     #Choose specipic PoS tag to display results with it
     'posSpecialContentName': "",
     'posSpecialContent': {},

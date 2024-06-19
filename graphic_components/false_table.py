@@ -15,6 +15,7 @@ from config.config_data_colector import DataProvider
 class FalseTable(SuperPoSTextComponent):
     
     def dataDisplay(self, two: Tuple[Dict[str, int], Dict[str, int or float]], t: str) -> None:
+        # Data inicjalization
         advPoSdict = two[1]
         if 'posSpecialContentName'+t not in st.session_state[st.session_state['cfgId']]:
             st.session_state[st.session_state['cfgId']]['posSpecialContentName'+t] = st.session_state[st.session_state['cfgId']]['posSpecialContentName']
@@ -38,10 +39,12 @@ class FalseTable(SuperPoSTextComponent):
                 info = "#"+st.session_state[st.session_state['cfgId']]['unitPercentNumber'] + " (number of occurences)"
             fields = ["№", 'PoS_tag', info, 
                       str(convDict[st.session_state[st.session_state['cfgId']]['posSpecialContentName'+t]])]
+            # headers of first table 
             for col, field_name in zip(colms, fields):
                 # header
                 col.write(field_name)
 
+            #First "fake" table data
             markup = "<style>"
             for c, idx in enumerate(posDict.items()):
                 if st.session_state[st.session_state['cfgId']]['posSpecialContentName'+t] == idx[0]:
@@ -72,7 +75,7 @@ class FalseTable(SuperPoSTextComponent):
                     else:
                         st.markdown("<table><tr><th>"+"#"+str(idx[1])+"</th></tr></table>",unsafe_allow_html=True)
 
-
+            # second #Real table
             if st.session_state[st.session_state['cfgId']]['posSpecialContentName'+t] != '':
                 nameLst, valLst = [], []
                 if st.session_state[st.session_state['cfgId']]['unitPercentNumber'] == "Percentage":
