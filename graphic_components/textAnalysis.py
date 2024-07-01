@@ -10,8 +10,10 @@ class Cases2(SuperTextComponent):
 
     def getTextObj(self, data: Any, t: str) -> Any:
         colorsDict = DataProvider.getUniversalColors()
+        textColors = DataProvider.getTextColors()
         def color(row):
-            return ['background-color: '+colorsDict[row[self._cf['categoriesColumn']]]] * len(row)
+            return ['background-color: '+colorsDict[row[self._cf['categoriesColumn']]]+
+                "; "+"color: "+textColors[row[self._cf['categoriesColumn']]]] * len(row)
         def make_pretty(styler):
             styler.set_caption(self._cf['ADU_or_Speaker']+" "+t)
             styler.set_table_styles(DataProvider.getTableFormat())
