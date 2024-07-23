@@ -14,9 +14,12 @@ from config.config_data_colector import DataProvider
 
 class FalseTable(SuperPoSTextComponent):
     
-    def dataDisplay(self, two: Tuple[Dict[str, int], Dict[str, int or float]], t: str) -> None:
+    def dataDisplay(self, two: Tuple[Dict[str, int], Dict[str, int or float], Dict[str, Any]], t: str) -> None:
         # Data inicjalization
-        advPoSdict = two[1]
+        if st.session_state[st.session_state['cfgId']]['posTagType'] == "SynonimClasses":
+            advPoSdict = two[2]
+        else:
+            advPoSdict = two[1]
         if 'posSpecialContentName'+t not in st.session_state[st.session_state['cfgId']]:
             st.session_state[st.session_state['cfgId']]['posSpecialContentName'+t] = st.session_state[st.session_state['cfgId']]['posSpecialContentName']
             st.session_state[st.session_state['cfgId']]['posSpecialContent'+t] = st.session_state[st.session_state['cfgId']]['posSpecialContent']
@@ -87,23 +90,39 @@ class FalseTable(SuperPoSTextComponent):
                         " ("+str(len(st.session_state[st.session_state['cfgId']]['posSpecialContent'+t]))+ \
                         " in total)"
                 with colms[3]:
+                    synonims = []
                     limiter = st.slider(chooseInf,
                         min_value=1, 
                         value=st.session_state[st.session_state['cfgId']]['posLimittingSliderValue'],
                         max_value=len(st.session_state[st.session_state['cfgId']]['posSpecialContent'+t]),
                         key=st.session_state[st.session_state['cfgId']]['prefix']+"_Slider_"+t)
                     for c, item in enumerate(st.session_state[st.session_state['cfgId']]['posSpecialContent'+t].items()):
-                        if c < limiter:
-                            nameLst.append(item[0])
-                            if st.session_state[st.session_state['cfgId']]['unitPercentNumber'] == "Percentage":
-                                valLst.append(str(item[1])+"%")
-                            else:
-                                valLst.append("#"+str(item[1]))
+                        if st.session_state[st.session_state['cfgId']]['posTagType'] == 'SynonimClasses':
+                            if item[0] != 'ctr' and c < limiter + 1:
+                                nameLst.append(item[0])
+                                if st.session_state[st.session_state['cfgId']]['unitPercentNumber'] == "Percentage":
+                                    valLst.append(str(item[1]['ctr'])+"%")
+                                else:
+                                    valLst.append("#"+str(item[1]['ctr']))
+                                synonims.append(item[1]['synSet'])
                         else:
-                            break
+                            if c < limiter:
+                                nameLst.append(item[0])
+                                if st.session_state[st.session_state['cfgId']]['unitPercentNumber'] == "Percentage":
+                                    valLst.append(str(item[1])+"%")
+                                else:
+                                    valLst.append("#"+str(item[1]))
+                            else:
+                                break
                     st.session_state[st.session_state['cfgId']]['posLimittingSliderValue'] = limiter
-                    slownik = {str(st.session_state[st.session_state['cfgId']]['posTagType']):nameLst, 
-                            st.session_state[st.session_state['cfgId']]['unitPercentNumber']:valLst}
+                    if st.session_state[st.session_state['cfgId']]['posTagType'] == 'SynonimClasses':
+                        slownik = {str(st.session_state[st.session_state['cfgId']]['posTagType']):nameLst, 
+                                st.session_state[st.session_state['cfgId']]['unitPercentNumber']:valLst,
+                                "Synonims":synonims
+                                }
+                    else:
+                        slownik = {str(st.session_state[st.session_state['cfgId']]['posTagType']):nameLst, 
+                                st.session_state[st.session_state['cfgId']]['unitPercentNumber']:valLst}
                     df = pd.DataFrame(data=slownik)
                     df.index += 1
                     stt = df.style

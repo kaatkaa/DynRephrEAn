@@ -299,7 +299,8 @@ class FilterInterface:
                                     key = self.__cf['prefix']+"_multiPOS"+str(self.__keyCtr))
         self.__keyCtr += 1
         self.__cf['posTmpCategories'] = self.__cf['posCategories']
-        self.__cf['posTagType'] = st.selectbox("Choose spaCy's tag type:",options=DataProvider.getSpacyTagTypes(),index=0)
+        self.__cf['posTagType'] = st.radio("Choose categorization class",("text","lemma_","SynonimClasses",),index=0,horizontal=True)
+        # "Partial_Word_Detection",
 
     def __NgramSlider(self):
         self.__cf['ngramSliderValue'] = st.slider("Choose n-gram type: (1-4)",1,value=2, max_value=4, key="nType"+self.__cf['prefix'])

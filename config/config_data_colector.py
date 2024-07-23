@@ -90,7 +90,7 @@ class DataProvider:
         "INTJ":"Interjection","SYM":"Symbol","SCONJ":"Subordinating conjunction",
         "SPACE":"Space","X":"Unknowx","":"--"}
     
-    __3D_PSPdefalut = ["PROPN","AUX","VERB","PRON","NOUN","CCONJ","NUM"]
+    __3D_PSPdefalut = ["AUX","ADJ","ADV","VERB","PRON","NOUN","CCONJ","NUM","DET"]
         
     __sav_image = {
         'toImageButtonOptions': {
