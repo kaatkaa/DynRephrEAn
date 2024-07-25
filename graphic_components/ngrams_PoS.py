@@ -11,8 +11,8 @@ from typing import Tuple, List, Dict, Any
 
 sys.path.insert(0,"..")
 from config.config_data_colector import DataProvider
-from data_manipulation.data_manipulator import DataManipulator
 from graphic_components.superComponent import SuperTextComponent
+from graphic_components.wordCloudFreq import WordCloudOfFreq
 
 class NgramsPoS(SuperTextComponent):
 
@@ -23,6 +23,7 @@ class NgramsPoS(SuperTextComponent):
         colorsDict = DataProvider.getUniversalColors()
         textColor = DataProvider.getTextColors()
         cat = [self._cf['categoriesColumn']]
+        freqDict = {}
         def color(row, columns, colorFlagHashes):
             formattingLst = []
             for column in columns:
@@ -69,6 +70,9 @@ class NgramsPoS(SuperTextComponent):
             common = NgramLst.most_common(number)
             if self._cf['imediatePlot']:
                 w2 = [" ".join(item[0])+" : "+str(item[1]) for item in common if item[0] != ('',)]
+                for item in common:
+                    if item[0] != ('',):
+                        freqDict["_".join(item[0])] = item[1]
                 word = st.selectbox("Pick "+str(ngramType)+"-gram to analyse: ",w2,index=0,key='Dropdown'+str(ngramType)+'-gram_'+t)
                 regexpStr = re.sub(r"^(.*)\s:\s[0-9]+$", r"\1", word)
                 regExpCode = r"\s"+regexpStr+r"\s|^"+regexpStr+r"\s|\s"+regexpStr+r"$|^"+regexpStr+r"$"
@@ -84,7 +88,7 @@ class NgramsPoS(SuperTextComponent):
                     tmpDf.index += 1
                     lstOfInOut.remove(cat[0])
                     columns = [*cat,*lstOfInOut,*restLst]
-                    return tmpDf[columns].style.apply(color, axis=1, columns=columns, colorFlagHashes=set(lstOfInOut))
+                    return tmpDf[columns].style.apply(color, axis=1, columns=columns, colorFlagHashes=set(lstOfInOut)), freqDict
                 elif lstOfInOut[1] in self._cf['inOutLst']:
                     x = lstOfInOut[2]
                     filteredInputDF = data[data[lstOfInOut[1]].str.contains(regExpCode, case=False, regex=True)]
@@ -97,7 +101,7 @@ class NgramsPoS(SuperTextComponent):
                     lstOfInOut.remove(cat[0])
                     columns = [*cat,*lstOfInOut,*restLst]
                     lstOfInOut.remove(x)
-                    return tmpDf[columns].style.apply(color, axis=1, columns=columns, colorFlagHashes=set(lstOfInOut))
+                    return tmpDf[columns].style.apply(color, axis=1, columns=columns, colorFlagHashes=set(lstOfInOut)), freqDict
                 elif lstOfInOut[2] in self._cf['inOutLst']:
                     x = lstOfInOut[1]
                     filteredOutputDF = data[data[lstOfInOut[2]].str.contains(regExpCode, case=False, regex=True)]
@@ -110,7 +114,7 @@ class NgramsPoS(SuperTextComponent):
                     lstOfInOut.remove(cat[0])
                     columns = [*cat,*lstOfInOut,*restLst]
                     lstOfInOut.remove(x)
-                    return tmpDf[columns].style.apply(color, axis=1, columns=columns, colorFlagHashes=set(lstOfInOut))
+                    return tmpDf[columns].style.apply(color, axis=1, columns=columns, colorFlagHashes=set(lstOfInOut)), freqDict
                 else:
                     st.error("Wrong input-output options for dataframe")
             else:
@@ -132,5 +136,9 @@ class NgramsPoS(SuperTextComponent):
             st.warning("Not enought data to display in text analysis.")
     
     def dataDisplay(self, data: Any, t: str) -> None:
-        tbl = self.getTextObj(data=data, t=t)
-        st.table(tbl)
+        tbl, freq = self.getTextObj(data=data, t=t)
+        cases, wordcloud = st.tabs(["Cases","WordCloud"])
+        with cases:
+            st.table(tbl)
+        with wordcloud:
+            WordCloudOfFreq(dataDic=freq,config=st.session_state[st.session_state['cfgId']],title=t+" WordCloud of "+str(len(freq))+" n-grams")
