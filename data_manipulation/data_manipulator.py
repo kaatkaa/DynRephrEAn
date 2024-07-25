@@ -11,7 +11,6 @@ import spacy
 
 nlp = spacy.load("en_core_web_sm")
 sys.path.insert(0,"..")
-print("***************"+os.getcwd())
 
 class DataManipulator:
 
