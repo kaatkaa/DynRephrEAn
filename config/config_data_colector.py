@@ -36,7 +36,7 @@ class DataProvider:
     __color_universal = {'Amelioration':'#3FEE0F','A_strong':'#28B900','A_weak':'#7CFF57','Pejorativization':'#FF0000'
                      ,'P_strong':'#BD0000','P_weak':'#FF5656','Neutralization':'#2EBDFF','No_Change': '#A4A4A4'}
     
-    __color_text = {'Amelioration':'#000000','A_strong':'#FFFFFF','A_weak':'#FFFFFF','Pejorativization':'#FFFFFF'
+    __color_text = {'Amelioration':'#000000','A_strong':'#FFFFFF','A_weak':'#000000','Pejorativization':'#FFFFFF'
                      ,'P_strong':'#FFFFFF','P_weak':'#000000','Neutralization':'#000000','No_Change': '#000000'}   
 
     __color_rephr = {'C': '#7FB3D5','D': '#76D7C4',

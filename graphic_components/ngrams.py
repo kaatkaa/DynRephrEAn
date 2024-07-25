@@ -21,14 +21,15 @@ class Ngrams(SuperTextComponent):
         
     def getTextObj(self, data: Any, t: str) -> Any:
         colorsDict = DataProvider.getUniversalColors()
+        textColor = DataProvider.getTextColors()
         cat = [self._cf['categoriesColumn']]
         def color(row, columns, colorFlagHashes):
             formattingLst = []
             for column in columns:
                 if column in colorFlagHashes:
-                    formattingLst.append('background-color: '+DataProvider.getRephraseAndEmptycolors()['Rephrase'])
+                    formattingLst.append('background-color: '+DataProvider.getRephraseAndEmptycolors()['Rephrase']+";")
                 else: 
-                    formattingLst.append('background-color: '+colorsDict[row[cat[0]]])
+                    formattingLst.append('background-color: '+colorsDict[row[cat[0]]]+'; color: '+textColor[row[cat[0]]]+";")
             return formattingLst
         lstOfInOut = []
         restLst = []

@@ -4,10 +4,14 @@ import streamlit as st
 from nltk.corpus import wordnet as wn
 import subprocess
 import ast
+import sys
+import os
 from typing import Dict, Set, List, Tuple
 import spacy
 
 nlp = spacy.load("en_core_web_sm")
+sys.path.insert(0,"..")
+print("***************"+os.getcwd())
 
 class DataManipulator:
 
