@@ -152,4 +152,4 @@ class Ngrams(SuperTextComponent):
         with cases:
             st.table(tbl)
         with wordcloud:
-            WordCloudOfFreq(dataDic=freq,config=st.session_state[st.session_state['cfgId']],title="WordCloud of "+str(len(freq))+" n-grams")
+            WordCloudOfFreq(dataDic=freq,config=st.session_state[st.session_state['cfgId']],title=t+" WordCloud of "+str(len(freq))+" n-grams")
