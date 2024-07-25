@@ -39,7 +39,7 @@ class WordCloudOfFreq(SuperWordCloudFreq):
             # st.subheader(self._cf['generalConfig']["Wordcloud_display"])
             t = re.sub("wholeAll|whole","",t)
             chart = self.getChartObj(freqDict=freqDict, t=t)
-            fn = self._cf['prefix']+self._cf['ADU_or_Speaker']+"_"+t
+            fn = t
             buf = io.BytesIO()
             chart.savefig(buf, format="png", dpi=300)
             left_co, cent_co = st.columns([1,3])
