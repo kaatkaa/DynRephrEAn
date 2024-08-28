@@ -7,6 +7,7 @@ import seaborn as sns
 from submenus.single_corpus import SingleCorpusMenu
 from submenus.comparative_corpus import CmpCorpusMenu
 from config.config_data_colector import DataProvider
+from typing import Dict, Set, List, Tuple
 
 pd.set_option("max_colwidth", 300)
 sns.set_theme(style="whitegrid")
@@ -111,12 +112,15 @@ def __load_data(dir_address: str) -> dict[str : pd.DataFrame()]:
     #         del tmpDic[corpoName]
     return tmpDic
 
+dataDic = __load_data(__rephrase_xlsx)
+
 # ******************* multi pages functions **************************************
 
 def __MainPage():
     st.title("Dynamics of Rephrase Analytics")
     DataProvider.addSpacelines(2)
     st.write("DynRephAn_ver_2.0")
+
     with st.expander("Read abstract"):
         DataProvider.addSpacelines(1)
         st.write("""
@@ -130,6 +134,36 @@ def __MainPage():
             but we are also able to trace how speakers were strategically influencing the character of the discussion, 
             e.g., by shifting from using pure logos to using logos loaded with ethos."""
         )
+
+    with st.expander("Corpora statistics"):
+        def make_pretty(styler):
+            styler.set_caption("Data used in DynRephAn technology")
+            styler.set_table_styles(DataProvider.getTableFormat())
+            return styler
+        tmpData = dataDic.items()
+        names = [n[0] for n in tmpData]
+        aduLen = [len(l[1]["input"].tolist())*2 for l in tmpData]
+        inputText = [" ".join(i[1]["input"].tolist()) for i in tmpData]
+        outputText = [" ".join(i[1]["output"].tolist()) for i in tmpData]
+        loc_inputText = [" ".join(i[1]["locution_input"].tolist()) for i in tmpData]
+        loc_outputText = [" ".join(i[1]["locution_output"].tolist()) for i in tmpData]
+        inputSpeakers = [set(s[1]["speaker_input"].tolist()) for s in tmpData]
+        outputSpeakers = [set(s[1]["speaker_output"].tolist()) for s in tmpData]
+        allSpeakers = [x[0] | x[1] for x in zip(inputSpeakers, outputSpeakers)]
+        inputSpeakersLen = [len(l) for l in inputSpeakers]
+        outputSpeakersLen = [len(l) for l in outputSpeakers]
+        allSpeakersLen = [len(l) for l in allSpeakers]
+        inputWordsLen = [len(l.split(" ")) for l in inputText]
+        outputWordsLen = [len(l.split(" ")) for l in outputText]
+        allWordsLen = [a[0] + a[1] for a in zip(inputWordsLen, outputWordsLen)]
+        loc_inputWordsLen = [len(l.split(" ")) for l in loc_inputText]
+        loc_outputWordsLen = [len(l.split(" ")) for l in loc_outputText]
+        allLocutionLen = [x[0] + x[1] for x in zip(loc_inputWordsLen, loc_outputWordsLen)]
+        statsDF = pd.DataFrame(data={"Corpus":names,"# Words in ilocutions":allWordsLen,"# Words in locutions":allLocutionLen,
+                                     "# ADUs":aduLen,"# Speakers":allSpeakersLen,"# Speakers input":inputSpeakersLen,"# Speakers output":outputSpeakersLen})
+        statsDF.index += 1
+        st.table(make_pretty(statsDF.style))
+        #st.write(allSpeakers)
 
     with st.container():
         DataProvider.addSpacelines(3)
@@ -154,7 +188,6 @@ if __AnConfigId not in st.session_state:
 with st.sidebar:
     st.write('<style>div[class="css-1siy2j7 e1fqkh3o3"] > div{background-color: #d2cdcd;}</style>', unsafe_allow_html=True)
     st.write('<style>div.row-widget.stRadio > div{flex-direction:column;}</style>', unsafe_allow_html=True)
-    dataDic = __load_data(__rephrase_xlsx)
     st.subheader("Analytics type")
     anSubtype = st.radio("", ("DynRephAn for Ethos",
                             "DynRephAn for Sentiment"),
