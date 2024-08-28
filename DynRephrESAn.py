@@ -138,11 +138,13 @@ def __MainPage():
     with st.expander("Corpora statistics"):
         def make_pretty(styler):
             styler.set_caption("Data used in DynRephAn technology")
-            styler.set_table_styles(DataProvider.getTableFormat())
+            styler.set_table_styles(DataProvider.getTableStatsFormat())
             return styler
         tmpData = dataDic.items()
         names = [n[0] for n in tmpData]
-        aduLen = [len(l[1]["input"].tolist())*2 for l in tmpData]
+        names1 = names + ["Total"]
+        aduLen = [len(set(l[1]["id_input"].tolist()) | set(l[1]["id_output"].tolist())) for l in tmpData]
+        aduLen1 = aduLen + [sum(aduLen)]
         inputText = [" ".join(i[1]["input"].tolist()) for i in tmpData]
         outputText = [" ".join(i[1]["output"].tolist()) for i in tmpData]
         loc_inputText = [" ".join(i[1]["locution_input"].tolist()) for i in tmpData]
@@ -159,8 +161,17 @@ def __MainPage():
         loc_inputWordsLen = [len(l.split(" ")) for l in loc_inputText]
         loc_outputWordsLen = [len(l.split(" ")) for l in loc_outputText]
         allLocutionLen = [x[0] + x[1] for x in zip(loc_inputWordsLen, loc_outputWordsLen)]
-        statsDF = pd.DataFrame(data={"Corpus":names,"# Words in ilocutions":allWordsLen,"# Words in locutions":allLocutionLen,
-                                     "# ADUs":aduLen,"# Speakers":allSpeakersLen,"# Speakers input":inputSpeakersLen,"# Speakers output":outputSpeakersLen})
+        inputSpeakersLen1 = inputSpeakersLen + [sum(inputSpeakersLen)]
+        outputSpeakersLen1 = outputSpeakersLen + [sum(outputSpeakersLen)]
+        allSpeakersLen1 = allSpeakersLen + [sum(allSpeakersLen)]
+        inputWordsLen1 = inputWordsLen + [sum(inputWordsLen)]
+        outputWordsLen1 = outputWordsLen + [sum(outputWordsLen)]
+        allWordsLen1 = allWordsLen + [sum(allWordsLen)]
+        loc_inputWordsLen1 = loc_inputWordsLen + [sum(loc_inputWordsLen)]
+        loc_outputWordsLen1 = loc_outputWordsLen + [sum(loc_outputWordsLen)]
+        allLocutionLen1 = allLocutionLen + [sum(allLocutionLen)]
+        statsDF = pd.DataFrame(data={"Corpus":names1,"# Words in ilocutions":allWordsLen1,"# Words in locutions":allLocutionLen1,
+                                     "# ADUs":aduLen1,"# Speakers":allSpeakersLen1,"# Speakers input":inputSpeakersLen1,"# Speakers output":outputSpeakersLen1})
         statsDF.index += 1
         st.table(make_pretty(statsDF.style))
         #st.write(allSpeakers)
