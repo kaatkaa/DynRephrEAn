@@ -14,6 +14,17 @@ class DataProvider:
         {"selector": "th", "props": [("border", "2px solid black")]}
     ]
 
+    __tableFormat2 = [
+        {"selector": "caption","props":[("text-align", "center"),
+            ("font-size", "20px"),
+            ("color", 'black'),
+            ('caption-side','top')]},
+        {"selector": "", "props": [("border", "1px solid grey")]},
+        {"selector": "tbody td", "props": [("border", "1px solid grey")]},
+        {"selector": "th", "props": [("border", "2px solid black")]},
+        {"selector": "tbody tr:last-child", "props": [("font-weight", "bold"),("color", 'red')]}
+    ]
+
     __corpus3Ddic = {
             'Total': {'US2016RedditD1','US2016RedditR1','US2016RedditG1','US2016TVD1','US2016TVR1','US2016TVG1','Hansard','PolarIs1','PolarIs4'},
             'SocialMedia': {'US2016RedditD1','US2016RedditR1','US2016RedditG1','PolarIs1','PolarIs4'},
@@ -133,6 +144,10 @@ class DataProvider:
     @staticmethod
     def getTableFormat():
         return DataProvider.__tableFormat
+
+    @staticmethod
+    def getTableStatsFormat():
+        return DataProvider.__tableFormat2
 
     @staticmethod
     def getInOutColLst():
