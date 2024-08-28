@@ -171,7 +171,7 @@ def __MainPage():
         loc_outputWordsLen1 = loc_outputWordsLen + [sum(loc_outputWordsLen)]
         allLocutionLen1 = allLocutionLen + [sum(allLocutionLen)]
         statsDF = pd.DataFrame(data={"Corpus":names1,"# Words in ilocutions":allWordsLen1,"# Words in locutions":allLocutionLen1,
-                                     "# ADUs":aduLen1,"# Speakers":allSpeakersLen1,"# Speakers input":inputSpeakersLen1,"# Speakers output":outputSpeakersLen1})
+            "# ADUs":aduLen1,"# Speakers":allSpeakersLen1,"# Speakers input":inputSpeakersLen1,"# Speakers output":outputSpeakersLen1})
         statsDF.index += 1
         st.table(make_pretty(statsDF.style))
         #st.write(allSpeakers)
