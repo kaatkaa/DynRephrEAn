@@ -22,7 +22,7 @@ class DataProvider:
         {"selector": "", "props": [("border", "1px solid grey")]},
         {"selector": "tbody td", "props": [("border", "1px solid grey")]},
         {"selector": "th", "props": [("border", "2px solid black")]},
-        {"selector": "tbody tr:last-child", "props": [("font-weight", "bold"),("color", 'red')]}
+        {"selector": "tbody tr:last-child", "props": [("font-weight", '1000'),("color", 'black'),("background-color", "lightgrey")]}
     ]
 
     __corpus3Ddic = {
