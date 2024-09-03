@@ -70,6 +70,7 @@ class DataManipulator:
                     ctr += 1
                     tags[tag.pos_] = tags.get(tag.pos_, 0) + 1
                     if spacyTagType == "SynonimClasses":
+                        #print("Word to synonim: "+tmpDic['lemma_']+" "+str(tmpDic['SynonimClasses']))
                         for synonims in tmpDic['SynonimClasses']:
                             if tag.pos_ in synDic:
                                 synDic[tag.pos_]['ctr'] += 1
