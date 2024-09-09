@@ -124,15 +124,25 @@ def __MainPage():
     with st.expander("Read abstract"):
         DataProvider.addSpacelines(1)
         st.write("""
-            Dynamics of Rephrase Analytics is the other foundational tool in Rhetoric Analytics, 
-            as it allows us to analyse the transformations of the use of rhetorical devices as a result of rephrasing information, 
-            i.e. to analyse them as they change when speakers rephrase what they say. 
-            The special role of DynRephAn consists in treating an argument relation of rephrase as a process of how a debate is evolving, 
-            how rhetorical devices are changed and manipulated by speakers. 
-            This means that we are able to inspect not only results of rhetorical or linguistic use of language, 
-            e.g., by comparing the frequencies of using logos vs ethos, 
-            but we are also able to trace how speakers were strategically influencing the character of the discussion, 
-            e.g., by shifting from using pure logos to using logos loaded with ethos."""
+            The app DynRephAn was analysis 10 corpora: US2016redditD1, US2016redditR1, US2016redditG1
+            (Reddit presidential debates during 2016 elections), US2016tvR1, US2016tvD1, US2016tvG1 (Televi-
+            sion debates between candidates in 2016), Hansart (UK parliament debates), PolarIs1 - COVID19 vaccines debate 
+            , PolarIs4 - a climate change discussion and lastly: ToyCorpus prepared for testing purposes. For now the data is
+            provided through the *.xls file, but in the future it will be loaded directly from postgres database. The
+            application shows dynamics of the rephrase in ethos (annotated manually except PolarIs 1) and sentiment (annotated
+            automatically). The Ethos as well as Sentiment are both assigned to rephrased (input) and reprasing
+            part (output) of rephrase and are classified into 3 categories: positive (ethotic support or positive
+            emotions in sentiment), negative (ethotic attack on someone or negative emotions in sentiment) and
+            neutral (no ethos or no emotions). 
+            This analytic shows the dynamic nature of rephrase by taking into consideration both the rephrasing and rephrased part of rephrase. 
+            For example if rephrase statement  
+            is rephrased from:  
+            \n- :green[neutral or negative (statement) to → positive : it would be called **Amelioration**],
+            \n\n There are also other combinations:  
+            \n- :red[positive or negative → neutral is called **Neutralization**],
+            \n- :blue[positive or neutral → negative is called **Pejorativization**],
+            \n- neutral or positive, or negative → to the same as on the left is called **No_Change**.
+        """
         )
 
     with st.expander("Corpora statistics"):
@@ -140,7 +150,10 @@ def __MainPage():
             styler.set_caption("Data used in DynRephAn technology")
             styler.set_table_styles(DataProvider.getTableStatsFormat())
             return styler
-        tmpData = dataDic.items()
+        # tmpData = dataDic.items()
+        tmpData = list()
+        for x in dataDic.items():
+            tmpData.append((x[0], x[1].drop_duplicates(),))
         names = [n[0] for n in tmpData]
         names1 = names + ["Total"]
         aduLen = [len(set(l[1]["id_input"].tolist()) | set(l[1]["id_output"].tolist())) for l in tmpData]
@@ -173,6 +186,7 @@ def __MainPage():
         statsDF = pd.DataFrame(data={"Corpus":names1,"# Words in ilocutions":allWordsLen1,"# Words in locutions":allLocutionLen1,
             "# ADUs":aduLen1,"# Speakers":allSpeakersLen1,"# Speakers input":inputSpeakersLen1,"# Speakers output":outputSpeakersLen1})
         statsDF.index += 1
+        # st.write(tmpData)
         st.table(make_pretty(statsDF.style))
         #st.write(allSpeakers)
 
