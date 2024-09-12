@@ -44,6 +44,7 @@ class DataManipulator:
                     if not isinstance(synDic[tagPos][clusterName], int) and token in synDic[tagPos][clusterName]['synSet']:
                         synDic[tagPos][clusterName]['ctr'] += 1
                         flag = False
+                        break
                 #         setOfMeanings.update(synDic[tagPos][clusterName]['synSet'])
                 # if len(syn - setOfMeanings) >= 2:
                 #     flag = False

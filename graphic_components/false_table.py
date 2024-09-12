@@ -82,19 +82,21 @@ class FalseTable(SuperPoSTextComponent):
             if st.session_state[st.session_state['cfgId']]['posSpecialContentName'+t] != '':
                 nameLst, valLst = [], []
                 if st.session_state[st.session_state['cfgId']]['unitPercentNumber'] == "Percentage":
+                    if st.session_state[st.session_state['cfgId']]['posTagType'] == 'SynonimClasses':
+                        totLen = len(st.session_state[st.session_state['cfgId']]['posSpecialContent'+t]) - 1
+                    else:
+                        totLen = len(st.session_state[st.session_state['cfgId']]['posSpecialContent'+t])
                     chooseInf = "Choose top n "+st.session_state[st.session_state['cfgId']]['posTagType']+ \
-                        " ("+str(len(st.session_state[st.session_state['cfgId']]['posSpecialContent'+t]))+ \
-                        " tags is 100%)"
+                        " ("+str(totLen)+" tags is 100%)"
                 else:
                     chooseInf = "Choose top n "+st.session_state[st.session_state['cfgId']]['posTagType']+ \
-                        " ("+str(len(st.session_state[st.session_state['cfgId']]['posSpecialContent'+t]))+ \
-                        " in total)"
+                        " ("+str(totLen)+" in total)"
                 with colms[3]:
                     synonims = []
                     limiter = st.slider(chooseInf,
                         min_value=1, 
                         value=st.session_state[st.session_state['cfgId']]['posLimittingSliderValue'],
-                        max_value=len(st.session_state[st.session_state['cfgId']]['posSpecialContent'+t]),
+                        max_value=totLen,
                         key=st.session_state[st.session_state['cfgId']]['prefix']+"_Slider_"+t)
                     for c, item in enumerate(st.session_state[st.session_state['cfgId']]['posSpecialContent'+t].items()):
                         if st.session_state[st.session_state['cfgId']]['posTagType'] == 'SynonimClasses':
@@ -116,14 +118,14 @@ class FalseTable(SuperPoSTextComponent):
                                 break
                     st.session_state[st.session_state['cfgId']]['posLimittingSliderValue'] = limiter
                     if st.session_state[st.session_state['cfgId']]['posTagType'] == 'SynonimClasses':
-                        slownik = {str(st.session_state[st.session_state['cfgId']]['posTagType']):nameLst, 
+                        tableDict = {str(st.session_state[st.session_state['cfgId']]['posTagType']):nameLst, 
                                 st.session_state[st.session_state['cfgId']]['unitPercentNumber']:valLst,
                                 "Synonims":synonims
                                 }
                     else:
-                        slownik = {str(st.session_state[st.session_state['cfgId']]['posTagType']):nameLst, 
+                        tableDict = {str(st.session_state[st.session_state['cfgId']]['posTagType']):nameLst, 
                                 st.session_state[st.session_state['cfgId']]['unitPercentNumber']:valLst}
-                    df = pd.DataFrame(data=slownik)
+                    df = pd.DataFrame(data=tableDict)
                     df.index += 1
                     stt = df.style
                     # stt.set_caption()
