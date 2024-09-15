@@ -81,11 +81,12 @@ class FalseTable(SuperPoSTextComponent):
             # second #Real table
             if st.session_state[st.session_state['cfgId']]['posSpecialContentName'+t] != '':
                 nameLst, valLst = [], []
+                totLen = len(st.session_state[st.session_state['cfgId']]['posSpecialContent'+t])
+                maxlen = totLen
+                if st.session_state[st.session_state['cfgId']]['posTagType'] == 'SynonimClasses':
+                    maxlen -= 1
+                    totLen -= 1
                 if st.session_state[st.session_state['cfgId']]['unitPercentNumber'] == "Percentage":
-                    if st.session_state[st.session_state['cfgId']]['posTagType'] == 'SynonimClasses':
-                        totLen = len(st.session_state[st.session_state['cfgId']]['posSpecialContent'+t]) - 1
-                    else:
-                        totLen = len(st.session_state[st.session_state['cfgId']]['posSpecialContent'+t])
                     chooseInf = "Choose top n "+st.session_state[st.session_state['cfgId']]['posTagType']+ \
                         " ("+str(totLen)+" tags is 100%)"
                 else:
@@ -96,7 +97,7 @@ class FalseTable(SuperPoSTextComponent):
                     limiter = st.slider(chooseInf,
                         min_value=1, 
                         value=st.session_state[st.session_state['cfgId']]['posLimittingSliderValue'],
-                        max_value=totLen,
+                        max_value=maxlen,
                         key=st.session_state[st.session_state['cfgId']]['prefix']+"_Slider_"+t)
                     for c, item in enumerate(st.session_state[st.session_state['cfgId']]['posSpecialContent'+t].items()):
                         if st.session_state[st.session_state['cfgId']]['posTagType'] == 'SynonimClasses':
