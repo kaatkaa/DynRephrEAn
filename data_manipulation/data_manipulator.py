@@ -55,10 +55,15 @@ class DataManipulator:
         for doc in spacyDataLst:
             for tag in doc:
                 if tag.pos_ in PoS_set:
+                    PoS_to_WN = {"PROPN":wn.MORPHOLOGICAL_SUBSTITUTIONS,"AUX":wn.VERB,
+                    "VERB":wn.VERB,"PRON":wn.MORPHOLOGICAL_SUBSTITUTIONS,"NOUN":wn.NOUN,"CCONJ":wn.MORPHOLOGICAL_SUBSTITUTIONS,
+                    "ADP":wn.MORPHOLOGICAL_SUBSTITUTIONS,"DET":wn.MORPHOLOGICAL_SUBSTITUTIONS,"PART":wn.MORPHOLOGICAL_SUBSTITUTIONS,
+                    "ADJ":wn.ADJ,"NUM":wn.NOUN,"PUNCT":wn._ENCODING,"ADV":wn.ADV,
+                    "INTJ":wn.MORPHOLOGICAL_SUBSTITUTIONS,"SYM":wn.MORPHOLOGICAL_SUBSTITUTIONS,"SCONJ":wn.MORPHOLOGICAL_SUBSTITUTIONS,
+                    "SPACE":wn._FILEMAP,"X":wn.MORPHOLOGICAL_SUBSTITUTIONS,"":"--"}
                     tmpDic = {}
                     tmpDic['text'] = tag.text
                     tmpDic['lemma_'] = tag.lemma_
-                    tmpDic['SynonimClasses'] = wn.synonyms(tag.lemma_)
                     tmpDic['pos_'] = tag.pos_
                     tmpDic['tag_'] = tag.tag_
                     tmpDic['dep_'] = tag.dep_
@@ -66,30 +71,35 @@ class DataManipulator:
                     tmpDic['morph'] = str(tag.morph)
                     tmpDic['ent_type_'] = tag.ent_type_
                     tmpDic['ent_iob_'] = tag.ent_iob_
+                    tmpDic['SynonimClasses'] = []
+                    for synset_wn in wn.synsets(tag.lemma_, pos=PoS_to_WN[tmpDic['pos_']]):
+                        for lemma_wn in synset_wn.lemmas():
+                            tmpDic['SynonimClasses'].append(lemma_wn.name())
                     if spacyTagType not in tmpDic:
                         st.error("Wrong tag name provided to 'getSpacyPoSTagsFre' in data_manipulator.py .")
                     ctr += 1
                     tags[tag.pos_] = tags.get(tag.pos_, 0) + 1
                     if spacyTagType == "SynonimClasses":
                         #print("Word to synonim: "+tmpDic['lemma_']+" "+str(tmpDic['SynonimClasses']))
-                        for synonims in tmpDic['SynonimClasses']:
-                            if tag.pos_ in synDic:
-                                synDic[tag.pos_]['ctr'] += 1
-                                notInClusterFlag = notInCluster(tagPos=tag.pos_, token = tmpDic['lemma_'], syn=set(synonims))
-                                if notInClusterFlag:
-                                    clusterSynCtr += 1
-                                    synDic[tag.pos_]["syn_"+tmpDic['lemma_']] = {}
-                                    synDic[tag.pos_]["syn_"+tmpDic['lemma_']]['ctr'] = 1
-                                    synDic[tag.pos_]["syn_"+tmpDic['lemma_']]['synSet'] = set(synonims)
-                                    synDic[tag.pos_]["syn_"+tmpDic['lemma_']]['synSet'].add(tmpDic['lemma_'])                                 
-                            else:
+                        # for synonims in tmpDic['SynonimClasses']:
+                        synonims = tmpDic['SynonimClasses'] if len(tmpDic['SynonimClasses']) > 0 else []
+                        if tag.pos_ in synDic:
+                            synDic[tag.pos_]['ctr'] += 1
+                            notInClusterFlag = notInCluster(tagPos=tag.pos_, token = tmpDic['lemma_'], syn=set(synonims))
+                            if notInClusterFlag:
                                 clusterSynCtr += 1
-                                synDic[tag.pos_] = {}
-                                synDic[tag.pos_]['ctr'] = 1
                                 synDic[tag.pos_]["syn_"+tmpDic['lemma_']] = {}
                                 synDic[tag.pos_]["syn_"+tmpDic['lemma_']]['ctr'] = 1
                                 synDic[tag.pos_]["syn_"+tmpDic['lemma_']]['synSet'] = set(synonims)
-                                synDic[tag.pos_]["syn_"+tmpDic['lemma_']]['synSet'].add(tmpDic['lemma_'])
+                                synDic[tag.pos_]["syn_"+tmpDic['lemma_']]['synSet'].add(tmpDic['lemma_'])                                 
+                        else:
+                            clusterSynCtr += 1
+                            synDic[tag.pos_] = {}
+                            synDic[tag.pos_]['ctr'] = 1
+                            synDic[tag.pos_]["syn_"+tmpDic['lemma_']] = {}
+                            synDic[tag.pos_]["syn_"+tmpDic['lemma_']]['ctr'] = 1
+                            synDic[tag.pos_]["syn_"+tmpDic['lemma_']]['synSet'] = set(synonims)
+                            synDic[tag.pos_]["syn_"+tmpDic['lemma_']]['synSet'].add(tmpDic['lemma_'])
                     else:
                         if tag.pos_ in adv_tags:
                             if tmpDic[spacyTagType] in adv_tags[tag.pos_]:
