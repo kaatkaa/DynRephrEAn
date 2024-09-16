@@ -11,13 +11,13 @@ sys.path.insert(0,"..")
 class dataHandlerDisplayInterface:
 
     def dataDisplay(self, dataDic: Any, t: str) -> None:
-        st.write("This is SuperChartComponent method that should be overlapped.")
+        st.write("This is SuperChartComponent 'dataDisplay' method that should be overlapped.")
 
     def getChartObj(self, dataDic: Any, t: str) -> Any:
-        st.write("This is SuperChartComponent method that should be overlapped.")
+        st.write("This is SuperChartComponent 'getChartObj' method that should be overlapped.")
 
-    def getChartsDic() -> Dict[str, Any]:
-        st.write("This is SuperChartComponent method that should be overlapped.")
+    def getChartsDic(self) -> Dict[str, Any]:
+        st.write("This is SuperChartComponent 'getChartsDic' method that should be overlapped.")
 
 class SuperChartComponent(dataHandlerDisplayInterface):
 
@@ -65,6 +65,9 @@ class SuperTextComponent(dataHandlerDisplayInterface):
                 elif self._cf['objectToEnable'] == "Text":
                     self.__textDict[key] = self.getTextObj(dataDic[key],key)
 
+    def getChartsDic(self) -> Dict[str, Any]:
+        return self.__chartDict
+
 class SuperWordCloudFreq(dataHandlerDisplayInterface):
 
     def __init__(self, dataDic: Dict[str, int], config: Dict[str, Any], title) -> None:
@@ -82,7 +85,7 @@ class SuperWordCloudFreq(dataHandlerDisplayInterface):
                     self.__textDict[key] = self.getTextObj(dataDic[key],key)
                     
     def getTextObj(self, data: Any, t: str) -> Any:
-        st.write("This is SuperChartComponent method that should be overlapped.")
+        st.write("This is SuperWordCloudFreq 'getTextObj' method that should be overlapped.")
 
     def getTextDic(self) -> Dict[str, Any]:
         return self.__textDict
