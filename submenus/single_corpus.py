@@ -21,7 +21,7 @@ from streamlit_modal import Modal
 
 class SingleCorpusMenu:
 
-    __debug = True
+    __debug = False
 
     def __init__(self, dataDic: dict[str : pd.DataFrame()], prefix: str="0_") -> None:
         #dictionary containing all possible data with corpora indexed by name
