@@ -186,7 +186,8 @@ class ComparativeCorporaSimple:
             'showStopwords':False,
             'useStopwords':False,
             'showPOSInterface':True,
-            'showNgramSlider': False
+            'showNgramSlider': False,
+            'showPoS_subFreq': False,
         }
         self.__updateCfg(config=overrideConfig)
         self.__cf = FilterInterface(config=self.__cf).getConfig()

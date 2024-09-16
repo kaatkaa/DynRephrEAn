@@ -273,6 +273,7 @@ class SingleCorpusMenu:
                 'showPOSInterface':True,
                 'showNgramSlider': False,
                 'showStopPoSInterface':False,
+                'showPoS_subFreq': True
             }
             DataProvider.updateGlobalConfig(config=__PoSCfg)
             st.session_state[st.session_state['cfgId']] = \

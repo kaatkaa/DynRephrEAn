@@ -299,7 +299,8 @@ class FilterInterface:
                                     key = self.__cf['prefix']+"_multiPOS"+str(self.__keyCtr))
         self.__keyCtr += 1
         self.__cf['posTmpCategories'] = self.__cf['posCategories']
-        self.__cf['posTagType'] = st.radio("Choose categorization class",("text","lemma_","SynonimClasses",),index=0,horizontal=True)
+        if self.__cf['showPoS_subFreq']:
+            self.__cf['posTagType'] = st.radio("Choose categorization class",("text","lemma_","SynonimClasses",),index=0,horizontal=True)
         # "Partial_Word_Detection",
 
     def __NgramSlider(self):

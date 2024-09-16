@@ -84,6 +84,7 @@ __AnConfig = {
     #Limit the results between 1-100 to score
     'posLimittingSliderValue': 30,
     #Choose specipic PoS tag to display results with it
+    'showPoS_subFreq': True,
     'posSpecialContentName': "",
     'posSpecialContent': {},
     #Shows ngram slider
