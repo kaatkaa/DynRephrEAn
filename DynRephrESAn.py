@@ -167,11 +167,11 @@ e.g., by using different dynamic types of rephrase.
         \n ***Rephrase*** \n
         The starting point of DynRephAn data are manually annotated rephrases in various types of texts, 
         following precise guidelines according to IAT and rephrase detection annotation schemes. 
-        Rephrase is defined as rhetorical argument between input *IN* and output *OUT* which are similar, 
+        Rephrase is defined as rhetorical argument between input *INPUT* and output *OUTPUT* which are similar, 
         but *OUT*  introduces some novel content for achieving a certain rhetorical gain, 
         including loading an information with ethotic appeals or emotions (sentiment) content. 
         For rephrese understood this way both (input) and (output) parts can curry different ethotic and sentiment values.\n
-        Example: \n
+        Rephrase Example: \n
         Cooper: You've been a Republican ⮕ Chafee: I was a liberal Republican \n
         \n ***Ethos*** \n
         The ethos defined here is an argument for or against the character (credibility) of the speaker
@@ -179,18 +179,51 @@ e.g., by using different dynamic types of rephrase.
         and regard ethos as a speaker's property, which can be attacked or supported by other speakers or neutral (no ethos) E0. 
         Thus, we treat favourable (positive) references to a speaker (a person, a group of persons or an organisation) as ethotic supports E+
         and unfavourable (negative) references as ethotic attacks E-. \n
+        Here are some ethos examples:\n
+        Cooper: You've been a Republican [E-]
+        Chafee: I was a liberal Republican [E+]\n
         \n ***Sentiment*** \n
         In Dynrephan sentiment is defined as emotions expressed by the speaker and similarly to ethos, there are 3 categories classifying the type of emotion:
         S+ positive emotion, S- negative and S0 - no emotion.
         In contrast to Ethos, sentiment was mined automatically by ''cardiffnlp/twitter-roberta-base-sentiment-latest`` LLM
         executed in colaboratori enviroment with transformers[sentencepiece] python library.\n
+        Here are some sentiment examples:\n
+        Ebonic_Plague: cage breeding is the true scale of how farm animals are raised in parts of the United States [S0]
+        Ebonic_Plague: cage breeding is horrible [S-]
         \n ***Ethos or Sentiment Dynamics in The Rephrase*** \n
+        DynRephAn analytic shows the dynamic nature of rephrase by taking into consideration both the rephrasing *INPUT* and rephrased *OUTPUT* part of rephrase. 
+        For example if rephrase statement  
+        is rephrased from:  
+        \n- :green[neutral or negative (Etos/Sentiment) to 
+    ⮕ 
+    positive : it would be called **Amelioration**,]\n
+    Dynamic Ethotic Amelioration Example\:\n 
+    :green[p_sweezy\: *It’s not like TRUMP was going to have a huge amount support from the black community anyway* \[E-\]
+    ⮕
+    HollywoodCote\: *TRUMP doesn’t have much to lose from the black community* \[E+\]]
+        \n\n There are also other combinations:  
+        \n- :red[positive or neutral ⮕ negative is called **Pejorativization**,]\n
+    Dynamic Ethotic Pejorativization Example\:\n
+    :red[SaxMan100: *let TRUMP control the narrative* \[E+\]
+    ⮕
+    Hatewrecked: *stick to policy and facts}{let Tump be the ignorant talkative buffoon* \[E-\]]
+        \n- :blue[positive or negative ⮕ neutral is called **Neutralization**,]\n
+    Dynamic Ethotic Neutralization Example\:\n
+    :blue[Wormhog\: *it does matter to woman in this country if they are
+    represented in a government that tries to dictate what can and can’t do with
+    our uteruses and tries to defund clinics providing birth control
+    and reproductive health screenings to low-income women* \[E-\]
+    ⮕
+    Wormhog: *it’s important women have representation* \[E0\]]
+        \n- neutral or positive, or negative 
+        ⮕ 
+    to the same as on the left is called **No_Change**.
+    Ethotic No_Change Example\:\n
+    Speaker-1\: *gut reactions to a man screaming at a woman like a psychopath are usually negative* \[E-\]
+    ⮕
+    Speaker-1\: *I'm talking about viewers reaction to Trump's terrible pointing* \[E-\]
         """
         )
-
-        st.latex("""
-        
-        """)
 
     with st.expander("Corpora statistics"):
         def make_pretty(styler):
