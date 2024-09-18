@@ -122,36 +122,88 @@ def __MainPage():
     DataProvider.addSpacelines(2)
     st.write("DynRephAn_ver_2.0")
 
-    with st.expander("Read abstract"):
+    with st.expander("Abstract"):
         DataProvider.addSpacelines(1)
         st.write("""
-            The app DynRephAn was analysis 10 corpora: US2016redditD1, US2016redditR1, US2016redditG1
-            (Reddit presidential debates during 2016 elections), US2016tvR1, US2016tvD1, US2016tvG1 (Televi-
-            sion debates between candidates in 2016), Hansart (UK parliament debates), PolarIs1 - COVID19 vaccines debate 
-            , PolarIs4 - a climate change discussion and lastly: ToyCorpus prepared for testing purposes. For now the data is
-            provided through the *.xls file, but in the future it will be loaded directly from postgres database. The
-            application shows dynamics of the rephrase in ethos (annotated manually except PolarIs 1) and sentiment (annotated
-            automatically). The Ethos as well as Sentiment are both assigned to rephrased (input) and reprasing
-            part (output) of rephrase and are classified into 3 categories: positive (ethotic support or positive
-            emotions in sentiment), negative (ethotic attack on someone or negative emotions in sentiment) and
-            neutral (no ethos or no emotions). 
-            This analytic shows the dynamic nature of rephrase by taking into consideration both the rephrasing and rephrased part of rephrase. 
-            For example if rephrase statement  
-            is rephrased from:  
-            \n- :green[neutral or negative (statement) to → positive : it would be called **Amelioration**],
-            \n\n There are also other combinations:  
-            \n- :red[positive or negative → neutral is called **Neutralization**],
-            \n- :blue[positive or neutral → negative is called **Pejorativization**],
-            \n- neutral or positive, or negative → to the same as on the left is called **No_Change**.
+Dynamics of Rephrase Analytics is the other foundational tool in Rhetoric Analytics, 
+as it allows us to analyse the transformations of the use of rhetorical devices as a result of rephrasing information, 
+i.e. to analyse them as they change when speakers rephrase what they say. 
+The special role of DynRephAn consists in treating an argument relation of rephrase as a process of how a debate is evolving, 
+how rhetorical devices are changed and manipulated by speakers. 
+This means that we are able to inspect not only results of rhetorical use of language, 
+e.g., by comparing the frequencies of using ethos or sentiment - expressed emotions, 
+but we are also able to trace how speakers were strategically influencing the character of the discussion, 
+e.g., by using different dynamic types of rephrase.
         """
         )
 
+    with st.expander("Implementation details"):
+        DataProvider.addSpacelines(1)
+        st.write(
+            """
+        Streamlit package and Python were employed for the implementation of the web application. 
+        Pandas package was utilised for data manipulation and seaborn and matplotlib for visualisation of results.
+        DynRephAn allows to combine several corpora into one and analyse it as a single corpora 
+        as well as compare patterns of rhetorical behaviour of dynamic changes of ethos or sentiment across corpora. 
+        The app DynRephAn operates on 10 corpora: US2016redditD1, US2016redditR1, US2016redditG1 
+        (Reddit presidential debates during 2016 elections), US2016tvR1, US2016tvD1, US2016tvG1 
+        (Television debates between candidates in 2016), 
+        Hansart (UK parliament debates), PolarIs1 - COVID19 vaccines debates, 
+        PolarIs4 - a climate change discussion and lastly: ToyCorpus prepared for testing purposes. 
+        Finally - ToyCorpus with carefully selected very small data sample used for testing the tool.
+        For now the data is provided through the *.xls file, but in the future it will be loaded directly from postgres database.
+        The unit of the analysis is textual. The app was inspired by LEPAn tool.
+        DynRephAn Analytics are a sense-making tools that provides insights into strategic use of rephrases in language of argumentative discourse. 
+        The technology uses data analytics techniques incorporating  visualisations in the form of pie charts 
+        and bar charts as well as table data exports to represent data in a way easy to comprehend that allows us to observe statistical patterns,trends and tendencies.
+        The tool also provides a way to see actual text content that represents rephrase in means of qualitative analysis. 
+        Other options are display of the most frequent n-grams, analytics of parts of speech in rephrase, 
+        n-grams of the most frequent parts of speech and 3D-view comparative analysis.
+        This allows for large-scale discourse analysis, i.e., 
+        we are able to make meaningful interpretations of vast amounts of information on how people actually use rephrase in several corpus-analysed discussions.\n
+        \n ***Logos*** \n
+        The annotation of logos follows the theoretical framework of Inference Anchoring Theory (IAT). 
+        One type of relation between propositions distinguished in IAT is analysed in the DynRephAn tool: the rephrase.\n
+        \n ***Rephrase*** \n
+        The starting point of DynRephAn data are manually annotated rephrases in various types of texts, 
+        following precise guidelines according to IAT and rephrase detection annotation schemes. 
+        Rephrase is defined as rhetorical argument between input *IN* and output *OUT* which are similar, 
+        but *OUT*  introduces some novel content for achieving a certain rhetorical gain, 
+        including loading an information with ethotic appeals or emotions (sentiment) content. 
+        For rephrese understood this way both (input) and (output) parts can curry different ethotic and sentiment values.\n
+        Example: \n
+        Cooper: You've been a Republican ⮕ Chafee: I was a liberal Republican \n
+        \n ***Ethos*** \n
+        The ethos defined here is an argument for or against the character (credibility) of the speaker
+        We follow a redefinition of the traditional conceptualisation of ethotic arguments, 
+        and regard ethos as a speaker's property, which can be attacked or supported by other speakers or neutral (no ethos) E0. 
+        Thus, we treat favourable (positive) references to a speaker (a person, a group of persons or an organisation) as ethotic supports E+
+        and unfavourable (negative) references as ethotic attacks E-. \n
+        \n ***Sentiment*** \n
+        In Dynrephan sentiment is defined as emotions expressed by the speaker and similarly to ethos, there are 3 categories classifying the type of emotion:
+        S+ positive emotion, S- negative and S0 - no emotion.
+        In contrast to Ethos, sentiment was mined automatically by ''cardiffnlp/twitter-roberta-base-sentiment-latest`` LLM
+        executed in colaboratori enviroment with transformers[sentencepiece] python library.\n
+        \n ***Ethos or Sentiment Dynamics in The Rephrase*** \n
+        """
+        )
+
+        st.latex("""
+        
+        """)
+
     with st.expander("Corpora statistics"):
         def make_pretty(styler):
-            styler.set_caption("Data used in DynRephAn technology")
+            styler.set_caption("Basic Corpora Statistics")
+            styler.set_table_styles(DataProvider.getTableStatsFormat())
+            return styler
+        
+        def make_pretty2(styler):
+            styler.set_caption("Basic Ethos & Sentiment Statistics")
             styler.set_table_styles(DataProvider.getTableStatsFormat())
             return styler
         # tmpData = dataDic.items()
+
         tmpData = list()
         for x in dataDic.items():
             tmpData.append((x[0], x[1].drop_duplicates(),))
@@ -189,6 +241,47 @@ def __MainPage():
         statsDF.index += 1
         # st.write(tmpData)
         st.table(make_pretty(statsDF.style))
+
+        input_ethos = [ i[1]["input_ethos"].tolist() for i in tmpData]
+        output_ethos = [ i[1]["output_ethos"].tolist() for i in tmpData]
+        input_sentiment = [ i[1]["input_sentiment"].tolist() for i in tmpData]
+        output_sentiment = [ i[1]["output_sentiment"].tolist() for i in tmpData]
+
+        input_ethos_attacks = [ len([y for y in x if y=='E-']) for x in input_ethos]
+        input_ethos_supports = [ len([y for y in x if y=='E+']) for x in input_ethos]
+        input_ethos_noEthos = [ len([y for y in x if y=='no_ethos']) for x in input_ethos]
+        output_ethos_attacks = [ len([y for y in x if y=='E-']) for x in output_ethos]
+        output_ethos_supports = [ len([y for y in x if y=='E+']) for x in output_ethos]
+        output_ethos_noEthos = [ len([y for y in x if y=='no_ethos']) for x in output_ethos]
+
+        input_negative_sentiment = [ len([y for y in x if y=='negative']) for x in input_sentiment]
+        input_positive_sentiment = [ len([y for y in x if y=='positive']) for x in input_sentiment]
+        input_neutral_sentiment = [ len([y for y in x if y=='neutral']) for x in input_sentiment]
+        output_negative_sentiment = [ len([y for y in x if y=='negative']) for x in output_sentiment]
+        output_positive_sentiment = [ len([y for y in x if y=='positive']) for x in output_sentiment]
+        output_neutral_sentiment = [ len([y for y in x if y=='neutral']) for x in output_sentiment]
+
+        ethotic_attacks = [ x[0] + x[1] for x in zip(input_ethos_attacks, output_ethos_attacks)]
+        ethotic_attacks1 = ethotic_attacks + [sum(ethotic_attacks)]
+        ethotic_supprts = [ x[0] + x[1] for x in zip(input_ethos_supports, output_ethos_supports)]
+        ethotic_supprts1 = ethotic_supprts + [sum(ethotic_supprts)]
+        no_ethos = [ x[0] + x[1] for x in zip(input_ethos_noEthos, output_ethos_noEthos)]
+        no_ethos1 = no_ethos = no_ethos + [sum(no_ethos)]
+
+        negative_sentiment = [ x[0] + x[1] for x in zip(input_negative_sentiment, output_negative_sentiment) ]
+        negative_sentiment1 = negative_sentiment + [sum(negative_sentiment)]
+        positive_sentiment = [ x[0] + x[1] for x in zip(input_positive_sentiment, output_positive_sentiment) ]
+        positive_sentiment1 = positive_sentiment + [sum(positive_sentiment)]
+        no_sentiment = [ x[0] + x[1] for x in zip(input_neutral_sentiment, output_neutral_sentiment) ]
+        no_sentiment1 = no_sentiment + [sum(no_sentiment)]
+
+        ethosSentimentDF = pd.DataFrame(data={"Corpus":names1,"# Ethotic attacks":ethotic_attacks1,"# Ethotic Supports":ethotic_supprts1,
+            "# No Ethos":no_ethos1,"# Negative Sentiment":negative_sentiment1,"# Positive Sentiment":positive_sentiment1,"# No Sentiment":no_sentiment1})
+
+        DataProvider.addSpacelines(1)
+        ethosSentimentDF.index += 1
+        st.table(make_pretty2(ethosSentimentDF.style))
+
         #st.write(allSpeakers)
 
     with st.container():
