@@ -162,43 +162,58 @@ e.g., by using different dynamic types of rephrase.
         This allows for large-scale discourse analysis, i.e., 
         we are able to make meaningful interpretations of vast amounts of information on how people actually use rephrase in several corpus-analysed discussions.\n
         \n ***Logos*** \n
-        The annotation of logos follows the theoretical framework of Inference Anchoring Theory (IAT). 
-        One type of relation between propositions distinguished in IAT is analysed in the DynRephAn tool: the rephrase.\n
-        \n ***Rephrase*** \n
-        The starting point of DynRephAn data are manually annotated rephrases in various types of texts, 
-        following precise guidelines according to IAT and rephrase detection annotation schemes. 
-        Rephrase is defined as rhetorical argument between input *INPUT* and output *OUTPUT* which are similar, 
-        but *OUT*  introduces some novel content for achieving a certain rhetorical gain, 
-        including loading an information with ethotic appeals or emotions (sentiment) content. 
-        For rephrese understood this way both (input) and (output) parts can curry different ethotic and sentiment values.\n
+        The annotation of logos in  Online Visualisation of Argument analysis tool (OVA) 
+        follows the theoretical framework of Inference Anchoring Theory 
+        (IAT: Budzynska, K., & Reed, C., (2011). Whence inference. Technical Report, University of Dundee)
+        that is used for obtaining a rephrase - the starting point of data visualisation and analysis.\n
+        \n ***Rephrase*** \n 
+        Rephrase is defined as rhetorical argument between 
+        INPUT and OUTPUT which are similar, 
+        but OUTPUT  introduces some novel content 
+        for achieving a certain rhetorical gain, 
+        including loading an information with 
+        ethotic appeals or emotions (sentiment) content. 
+        For rephrese understood this way 
+        both (input) and (output) parts 
+        can curry different ethotic and sentiment values.\n
         Rephrase Example: \n
-        Cooper: You've been a Republican ⮕ Chafee: I was a liberal Republican \n
+        Todo88: I don't see PAUL vs. SANDERS happening ⮕ kevo7777: PAUL vs. SANDERS won't happen \n
         \n ***Ethos*** \n
-        The ethos defined here is an argument for or against the character (credibility) of the speaker
+        The ethos defined here is an argument for or against 
+        the character (credibility) of the speaker
         We follow a redefinition of the traditional conceptualisation of ethotic arguments, 
-        and regard ethos as a speaker's property, which can be attacked or supported by other speakers or neutral (no ethos) E0. 
-        Thus, we treat favourable (positive) references to a speaker (a person, a group of persons or an organisation) as ethotic supports E+
+        and regard ethos as a speaker's property, 
+        which can be attacked or supported by other speakers or neutral (no ethos) E0. 
+        Thus, we treat favourable (positive) references to a speaker 
+        (a person, a group of persons or an organisation) as ethotic supports E+
         and unfavourable (negative) references as ethotic attacks E-. \n
         Here are some ethos examples:\n
         Cooper: You've been a Republican [E-]
         Chafee: I was a liberal Republican [E+]\n
         \n ***Sentiment*** \n
-        In Dynrephan sentiment is defined as emotions expressed by the speaker and similarly to ethos, there are 3 categories classifying the type of emotion:
+        In Dynrephan sentiment is defined as emotions expressed by the speaker 
+        and similarly to ethos, there are 3 categories classifying the type of emotion:
         S+ positive emotion, S- negative and S0 - no emotion.
-        In contrast to Ethos, sentiment was mined automatically by ''cardiffnlp/twitter-roberta-base-sentiment-latest`` LLM
-        executed in colaboratori enviroment with transformers[sentencepiece] python library.\n
+        In contrast to Ethos, sentiment was mined automatically 
+        by ''cardiffnlp/twitter-roberta-base-sentiment-latest`` LLM
+        executed in colaboratori enviroment 
+        with transformers[sentencepiece] python library.\n
         Here are some sentiment examples:\n
-        Ebonic_Plague: cage breeding is the true scale of how farm animals are raised in parts of the United States [S0]
+        Ebonic_Plague: cage breeding is the true scale 
+        of how farm animals are raised in parts of the United States [S0]
         Ebonic_Plague: cage breeding is horrible [S-]
         \n ***Ethos or Sentiment Dynamics in The Rephrase*** \n
-        DynRephAn analytic shows the dynamic nature of rephrase by taking into consideration both the rephrasing *INPUT* and rephrased *OUTPUT* part of rephrase. 
+        DynRephAn analytic shows the dynamic nature of rephrase by 
+        taking into consideration both the rephrasing INPUT 
+        and rephrased OUTPUT part of rephrase. 
         For example if rephrase statement  
-        is rephrased from:  
+        is rephrased from:
         \n- :green[neutral or negative (Etos/Sentiment) to 
     ⮕ 
     positive : it would be called **Amelioration**,]\n
     Dynamic Ethotic Amelioration Example\:\n 
-    :green[p_sweezy\: *It’s not like TRUMP was going to have a huge amount support from the black community anyway* \[E-\]
+    :green[p_sweezy\: *It’s not like TRUMP was going to have a huge amount 
+    support from the black community anyway* \[E-\]
     ⮕
     HollywoodCote\: *TRUMP doesn’t have much to lose from the black community* \[E+\]]
         \n\n There are also other combinations:  
@@ -206,7 +221,7 @@ e.g., by using different dynamic types of rephrase.
     Dynamic Ethotic Pejorativization Example\:\n
     :red[SaxMan100: *let TRUMP control the narrative* \[E+\]
     ⮕
-    Hatewrecked: *stick to policy and facts}{let Tump be the ignorant talkative buffoon* \[E-\]]
+    Hatewrecked: *stick to policy and facts let Tump be the ignorant talkative buffoon* \[E-\]]
         \n- :blue[positive or negative ⮕ neutral is called **Neutralization**,]\n
     Dynamic Ethotic Neutralization Example\:\n
     :blue[Wormhog\: *it does matter to woman in this country if they are
@@ -217,7 +232,7 @@ e.g., by using different dynamic types of rephrase.
     Wormhog: *it’s important women have representation* \[E0\]]
         \n- neutral or positive, or negative 
         ⮕ 
-    to the same as on the left is called **No_Change**.
+    is the same as INPUT argument\: **No_Change**.\n
     Ethotic No_Change Example\:\n
     Speaker-1\: *gut reactions to a man screaming at a woman like a psychopath are usually negative* \[E-\]
     ⮕
