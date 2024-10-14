@@ -66,6 +66,8 @@ class DataFilter:
                 for pos in line:
                     if pos not in stopPoS_set:
                         modLine.append(pos)
+                    else:
+                        modLine.append("X")
                 modColumn.append(modLine)
             dataF[column] = modColumn
         self.__outputData = dataF
