@@ -99,7 +99,7 @@ class DataProvider:
         "ADP":"Adposition","DET":"Determinative","PART":"Part",
         "ADJ":"Adjective","NUM":"Cardinal numbers","PUNCT":"Punctuation","ADV":"Adverb",
         "INTJ":"Interjection","SYM":"Symbol","SCONJ":"Subordinating conjunction",
-        "SPACE":"Space","X":"Unknowx","":"--"}
+        "SPACE":"Space","X":"unclassified","":"--"}
     
     __3D_PSPdefalut = ["AUX","ADJ","ADV","VERB","PRON","NOUN","CCONJ","NUM","DET"]
         
