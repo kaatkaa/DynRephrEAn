@@ -15,9 +15,6 @@ from graphic_components.superComponent import SuperTextComponent
 from graphic_components.wordCloudFreq import WordCloudOfFreq
 
 class NgramsPoS(SuperTextComponent):
-
-    def noteClass(self):
-        pass
         
     def getTextObj(self, data: Any, t: str) -> Any:
         colorsDict = DataProvider.getUniversalColors()
@@ -34,15 +31,12 @@ class NgramsPoS(SuperTextComponent):
             return formattingLst
         lstOfInOut = []
         restLst = []
-        PoSflag = False
         if set(self._cf['inOutLst']) <= set(DataProvider.getInOutColLst()[2]):
             lstOfInOut = [*cat, *DataProvider.getInOutColLst()[2]]
             restLst = DataProvider.getInOutColLst()[0]
-            PoSflag = True
         elif set(self._cf['inOutLst']) <= set(DataProvider.getInOutColLst()[3]):
             lstOfInOut = [*cat, *DataProvider.getInOutColLst()[3]]
             restLst = DataProvider.getInOutColLst()[0]
-            PoSflag = True
         else:
             st.warning("Wrong list inOut values in n-gram data display.")
         wordLst = []
