@@ -34,6 +34,7 @@ class DataManipulator:
         adv_tags = dict()
         spacyDataLst = []
         synDic = dict()
+        detectedSynDic = {}
         ctr = 0
         clusterSynCtr = 0
         def notInCluster(tagPos: str, token: str, syn: set) -> bool:
@@ -109,6 +110,8 @@ class DataManipulator:
                         else:
                             adv_tags[tag.pos_] = {}
                             adv_tags[tag.pos_][tmpDic[spacyTagType]] = 1
+                else:
+                    tags["X"] = tags.get("X", 0) + 1
         # Descending sorting of dictonaries according to freqency
         tags = {k: v for k, v in sorted(tags.items(), key=lambda item: item[1], reverse=True)}
         for key in adv_tags.keys():
