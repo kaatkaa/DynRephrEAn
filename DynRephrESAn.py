@@ -262,7 +262,11 @@ e.g., by using different dynamic types of rephrase.
         inputText = [" ".join(i[1]["input"].tolist()) for i in tmpData]
         outputText = [" ".join(i[1]["output"].tolist()) for i in tmpData]
         loc_inputText = [" ".join(i[1]["locution_input"].tolist()) for i in tmpData]
-        loc_outputText = [" ".join(i[1]["locution_output"].tolist()) for i in tmpData]
+        loc_outputText = [" ".join(i[1]["locution_output"].astype(str).tolist()) for i in tmpData]
+        # loc_outputText = []
+        # for i in tmpData:
+        #     lst = i[1]["locution_output"].tolist()
+        #     loc_outputText.append(" ".join(i[1]["locution_output"].tolist()))
         inputSpeakers = [set(s[1]["speaker_input"].tolist()) for s in tmpData]
         outputSpeakers = [set(s[1]["speaker_output"].tolist()) for s in tmpData]
         allSpeakers = [x[0] | x[1] for x in zip(inputSpeakers, outputSpeakers)]
