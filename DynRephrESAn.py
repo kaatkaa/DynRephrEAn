@@ -318,7 +318,7 @@ e.g., by using different dynamic types of rephrase.
         ethotic_supprts = [ x[0] + x[1] for x in zip(input_ethos_supports, output_ethos_supports)]
         ethotic_supprts1 = ethotic_supprts + [sum(ethotic_supprts)]
         no_ethos = [ x[0] + x[1] for x in zip(input_ethos_noEthos, output_ethos_noEthos)]
-        no_ethos1 = no_ethos = no_ethos + [sum(no_ethos)]
+        no_ethos1 =  no_ethos + [sum(no_ethos)]
 
         negative_sentiment = [ x[0] + x[1] for x in zip(input_negative_sentiment, output_negative_sentiment) ]
         negative_sentiment1 = negative_sentiment + [sum(negative_sentiment)]
@@ -327,8 +327,14 @@ e.g., by using different dynamic types of rephrase.
         no_sentiment = [ x[0] + x[1] for x in zip(input_neutral_sentiment, output_neutral_sentiment) ]
         no_sentiment1 = no_sentiment + [sum(no_sentiment)]
 
-        ethosSentimentDF = pd.DataFrame(data={"Corpus":names1,"# Ethotic attacks":ethotic_attacks1,"# Ethotic Supports":ethotic_supprts1,
-            "# No Ethos":no_ethos1,"# Negative Sentiment":negative_sentiment1,"# Positive Sentiment":positive_sentiment1,"# No Sentiment":no_sentiment1})
+        ethotic_attacks2 = [ str(x[0])+"/"+str(round((x[0]/(x[0]+x[1]+x[2]))*100,1))+"%" for x in zip(ethotic_attacks1,ethotic_supprts1,no_ethos1)]
+        ethotic_supprts2 = [ str(x[1])+"/"+str(round((x[1]/(x[0]+x[1]+x[2]))*100,1))+"%" for x in zip(ethotic_attacks1,ethotic_supprts1,no_ethos1)]
+        no_ethos2 = [ str(x[2])+"/"+str(round((x[2]/(x[0]+x[1]+x[2]))*100,1))+"%" for x in zip(ethotic_attacks1,ethotic_supprts1,no_ethos1)]
+        negative_sentiment2 = [ str(x[0])+"/"+str(round((x[0]/(x[0]+x[1]+x[2]))*100,1))+"%" for x in zip(negative_sentiment1,positive_sentiment1,no_sentiment1)]
+        positive_sentiment2 = [ str(x[1])+"/"+str(round((x[1]/(x[0]+x[1]+x[2]))*100,1))+"%" for x in zip(negative_sentiment1,positive_sentiment1,no_sentiment1)]
+        no_sentiment2 = [ str(x[2])+"/"+str(round((x[2]/(x[0]+x[1]+x[2]))*100,1))+"%" for x in zip(negative_sentiment1,positive_sentiment1,no_sentiment1)]
+        ethosSentimentDF = pd.DataFrame(data={"Corpus":names1,"# Ethotic attacks":ethotic_attacks2,"# Ethotic Supports":ethotic_supprts2,
+            "# No Ethos":no_ethos2,"# Negative Sentiment":negative_sentiment2,"# Positive Sentiment":positive_sentiment2,"# No Sentiment":no_sentiment2})
 
         DataProvider.addSpacelines(1)
         ethosSentimentDF.index += 1
