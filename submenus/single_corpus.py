@@ -39,7 +39,7 @@ class SingleCorpusMenu:
             st.session_state[self.__prefix + 'speakerOrAdu'] = ""
             # Speaker type: "SS rephrase" or "OS rephrase", default is ""
             st.session_state[self.__prefix + 'speakerType'] = ""
-        print("Reloaded!!!")
+        #print("Reloaded!!!")
 
     def __checkSessionState(self) -> bool:
         for key in self.__dataDic:
@@ -56,6 +56,7 @@ class SingleCorpusMenu:
             st.session_state[self.__prefix + key] = False
         st.session_state[self.__prefix + "US2016Reddit"] = False
         st.session_state[self.__prefix + "US2016TV"] = False
+        st.session_state[self.__prefix + "PolarIs"] = False
         self.__rephrase_df = pd.DataFrame()
         self.__rephrase_old = self.__rephrase_df.copy(deep=True)
 
@@ -73,6 +74,7 @@ class SingleCorpusMenu:
         self.__rephrase_old = self.__rephrase_df.copy(deep=True)
 
     def __update_block(self, name: str):
+        #print("CheckboxName: "+name)
         for key in self.__dataDic:
             if key.find(name) != -1:
                 #print("Block:", self.__prefix + name," Updates: ",self.__prefix + key)
@@ -82,13 +84,14 @@ class SingleCorpusMenu:
     def __corporaPickerChckBox(self):
         tv = False
         reddit = False
+        polaris = False
         for ctr, key in enumerate(self.__dataDic):
             if key.find("US2016Reddit") != -1:
                 if not reddit:
                     reddit = True
                     st.checkbox("US2016Reddit", \
                         key = self.__prefix + "US2016Reddit",
-                        help = self.__prefix + "US2016Reddit",
+                        help = "USA Presidential debates 2016 - Reddit",
                         value = False,
                         on_change=self.__update_block,
                         kwargs = {"name": "US2016Reddit"},
@@ -108,7 +111,7 @@ class SingleCorpusMenu:
                     tv = True
                     st.checkbox("US2016TV", \
                         key = self.__prefix + "US2016TV",
-                        help = self.__prefix + "US2016TV",
+                        help = "USA Presidental debates 2016 - TV",
                         value = False,
                         on_change=self.__update_block,
                         kwargs = {"name": "US2016TV"},
@@ -123,6 +126,26 @@ class SingleCorpusMenu:
                     disabled=False,
                     id = "US2016TV" + str(ctr) 
                 )                
+            elif key.find("PolarIs") != -1:
+                if not polaris:
+                    polaris = True
+                    st.checkbox("PolarIs", \
+                        key = self.__prefix + "PolarIs",
+                        help = "Polarisation Corpora: Twitter and Reddit",
+                        value = False,
+                        on_change=self.__update_block,
+                        kwargs = {"name": "PolarIs"},
+                        disabled=False
+                    )                     
+                st_tweaker.checkbox(key, \
+                    key = self.__prefix + key,
+                    help = self.__prefix + key,
+                    value = False,
+                    on_change=self.__update_corpora_checkbox,
+                    kwargs = {},
+                    disabled=False,
+                    id = "PolarIs" + str(ctr) 
+                )                
             else:
                 st.checkbox(key, \
                     key = self.__prefix + key,
@@ -135,7 +158,7 @@ class SingleCorpusMenu:
         self.__update_corpora_checkbox()
         st.markdown("""
         <style>
-        #Reddit0,#Reddit1,#Reddit2,#US2016TV3,#US2016TV4,#US2016TV5 {
+        #Reddit0,#Reddit1,#Reddit2,#US2016TV3,#US2016TV4,#US2016TV5,#PolarIs7,#PolarIs8,#PolarIs9,#PolarIs10 {
             margin-left: 50px;
         }
         </style>

@@ -97,7 +97,7 @@ st.set_page_config(layout="wide")
 
 # ******************* path to file **************************************
 
-__rephrase_xlsx = r"./data_xlsx/DynRephrSEAnSortedNoConnId.xlsx"
+__rephrase_xlsx = r"./data_xlsx/FixedDataUS2016_202509.xlsx"
 
 # ********************** functions **************************************
 
