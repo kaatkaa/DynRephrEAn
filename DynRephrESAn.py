@@ -98,6 +98,7 @@ st.set_page_config(layout="wide")
 # ******************* path to file **************************************
 
 __rephrase_xlsx = r"./data_xlsx/FixedDataUS2016_202509.xlsx"
+#__rephrase_xlsx = r"./data_xlsx/FixedDataUS2016_20251022.xlsx"
 
 # ********************** functions **************************************
 
@@ -340,7 +341,7 @@ e.g., by using different dynamic types of rephrase.
         ethosSentimentDF.index += 1
         st.table(make_pretty2(ethosSentimentDF.style))
 
-        #st.write(allSpeakers)
+        st.write(allSpeakers)
 
     with st.container():
         DataProvider.addSpacelines(3)
