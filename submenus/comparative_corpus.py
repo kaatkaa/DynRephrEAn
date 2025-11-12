@@ -104,8 +104,8 @@ class CmpCorpusMenu:
                             'showStopPoSInterface':False
             }
             self.__updateCfg(config=cfg)
-            self.__anCf = FilterInterface(config=st.session_state[st.session_state['cfgId']]).getConfig()
-            _3D_PoS(dataDic=self.__dataDict,config=st.session_state[st.session_state['cfgId']]).plot3D()
+            __3D_PoS = FilterInterface(config=st.session_state[st.session_state['cfgId']]).getConfig()
+            _3D_PoS(dataDic=self.__dataDict,config=__3D_PoS).plot3D()
 
     def clearTabsSelections(self) -> None:
         for tab in self.__dataLoaders:
