@@ -26,6 +26,7 @@ class SingleCorpusMenu:
     def __init__(self, dataDic: dict[str : pd.DataFrame()], prefix: str="0_") -> None:
         #dictionary containing all possible data with corpora indexed by name
         self.__dataDic = dataDic
+        self.__disabledWidget = False
         #Prefix to distinguish between different data sets
         self.__prefix = prefix
 
@@ -62,6 +63,7 @@ class SingleCorpusMenu:
 
     def __update_corpora_checkbox(self):
         dfLst = []
+        self.__disabledWidget = True
         for key in self.__dataDic:
             if st.session_state[self.__prefix + key]:
                 dfLst.append(self.__dataDic[key])
@@ -72,6 +74,7 @@ class SingleCorpusMenu:
         else:
             self.__rephrase_df = pd.DataFrame()
         self.__rephrase_old = self.__rephrase_df.copy(deep=True)
+        self.__disabledWidget = False
 
     def __update_block(self, name: str):
         #print("CheckboxName: "+name)
@@ -95,7 +98,7 @@ class SingleCorpusMenu:
                         value = False,
                         on_change=self.__update_block,
                         kwargs = {"name": "US2016Reddit"},
-                        disabled=False
+                        disabled=self.__disabledWidget
                     )           
                 st_tweaker.checkbox(key, \
                     key = self.__prefix + key,
@@ -103,7 +106,7 @@ class SingleCorpusMenu:
                     value = False,
                     on_change=self.__update_corpora_checkbox,
                     kwargs = {},
-                    disabled=False,
+                    disabled=self.__disabledWidget,
                     id = "Reddit" + str(ctr)
                 )
             elif key.find("US2016TV") != -1:
@@ -115,7 +118,7 @@ class SingleCorpusMenu:
                         value = False,
                         on_change=self.__update_block,
                         kwargs = {"name": "US2016TV"},
-                        disabled=False
+                        disabled=self.__disabledWidget
                     )                     
                 st_tweaker.checkbox(key, \
                     key = self.__prefix + key,
@@ -123,7 +126,7 @@ class SingleCorpusMenu:
                     value = False,
                     on_change=self.__update_corpora_checkbox,
                     kwargs = {},
-                    disabled=False,
+                    disabled=self.__disabledWidget,
                     id = "US2016TV" + str(ctr) 
                 )                
             elif key.find("PolarIs") != -1:
@@ -135,7 +138,7 @@ class SingleCorpusMenu:
                         value = False,
                         on_change=self.__update_block,
                         kwargs = {"name": "PolarIs"},
-                        disabled=False
+                        disabled=self.__disabledWidget
                     )                     
                 st_tweaker.checkbox(key, \
                     key = self.__prefix + key,
@@ -143,7 +146,7 @@ class SingleCorpusMenu:
                     value = False,
                     on_change=self.__update_corpora_checkbox,
                     kwargs = {},
-                    disabled=False,
+                    disabled=self.__disabledWidget,
                     id = "PolarIs" + str(ctr) 
                 )                
             else:
@@ -153,7 +156,7 @@ class SingleCorpusMenu:
                     value = False,
                     on_change=self.__update_corpora_checkbox,
                     kwargs = {},
-                    disabled=False
+                    disabled=self.__disabledWidget
                 )
         self.__update_corpora_checkbox()
         st.markdown("""
